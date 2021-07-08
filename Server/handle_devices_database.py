@@ -1,42 +1,68 @@
-from pydantic import BaseModel
 import json
 import os
+from uuid import UUID, uuid4
+
+from pydantic import BaseModel
 
 import consts
 
 
-class NewDevice(BaseModel):
+class DeviceInfo(BaseModel):
     stam: int  #TODO: remove
 
 
-class Device(NewDevice):
-    device_id: int
+class Device(DeviceInfo):
+    device_id: UUID
 
 
+class DeviceDBInfo(DeviceInfo):
+    is_active: bool
+
+
+# TODO: remove. only for testing
 def init_devices_database():
-    os.mkdir(consts.DEVICES_DATABASE_DIRECTORY)
+    if not os.path.isdir(consts.DEVICES_DATABASE_DIRECTORY):
+        os.mkdir(consts.DEVICES_DATABASE_DIRECTORY)
+        with open(consts.DEVICES_DATABASE_NAME, 'w') as database:
+            database.write('{}')
 
 
+# TODO: remove. only for testing
 def delete_devices_database():
-    os.remove(consts.DEVICES_DATABASE_NAME)
-
-# def create_devices_database_directory():
-#     os.mkdir('/devices')
+    with open(consts.DEVICES_DATABASE_NAME, 'w') as database:
+        database.write('{}')
 
 
-async def register_device(new_device: NewDevice):
+# TODO: maybe change return value to device id
+async def register_device(device_info: DeviceInfo) -> Device:
+    """
 
-    with open(consts.DEVICES_DATABASE_NAME, 'a') as database:
+    Note:
+        Assumes that './devices/devices_database.json' exists and contains '{}'
+        or other devices.
 
-        device = Device(**new_device.dict(), device_id=consts.NUM_OF_DEVICES)
-        json.dump(device, database)
-        consts.NUM_OF_DEVICES += 1
+    Args:
+        device_info: information about the device
+
+    Returns:
+
+    """
+    with open(consts.DEVICES_DATABASE_NAME, 'r') as database:
+        data = json.load(database)
+
+    device_id = uuid4()
+    device = Device(**device_info.dict(), device_id=device_id)
+    new_device = {device_id.hex: device_info.dict()}
+    data.update(new_device)
+
+    with open(consts.DEVICES_DATABASE_NAME, 'w') as database:
+        json.dump(data, database)
 
     return device
 
 
 async def get_device_database():
-    with open('/devices/database.json', 'r') as database:
+    with open(consts.DEVICES_DATABASE_NAME, 'r') as database:
         result = database.read()
 
     return result

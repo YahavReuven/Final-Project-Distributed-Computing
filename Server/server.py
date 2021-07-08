@@ -11,7 +11,6 @@ register_device = app.post("/register_device", response_model=Device)(register_d
 get_device_database = app.get('/devices')(get_device_database)
 delete_devices_database = app.get('/delete')(delete_devices_database)
 
-delete_devices_database()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
