@@ -1,3 +1,7 @@
+"""
+Module used to handle devices
+"""
+
 import json
 import os
 from uuid import UUID, uuid4
@@ -7,7 +11,11 @@ from pydantic import BaseModel
 import consts
 from db_handler import DBHandler
 
-devices_db = DBHandler()
+devices_db = None
+
+def devices_db_init():
+    global devices_db
+    devices_db = DBHandler()
 
 
 
@@ -54,7 +62,7 @@ async def register_device(device_info: DeviceInfo) -> str:
 
     device_id = uuid4()
     client = consts.Client(id=device_id.hex, is_active=True)
-    devices_db.db['clients'].append(client)
+    devices_db.db['devices'].append(client)
 
     # new_device = {device_id.hex: device_info.dict()}
     # data.update(new_device)
@@ -62,6 +70,7 @@ async def register_device(device_info: DeviceInfo) -> str:
     return device_id.hex
 
 
+# TODO: remove. only for testing
 async def get_device_database():
     with open(consts.DEVICES_DATABASE_NAME, 'r') as database:
         result = database.read()

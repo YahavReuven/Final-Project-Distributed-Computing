@@ -10,6 +10,8 @@ from handle_devices import (register_device) #, Device, get_device_database,
 # from handle_projects_database import create_new_project
 import consts
 from db_handler import DBHandler
+from server_maintenance import init_server
+
 
 app = FastAPI()
 
@@ -30,6 +32,7 @@ def update_db(db: DBHandler):
 
 
 if __name__ == '__main__':
+    init_server()
     db = DBHandler()
     th = threading.Thread(target=update_db, args=(db,))
     th.start()

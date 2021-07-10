@@ -2,9 +2,11 @@ from dataclasses import dataclass, field
 
 DEVICES_DATABASE_DIRECTORY = './devices'
 DEVICES_DATABASE_NAME = DEVICES_DATABASE_DIRECTORY + '/devices_database.json'
+DEVICES_DATABASE_KEY = 'devices'
 
 PROJECTS_DATABASE_DIRECTORY = './projects'
 PROJECTS_DATABASE_NAME = PROJECTS_DATABASE_DIRECTORY + '/projects_database.json'
+
 UPDATE_DB_DELAY = 60*0.1
 
 
