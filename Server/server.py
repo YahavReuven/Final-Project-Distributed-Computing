@@ -1,5 +1,4 @@
 import threading
-import time
 
 import uvicorn
 from fastapi import FastAPI
@@ -10,12 +9,11 @@ from handle_devices import (register_device) #, Device, get_device_database,
 # from handle_projects_database import create_new_project
 import consts
 from db_handler import DBHandler
-from server_maintenance import init_server
+from initialize_server import init_server, update_db
 
 
 app = FastAPI()
 
-#init_devices_database()
 
 register_device = app.post('/register_device')(register_device)
 # get_device_database = app.get('/devices')(get_device_database)
@@ -24,11 +22,6 @@ register_device = app.post('/register_device')(register_device)
 
 # create_new_project = app.post('/new_project')(create_new_project)
 
-
-def update_db(db: DBHandler):
-    while True:
-        time.sleep(consts.UPDATE_DB_DELAY)
-        db.update_db()
 
 
 if __name__ == '__main__':

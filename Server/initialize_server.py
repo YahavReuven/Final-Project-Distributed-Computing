@@ -1,11 +1,18 @@
 """
-Module used
+Module used to initialize the server and update
 """
-
+import time
 import os
 
 import consts
 import handle_devices
+from db_handler import DBHandler
+
+
+def update_db(db: DBHandler):
+    while True:
+        time.sleep(consts.UPDATE_DB_DELAY)
+        db.update_db()
 
 
 def init_server():

@@ -61,8 +61,8 @@ async def register_device(device_info: DeviceInfo) -> str:
     """
 
     device_id = uuid4()
-    client = consts.Client(id=device_id.hex, is_active=True)
-    devices_db.db['devices'].append(client)
+    device = consts.Device(id=device_id.hex, is_active=True)
+    devices_db.db['devices'].append(device)
 
     # new_device = {device_id.hex: device_info.dict()}
     # data.update(new_device)

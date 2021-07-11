@@ -11,7 +11,13 @@ UPDATE_DB_DELAY = 60*0.1
 
 
 @dataclass
-class Client:
+class Device:
     id: str
     is_active: bool
     projects: list[str] = field(default_factory=list)
+
+
+@dataclass
+class Project:
+    id: str
+    tasks: list[str] = field(default_factory=list)

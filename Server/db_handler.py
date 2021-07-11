@@ -3,7 +3,7 @@ from typing import Union, Any
 from dataclasses import asdict
 from functools import wraps
 
-from consts import Client, DEVICES_DATABASE_NAME
+from consts import Device, Project, DEVICES_DATABASE_NAME
 
 
 def singleton(cls):
@@ -17,23 +17,27 @@ def singleton(cls):
     return wrapper
 
 
-class ClientEncoder(json.JSONEncoder):
+class CustomEncoder(json.JSONEncoder):
     """ Custom class to encode client in order to dump to json file. """
 
-    def default(self, client: Client) -> dict[str, Union[str, list[str]], bool]:
+    def default(self, obj: object) -> dict[str, Union[str, list[str]], bool]:
         """ Called in case json can't serialize object. """
-        return asdict(client)
+        if isinstance(obj, Device) or isinstance(obj, Project):
+            return asdict(obj)
+        return json.jsonEncoder.default(self, obj)
 
 
-class ClientDecoder(json.JSONDecoder):
+class CustomDecoder(json.JSONDecoder):
     def __init__(self):
-        super().__init__(object_hook=self.dict_to_client)
+        super().__init__(object_hook=self.dict_to_object)
 
     @staticmethod
-    def dict_to_client(obj: Any) -> Union[Client, Any]:
+    def dict_to_object(obj: object) -> Union[Device, Any]:
         """ Called for every json object. """
         if isinstance(obj, dict) and 'projects' in obj:
-            return Client(**obj)
+            return Device(**obj)
+        if isinstance(obj, dict) and 'tasks' in obj:
+            return Project(**obj)
         return obj
 
 
@@ -46,15 +50,15 @@ class DBHandler:
 
     def _load_db(self) -> None:
         with open(DEVICES_DATABASE_NAME, 'r') as file:
-            self._db = json.load(file, cls=ClientDecoder)
+            self._db = json.load(file, cls=CustomDecoder)
 
     def update_db(self) -> None:
         print('updating db...')
         with open(DEVICES_DATABASE_NAME, 'w') as file:
-            json.dump(self._db, file, cls=ClientEncoder)
+            json.dump(self._db, file, cls=CustomEncoder)
 
     @property
-    def db(self) -> dict[str, list[Client]]:
+    def db(self) -> dict[str, list[Device]]:
         return self._db
 
 
