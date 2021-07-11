@@ -11,11 +11,11 @@ from pydantic import BaseModel
 import consts
 from db_handler import DBHandler
 
-devices_db = None
-
-def devices_db_init():
-    global devices_db
-    devices_db = DBHandler()
+# db = None
+#
+# def devices_db_init():
+#     global db
+#     db = DBHandler()
 
 
 
@@ -46,7 +46,7 @@ class DeviceInfo(BaseModel):
 
 
 # TODO: maybe change return value to device id
-async def register_device(device_info: DeviceInfo) -> str:
+async def register_device() -> str:  # device_info: DeviceInfo
     """
 
     Note:
@@ -59,15 +59,16 @@ async def register_device(device_info: DeviceInfo) -> str:
     Returns:
 
     """
+    db = DBHandler()
 
-    device_id = uuid4()
-    device = consts.Device(id=device_id.hex, is_active=True)
-    devices_db.db['devices'].append(device)
+    device_id = uuid4().hex
+    device = consts.Device(device_id=device_id)
+    db.devices_db[consts.DEVICES_DATABASE_KEY].append(device)
 
     # new_device = {device_id.hex: device_info.dict()}
     # data.update(new_device)
 
-    return device_id.hex
+    return device_id
 
 
 # TODO: remove. only for testing
