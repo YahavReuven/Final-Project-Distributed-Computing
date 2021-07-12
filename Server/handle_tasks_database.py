@@ -4,7 +4,7 @@
 # from pydantic import BaseModel
 #
 #
-# class ProjectInfo(BaseModel):
+# class NewProject(BaseModel):
 #     creator_id: int
 #     zip_project: str
 #     #zip_project: UploadFile
@@ -19,7 +19,7 @@
 # # resp = requests.post('http://127.0.0.1:8000/new_project', json={'creator_id': 1,'zip_project': b64.decode('utf-8')})
 #
 # #TODO: make it work with UploadFile insted of bytes
-# async def create_new_project(new_project: ProjectInfo) -> int:
+# async def create_new_project(new_project: NewProject) -> int:
 #     if not os.path.isdir('./projects'):
 #         os.mkdir('./projects')
 #
@@ -35,11 +35,11 @@
 # #     print(creator_id)
 # #     return somthing
 #
-# # async def create_new_project(new_project: ProjectInfo) -> int:
+# # async def create_new_project(new_project: NewProject) -> int:
 # #     print(new_project.creator_id)
 # #     return new_project.creator_id
 #
-# # async def create_new_project(new_project: ProjectInfo, file: UploadFile = File(...)):
+# # async def create_new_project(new_project: NewProject, file: UploadFile = File(...)):
 # #     #print(new_project.dict())
 # #     return True
 #

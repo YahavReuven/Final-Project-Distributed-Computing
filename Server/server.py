@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from handle_devices import (register_device) #, Device, get_device_database,
                                      # delete_devices_database, init_devices_database,
                                      # delete_devices_database)
-from handle_projects import new_project
+from handle_projects import create_new_project
 # from handle_projects_database import create_new_project
 import consts
 from db_handler import DBHandler
@@ -20,7 +20,8 @@ register_device = app.post('/register_device')(register_device)
 # get_device_database = app.get('/devices')(get_device_database)
 # delete_devices_database = app.get('/delete')(delete_devices_database)
 
-new_project = app.post('/new_project')(new_project)
+create_new_project = app.post('/upload_new_project')(create_new_project)
+# new_project_1 = app.post('/new_project')(new_project_1)
 # create_new_project = app.post('/new_project')(create_new_project)
 
 

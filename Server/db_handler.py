@@ -1,3 +1,7 @@
+"""
+Module used to update the database and load it to memory correctly.
+"""
+
 import json
 from typing import Union, Any
 from dataclasses import asdict
@@ -5,6 +9,7 @@ from functools import wraps
 
 import consts
 from consts import Device, DeviceDB, Project
+
 
 def singleton(cls):
     """ An implementation of singleton using decorator. """
@@ -37,7 +42,8 @@ class CustomDecoder(json.JSONDecoder):
     def dict_to_object(obj: object) -> Union[Device, Any]:
         """ Called for every json object. """
         if isinstance(obj, dict) and 'device_id' in obj:
-            return device_db_to_device()
+            device_db = DeviceDB(**obj)
+            return device_db_to_device(device_db)
         if isinstance(obj, dict) and 'tasks' in obj:
             return Project(**obj)
         return obj
@@ -57,7 +63,7 @@ class DBHandler:
             self._projects_db = json.load(file, cls=CustomDecoder)
 
     def update_db(self) -> None:
-        print('updating db...')
+        print('updating db...')  # TODO: remove after testing
         with open(consts.DEVICES_DATABASE_NAME, 'w') as file:
             json.dump(self._devices_db, file, cls=CustomEncoder)
         with open(consts.PROJECTS_DATABASE_NAME, 'w') as file:
@@ -70,6 +76,7 @@ class DBHandler:
     @property
     def projects_db(self) -> dict[str, list[Project]]:
         return self._projects_db
+
 
 
 def device_to_device_db(device: Device) -> DeviceDB:
@@ -99,11 +106,16 @@ def device_db_to_device(device_db: DeviceDB) -> Device:
     """
 
     device_id = device_db.device_id
-    projects = [find_project(project_id) for project_id in DeviceDB.projects_ids]
+    projects = list()
+    if not device_db.projects_ids:
+        projects = [find_project(project_id) for project_id in device_db.projects_ids]
     return Device(device_id=device_id, projects=projects)
 
-def find_project(project_id: str) -> Union[Project, None]:
 
+
+
+
+def find_project(project_id: str) -> Union[Project, None]:
     """
 
     Args:
@@ -121,3 +133,26 @@ def find_project(project_id: str) -> Union[Project, None]:
         if project.project_id == project_id:
             return project
     return None
+
+
+def find_device(device_id: str) -> Union[Device, None]:
+    """
+
+    Args:
+        device_id (str): the device's id of the desired device.
+
+    Returns:
+        Device: the device with the specified device id.
+        None: if no project has the specified device id.
+
+    """
+
+    db = DBHandler()
+    devices = db.devices_db[consts.DEVICES_DATABASE_KEY]
+    for device in devices:
+        if device.device_id == device_id:
+            return device
+    return None
+
+
+# TODO: add sort devices, sort projects, sort projects in device

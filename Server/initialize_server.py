@@ -5,8 +5,6 @@ import time
 import os
 
 import consts
-import handle_devices
-import handle_projects
 from db_handler import DBHandler
 
 
@@ -42,8 +40,29 @@ def init_projects_database():
     Initializes projects database and creates needed directories.
     """
 
-    os.makedirs(consts.PROJECTS_DATABASE_DIRECTORY, exist_ok=True)
+    os.makedirs(consts.PROJECTS_DIRECTORY, exist_ok=True)
 
     if not os.path.isfile(consts.PROJECTS_DATABASE_NAME):
         with open(consts.PROJECTS_DATABASE_NAME, 'w') as database:
             database.write('{ "' + consts.PROJECTS_DATABASE_KEY + '" : [] }')
+
+
+# TODO: change to consts
+def init_project_storage(project_id: str):
+    """
+
+    Initializes the project with the project's id storage space.
+
+    Note:
+        Assumes that the project's id appears once in the database.
+
+    Args:
+        project_id (str): the project's id
+
+    """
+
+    project_directory = consts.PROJECTS_DIRECTORY + '/' + project_id
+
+    # TODO: shouldn't return Fallse since ids are unique. maybe check.
+    os.makedirs(project_directory + consts.PROJECT_STORAGE_PROJECT)
+    os.makedirs(project_directory + consts.PROJECT_STORAGE_RESULTS)
