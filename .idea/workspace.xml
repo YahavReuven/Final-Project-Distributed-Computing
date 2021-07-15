@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="976bfc05-2c65-4320-ac91-bab6df989ccd" name="Default Changelist" comment="">
+    <list default="true" id="964114a0-9bf3-4d9a-ba53-2fdd532fd86b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Server/handle_tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/final_project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/final_project.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.venv/Lib/site-packages/click/_termui_impl.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/Lib/site-packages/click/_termui_impl.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.venv/Lib/site-packages/pip/_vendor/urllib3/_collections.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/Lib/site-packages/pip/_vendor/urllib3/_collections.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.venv/Lib/site-packages/urllib3/_collections.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/Lib/site-packages/urllib3/_collections.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/consts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/db_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/db_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/handle_projects.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_projects.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/handle_tasks_database.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_tasks_database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/initialize_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/initialize_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/handle_tasks_database.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -15,17 +19,10 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectId" id="1vAk3W3cAvtiwTJotxwuBXkrd35" />
+  <component name="ProjectId" id="1vMPTbP97Pk9yyGzjQvvtaNVMnz" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -34,7 +31,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
   </component>
   <component name="RunManager">
     <configuration name="server" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -68,31 +65,19 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="976bfc05-2c65-4320-ac91-bab6df989ccd" name="Default Changelist" comment="" />
-      <created>1626012089820</created>
+      <changelist id="964114a0-9bf3-4d9a-ba53-2fdd532fd86b" name="Default Changelist" comment="" />
+      <created>1626368995212</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1626012089820</updated>
-      <workItem from="1626012094028" duration="7539000" />
-      <workItem from="1626094001296" duration="12288000" />
+      <updated>1626368995212</updated>
+      <workItem from="1626368997859" duration="1349000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Server/db_handler.py</url>
-          <line>45</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/final_project$server.coverage" NAME="server Coverage Results" MODIFIED="1626104760694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" />
+    <SUITE FILE_PATH="coverage/final_project$server.coverage" NAME="server Coverage Results" MODIFIED="1626382361329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" />
   </component>
 </project>

@@ -54,6 +54,17 @@ class NewProject(BaseModel):
 
 # TODO: make it work with UploadFile instead of bytes
 async def create_new_project(new_project: NewProject) -> str:
+    """
+    Create a new project, initializes its storage and updates the database.
+
+    Args:
+        new_project (NewProject): contains the needed information about
+        the uploaded project.
+
+    Returns:
+        str: the project's id.
+
+    """
     project_id = uuid4().hex
     # TODO: check if id is already in use.
     init_project_storage(project_id)
@@ -85,3 +96,16 @@ def store_zipped_project(base64_project: str, project_id: str):
 
     with open(zipped_project_path, 'wb') as file:
         file.write(decoded_project)
+
+
+def encode_zipped_project(project_id: str) -> bytes:
+    zipped_project_path = consts.PROJECTS_DIRECTORY + '/' + project_id \
+                          + consts.PROJECT_STORAGE_PROJECT \
+                          + consts.PROJECT_STORAGE_ZIPPED_PROJECT_NAME_AND_TYPE
+
+    with open(zipped_project_path, 'rb') as file:
+        zipped_project = file.read()
+
+    encoded_project = base64.b64encode(zipped_project)
+
+    return encoded_project

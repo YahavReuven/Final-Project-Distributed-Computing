@@ -9,6 +9,7 @@ from handle_devices import (register_device) #, Device, get_device_database,
 from handle_projects import create_new_project
 # from handle_projects_database import create_new_project
 import consts
+from handle_tasks import SentTask, get_new_task
 from db_handler import DBHandler
 from initialize_server import init_server, update_db
 
@@ -24,6 +25,7 @@ create_new_project = app.post('/upload_new_project')(create_new_project)
 # new_project_1 = app.post('/new_project')(new_project_1)
 # create_new_project = app.post('/new_project')(create_new_project)
 
+get_new_task = app.get('/get_new_task', response_model=SentTask)(get_new_task)
 
 
 if __name__ == '__main__':

@@ -78,7 +78,6 @@ class DBHandler:
         return self._projects_db
 
 
-
 def device_to_device_db(device: Device) -> DeviceDB:
     """
 
@@ -110,9 +109,6 @@ def device_db_to_device(device_db: DeviceDB) -> Device:
     if not device_db.projects_ids:
         projects = [find_project(project_id) for project_id in device_db.projects_ids]
     return Device(device_id=device_id, projects=projects)
-
-
-
 
 
 def find_project(project_id: str) -> Union[Project, None]:
