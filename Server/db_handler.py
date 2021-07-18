@@ -41,8 +41,10 @@ class CustomEncoder(json.JSONEncoder):
             return task
         if isinstance(obj, datetime.datetime):
             # pickled = pickle.dumps(obj).decode('base64')
-
-            return codecs.encode(pickle.dumps(obj), "base64").decode()  # TODO: add an explanation
+            pickled = pickle.dumps(obj)  # returns a pickled object of obj (in bytes)
+            encoded_base64 = codecs.encode(pickled, "base64")  # returns the pickled object in base64 encoding
+            return encoded_base64.decode()  # decodes the pickled object in base64 from bytes into str
+            # TODO: add an explanation
         return json.JSONEncoder.default(self, obj)
 
 
@@ -60,8 +62,11 @@ class CustomDecoder(json.JSONDecoder):
             return Project(**obj)
         if isinstance(obj, dict) and 'sent_date' in obj:
             values = {**obj}
-            pickled = values['sent_date']
-            values['sent_date'] = pickle.loads(codecs.decode(pickled.encode(), "base64"))  # TODO: add an explanation
+            decoded_pickle_base64 = values['sent_date']  # holds a str representation of a pickled object in base64
+            encoded_pickle_base64 = decoded_pickle_base64.encode()  # converts the str representation back to bytes
+            pickled = codecs.decode(encoded_pickle_base64, "base64")  # decodes the base64 to an ordinary pickle object
+            values['sent_date'] = pickle.loads(pickled)  # stores the unpickled object back in the dict
+            # TODO: add an explanation and check names
             return Task(**values)
 
         return obj

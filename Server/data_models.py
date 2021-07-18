@@ -13,6 +13,13 @@ class NewProject(BaseModel):
     zip_project: str  # in base 64 encoding
 
 
+class SentTask(BaseModel):
+    """A task sent to the client"""
+    project_id: str
+    task_number: int
+    base64_zipped_project: str  # in base64
+
+
 @dataclass
 class Task:
     sent_date: datetime

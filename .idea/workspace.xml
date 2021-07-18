@@ -2,11 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="964114a0-9bf3-4d9a-ba53-2fdd532fd86b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Server/projects/f6256f7476ba4003a39256a8dabfbb61/project/zipped_project.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server/projects/aedf2814c0d845bfaf2be4f7886c7b5f/project/zipped_project.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/data_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/data_models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/db_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/db_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/devices/devices_database.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/devices/devices_database.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/projects/08dd9d022203444e8784054219cf6866/project/zipped_project.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/handle_tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/projects/f6256f7476ba4003a39256a8dabfbb61/project/zipped_project.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/projects/projects_database.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/projects/projects_database.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -89,6 +92,7 @@
       <workItem from="1626559996613" duration="39000" />
       <workItem from="1626618106910" duration="4427000" />
       <workItem from="1626622856456" duration="3271000" />
+      <workItem from="1626626307633" duration="5040000" />
     </task>
     <servers />
   </component>
@@ -114,24 +118,21 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Server/db_handler.py</url>
-          <line>37</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Server/db_handler.py</url>
-          <line>60</line>
-          <option name="timeStamp" value="5" />
+          <url>file://$PROJECT_DIR$/Server/handle_tasks.py</url>
+          <line>28</line>
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="PythonConfigurationType">
-        <watch expression="bytes(values['sent_date'])" language="Python" />
-      </configuration>
-    </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/final_project$server.coverage" NAME="server Coverage Results" MODIFIED="1626625896701" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" />
+    <SUITE FILE_PATH="coverage/final_project$server.coverage" NAME="server Coverage Results" MODIFIED="1626630292235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" />
   </component>
 </project>
