@@ -1,9 +1,10 @@
 """
 Module used to update the database and load it to memory correctly.
 """
-
+import codecs
 import json
 import pickle
+import datetime
 from typing import Union, Any
 from dataclasses import asdict
 from functools import wraps
@@ -28,7 +29,7 @@ def singleton(cls):
 class CustomEncoder(json.JSONEncoder):
     """ Custom class to encode client in order to dump to json file. """
 
-    def default(self, obj: object) -> dict[str, Union[str, list[str]], bool]:
+    def default(self, obj: object):  # -> dict[str, Union[str, list[str]], bool]:
         """ Called in case json can't serialize object. """
         if isinstance(obj, Device):
             return asdict(device_to_device_db(obj))
@@ -36,8 +37,12 @@ class CustomEncoder(json.JSONEncoder):
             return asdict(obj)
         if isinstance(obj, Task):
             task = asdict(obj)
-            task['sent_date'] = pickle.dumps(task['sent_date'])
+            # task['sent_date'] = pickle.dumps(task['sent_date'])
             return task
+        if isinstance(obj, datetime.datetime):
+            # pickled = pickle.dumps(obj).decode('base64')
+
+            return codecs.encode(pickle.dumps(obj), "base64").decode()  # TODO: add an explanation
         return json.JSONEncoder.default(self, obj)
 
 
@@ -55,8 +60,10 @@ class CustomDecoder(json.JSONDecoder):
             return Project(**obj)
         if isinstance(obj, dict) and 'sent_date' in obj:
             values = {**obj}
-            values['sent_date'] = pickle.loads(values['sent_date'])
-            return Task()
+            pickled = values['sent_date']
+            values['sent_date'] = pickle.loads(codecs.decode(pickled.encode(), "base64"))  # TODO: add an explanation
+            return Task(**values)
+
         return obj
 
 
