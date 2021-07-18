@@ -10,34 +10,15 @@ from typing import Union
 import asyncio
 
 # from fastapi import File, UploadFile, Body
-from pydantic import BaseModel
+# from pydantic import BaseModel
 
 import consts
-from consts import Project
-
+from data_models import Project, NewProject
+from errors import IDNotFoundError
 from db_handler import DBHandler, find_device
 # from db_functions import find_device
 
 from initialize_server import init_project_storage
-
-
-# db = None
-#
-# def projects_db_init():
-#     global db
-#     db = DBHandler()
-
-# def new_project_1():
-#     db = DBHandler()
-#     project_id = uuid4().hex
-#     project = consts.Project(project_id=project_id)
-#     db.projects_db[consts.PROJECTS_DATABASE_KEY].append(project)
-#     return project_id
-
-
-class NewProject(BaseModel):
-    creator_id: str  # TODO: the device id of the creator of the project. maybe change to user
-    zip_project: str  # in base 64 encoding
 
 
 #
@@ -46,11 +27,16 @@ class NewProject(BaseModel):
 #     creator_id: int
 #     tasks: dict[int, int]  # dict[iteration, return value]
 
+# ---------------------------------------------------------------------------
 # send request:
+# import requests
 # import base64
+# device1 = requests.post('http://127.0.0.1:8000/register_device')
+# print(device1.text)
+# device2 = requests.post('http://127.0.0.1:8000/register_device')
 # b64 = base64.b64encode(b'\x54\x43\x65')
-# resp = requests.post('http://127.0.0.1:8000/new_project', json={'creator_id': 1,'zip_project': b64.decode('utf-8')})
-
+# project1 = requests.post('http://127.0.0.1:8000/upload_new_project', json={'creator_id': device1.text[1:-1],'zip_project': b64.decode('utf-8')})
+# ---------------------------------------------------------------------------
 
 # TODO: make it work with UploadFile instead of bytes
 async def create_new_project(new_project: NewProject) -> str:
@@ -64,6 +50,9 @@ async def create_new_project(new_project: NewProject) -> str:
     Returns:
         str: the project's id.
 
+    Raises:
+        IDNotFoundError
+
     """
     project_id = uuid4().hex
     # TODO: check if id is already in use.
@@ -71,28 +60,26 @@ async def create_new_project(new_project: NewProject) -> str:
     store_zipped_project(new_project.zip_project, project_id)
 
     project = Project(project_id=project_id)
-    creator = find_device(new_project.creator_id)
+    if not (creator := find_device(new_project.creator_id)):
+        raise IDNotFoundError()
     db = DBHandler()
 
-    db.projects_db[consts.PROJECTS_DATABASE_KEY].append(project)
+    db.add_to_database(project)
+    # db.projects_db[consts.PROJECTS_DATABASE_KEY].append(project)
     creator.projects.append(project)
 
     return project_id
 
 
-#
-#
-# async def return_project_results():
-#     pass
-#
-#
-#
+async def return_project_results():
+    pass
+
 
 def store_zipped_project(base64_project: str, project_id: str):
     decoded_project = base64.b64decode(base64_project)
     zipped_project_path = consts.PROJECTS_DIRECTORY + '/' + project_id \
-                        + consts.PROJECT_STORAGE_PROJECT \
-                        + consts.PROJECT_STORAGE_ZIPPED_PROJECT_NAME_AND_TYPE
+                          + consts.PROJECT_STORAGE_PROJECT \
+                          + consts.PROJECT_STORAGE_ZIPPED_PROJECT_NAME_AND_TYPE
 
     with open(zipped_project_path, 'wb') as file:
         file.write(decoded_project)

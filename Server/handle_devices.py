@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel
 
 import consts
+from data_models import Device
 from db_handler import DBHandler
 
 # db = None
@@ -62,8 +63,9 @@ async def register_device() -> str:  # device_info: DeviceInfo
     db = DBHandler()
 
     device_id = uuid4().hex
-    device = consts.Device(device_id=device_id)
-    db.devices_db[consts.DEVICES_DATABASE_KEY].append(device)
+    device = Device(device_id=device_id)
+    db.add_to_database(device)
+    #db.devices_db[consts.DEVICES_DATABASE_KEY].append(device)
 
     # new_device = {device_id.hex: device_info.dict()}
     # data.update(new_device)

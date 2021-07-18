@@ -1,5 +1,10 @@
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+"""
+Module used to define constants.
+"""
+
+from datetime import timedelta
+from enum import Enum
+
 
 DEVICES_DATABASE_DIRECTORY = './devices'
 DEVICES_DATABASE_NAME = DEVICES_DATABASE_DIRECTORY + '/devices_database.json'
@@ -19,33 +24,12 @@ SENT_TASK_VALIDITY = timedelta(days=1)
 UPDATE_DB_DELAY = 60*0.1
 
 
-@dataclass
-class Task:
-    sent_date: datetime
-    is_finished: bool = False
-    workers_ids: list[str] = field(default_factory=list)
+class DatabaseType(str, Enum):
+    devices_db = 'devices_db'
+    projects_db = 'projects_db'
 
 
-@dataclass
-class Project:
-    project_id: str
-    tasks: list[Task] = field(default_factory=list)
-    stop_number: int = -1
-    stop_immediately: bool = False
 
-
-# TODO: maybe add DeviceInfo that Device and DeviceDB will inherit from
-
-@dataclass
-class Device:
-    device_id: str
-    projects: list[Project] = field(default_factory=list)
-
-
-@dataclass
-class DeviceDB:
-    device_id: str
-    projects_ids: list[str] = field(default_factory=list)
 
 
 

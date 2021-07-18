@@ -1,6 +1,7 @@
 """
 Module used to initialize the server and update
 """
+
 import time
 import os
 
@@ -17,10 +18,7 @@ def update_db(db: DBHandler):
 def init_server():
     init_devices_database()
     init_projects_database()
-    db = DBHandler()
-
-    # handle_devices.devices_db_init()
-    # handle_projects.projects_db_init()
+    # db = DBHandler()  # TODO: not sure if needed
 
 
 def init_devices_database():
@@ -47,7 +45,6 @@ def init_projects_database():
             database.write('{ "' + consts.PROJECTS_DATABASE_KEY + '" : [] }')
 
 
-# TODO: change to consts
 def init_project_storage(project_id: str):
     """
 
@@ -63,6 +60,6 @@ def init_project_storage(project_id: str):
 
     project_directory = consts.PROJECTS_DIRECTORY + '/' + project_id
 
-    # TODO: shouldn't return Fallse since ids are unique. maybe check.
+    # TODO: shouldn't return False since ids are unique. maybe check.
     os.makedirs(project_directory + consts.PROJECT_STORAGE_PROJECT)
     os.makedirs(project_directory + consts.PROJECT_STORAGE_RESULTS)

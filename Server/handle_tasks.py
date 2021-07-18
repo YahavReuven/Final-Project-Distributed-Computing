@@ -7,7 +7,8 @@ from fastapi import File, UploadFile, Body
 from pydantic import BaseModel
 
 import consts
-from consts import Task
+from consts import DatabaseType
+from data_models import Task
 from db_handler import DBHandler, find_project
 from handle_projects import encode_zipped_project
 
@@ -24,11 +25,12 @@ class SentTask(BaseModel):
     task_number: int
     base64_zipped_project: str  # in base64
 
+
 async def get_new_task(device_id: str) -> SentTask:
 
     db = DBHandler()
 
-    for project in db.projects_db[consts.PROJECTS_DATABASE_KEY]:
+    for project in db.get_database(DatabaseType.projects_db, lst_form=True):
 
         if project.stop_immediately:
             continue
@@ -37,7 +39,7 @@ async def get_new_task(device_id: str) -> SentTask:
         stop_number = project.stop_number
         tasks = project.tasks
         while True:
-            if stop_number >= 0 and i > stop_number:
+            if 0 <= stop_number < i:
                 break
 
             try:

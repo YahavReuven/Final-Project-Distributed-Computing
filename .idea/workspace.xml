@@ -2,16 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="964114a0-9bf3-4d9a-ba53-2fdd532fd86b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Server/handle_tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/final_project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/final_project.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server/devices/devices_database.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server/errors.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server/projects/08dd9d022203444e8784054219cf6866/project/zipped_project.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server/projects/projects_database.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/Lib/site-packages/click/_termui_impl.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/Lib/site-packages/click/_termui_impl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/Lib/site-packages/pip/_vendor/urllib3/_collections.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/Lib/site-packages/pip/_vendor/urllib3/_collections.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.venv/Lib/site-packages/urllib3/_collections.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/Lib/site-packages/urllib3/_collections.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/consts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/db_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/db_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/handle_devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_devices.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/handle_projects.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_projects.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/handle_tasks_database.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/handle_tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/initialize_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/initialize_server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -19,15 +21,34 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="1vMPTbP97Pk9yyGzjQvvtaNVMnz" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -71,13 +92,52 @@
       <option name="presentableId" value="Default" />
       <updated>1626368995212</updated>
       <workItem from="1626368997859" duration="1349000" />
+      <workItem from="1626419022624" duration="19891000" />
+      <workItem from="1626559996613" duration="39000" />
+      <workItem from="1626618106910" duration="4427000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Server/handle_projects.py</url>
+          <line>61</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Server/db_handler.py</url>
+          <line>179</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Server/handle_projects.py</url>
+          <line>56</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/final_project$server.coverage" NAME="server Coverage Results" MODIFIED="1626382361329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" />
+    <SUITE FILE_PATH="coverage/final_project$server.coverage" NAME="server Coverage Results" MODIFIED="1626622511381" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" />
   </component>
 </project>

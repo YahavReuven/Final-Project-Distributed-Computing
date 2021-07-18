@@ -3,12 +3,15 @@ Module used to update the database and load it to memory correctly.
 """
 
 import json
+import pickle
 from typing import Union, Any
 from dataclasses import asdict
 from functools import wraps
+from typing import Union
 
 import consts
-from consts import Device, DeviceDB, Project
+from consts import DatabaseType
+from data_models import Device, DeviceDB, Project, Task
 
 
 def singleton(cls):
@@ -31,6 +34,10 @@ class CustomEncoder(json.JSONEncoder):
             return asdict(device_to_device_db(obj))
         if isinstance(obj, Project):
             return asdict(obj)
+        if isinstance(obj, Task):
+            task = asdict(obj)
+            task['sent_date'] = pickle.dumps(task['sent_date'])
+            return task
         return json.JSONEncoder.default(self, obj)
 
 
@@ -44,8 +51,12 @@ class CustomDecoder(json.JSONDecoder):
         if isinstance(obj, dict) and 'device_id' in obj:
             device_db = DeviceDB(**obj)
             return device_db_to_device(device_db)
-        if isinstance(obj, dict) and 'tasks' in obj:
+        if isinstance(obj, dict) and 'project_id' in obj:
             return Project(**obj)
+        if isinstance(obj, dict) and 'sent_date' in obj:
+            values = {**obj}
+            values['sent_date'] = pickle.loads(values['sent_date'])
+            return Task()
         return obj
 
 
@@ -69,13 +80,36 @@ class DBHandler:
         with open(consts.PROJECTS_DATABASE_NAME, 'w') as file:
             json.dump(self._projects_db, file, cls=CustomEncoder)
 
-    @property
-    def devices_db(self) -> dict[str, list[Device]]:
-        return self._devices_db
+    def get_database(self, database_type: DatabaseType, *, lst_form: bool = False) -> \
+            Union[dict[str, list[Device]], list[Device],
+                  dict[str, list[Project]], list[Project]]:
+        if database_type == DatabaseType.devices_db:
+            if lst_form:
+                return self._devices_db[consts.DEVICES_DATABASE_KEY]
+            return self._devices_db
+        if database_type == DatabaseType.projects_db:
+            if lst_form:
+                return self._projects_db[consts.PROJECTS_DATABASE_KEY]
+            return self._projects_db
 
-    @property
-    def projects_db(self) -> dict[str, list[Project]]:
-        return self._projects_db
+    def add_to_database(self, obj: Union[Device, Project]) -> bool:
+
+        if isinstance(obj, Device):
+            self._devices_db[consts.DEVICES_DATABASE_KEY].append(obj)
+            return True
+        if isinstance(obj, Project):
+            self._projects_db[consts.PROJECTS_DATABASE_KEY].append(obj)
+            return True
+        return False
+
+
+    # @property
+    # def devices_db(self) -> dict[str, list[Device]]:
+    #     return self._devices_db
+    #
+    # @property
+    # def projects_db(self) -> dict[str, list[Project]]:
+    #     return self._projects_db
 
 
 def device_to_device_db(device: Device) -> DeviceDB:
@@ -124,7 +158,7 @@ def find_project(project_id: str) -> Union[Project, None]:
     """
 
     db = DBHandler()
-    projects = db.projects_db[consts.PROJECTS_DATABASE_KEY]
+    projects = db.get_database(DatabaseType.projects_db, lst_form=True)
     for project in projects:
         if project.project_id == project_id:
             return project
@@ -144,11 +178,12 @@ def find_device(device_id: str) -> Union[Device, None]:
     """
 
     db = DBHandler()
-    devices = db.devices_db[consts.DEVICES_DATABASE_KEY]
+    devices = db.get_database(DatabaseType.devices_db, lst_form=True)
     for device in devices:
         if device.device_id == device_id:
             return device
     return None
+
 
 
 # TODO: add sort devices, sort projects, sort projects in device
