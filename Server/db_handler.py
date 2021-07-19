@@ -64,7 +64,7 @@ class CustomDecoder(json.JSONDecoder):
             return Project(**obj)
         if isinstance(obj, dict) and 'workrs_ids' in obj:
             return Task(**obj)
-        if isinstance(obj, dict) and 'sent_date' in obj:
+        if isinstance(obj, dict) and 'worker_id' in obj:
             values = {**obj}
             # decoded_pickle_base64 = values['sent_date']  # holds a str representation of a pickled object in base64
             # encoded_pickle_base64 = decoded_pickle_base64.encode()  # converts the str representation back to bytes

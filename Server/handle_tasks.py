@@ -62,7 +62,7 @@ async def get_new_task(device_id: str) -> SentTask:
                 is_expired = datetime.utcnow() - worker.sent_date > consts.SENT_TASK_VALIDITY
                 if (not worker.is_finished) and is_expired:
                     worker = create_new_worker(device_id)
-                    tasks[i].workers_ids = list(worker)
+                    tasks[i].workers_ids = [worker]
                     return create_task_to_send(project.project_id, i)
 
             i += 1
@@ -96,7 +96,7 @@ def create_task_to_send(project_id: str, task_number: int):
 
 def create_new_worker(device_id: str):
     sent_date = datetime.utcnow()
-    new_worker = NewWorker(device_id=device_id, sent_date=sent_date)
+    new_worker = NewWorker(worker_id=device_id, sent_date=sent_date)
     return new_worker
 
 

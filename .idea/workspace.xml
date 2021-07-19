@@ -2,14 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="964114a0-9bf3-4d9a-ba53-2fdd532fd86b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Server/devices/devices_database.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server/projects/projects_database.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/consts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/data_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/data_models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/db_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/db_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/devices/devices_database.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/errors.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/errors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/handle_tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/projects/aedf2814c0d845bfaf2be4f7886c7b5f/project/zipped_project.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/projects/projects_database.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/initialize_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/initialize_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yahavpc/parallelize.py" beforeDir="false" afterPath="$PROJECT_DIR$/yahavpc/parallelize.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,6 +96,7 @@
       <workItem from="1626626307633" duration="5040000" />
       <workItem from="1626695401021" duration="132000" />
       <workItem from="1626705797793" duration="4094000" />
+      <workItem from="1626711250925" duration="4593000" />
     </task>
     <servers />
   </component>
@@ -134,6 +137,6 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/final_project$server.coverage" NAME="server Coverage Results" MODIFIED="1626710968608" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" />
+    <SUITE FILE_PATH="coverage/final_project$server.coverage" NAME="server Coverage Results" MODIFIED="1626720018260" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Server" />
   </component>
 </project>

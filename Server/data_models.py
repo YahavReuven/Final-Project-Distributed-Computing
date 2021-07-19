@@ -51,6 +51,6 @@ class DeviceDB:
 
 @dataclass
 class NewWorker:
-    device_id: str
+    worker_id: str
     sent_date: datetime
     is_finished: bool = False

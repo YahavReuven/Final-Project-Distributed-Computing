@@ -12,7 +12,7 @@ import consts
 from handle_tasks import SentTask, get_new_task
 from db_handler import DBHandler
 from initialize_server import init_server, update_db
-from errors import IDNotFoundError, handle_id_not_found_error
+from errors import IDNotFoundError, ServerError,  handle_server_error
 
 app = FastAPI()
 
@@ -22,11 +22,12 @@ register_device = app.post('/register_device')(register_device)
 # delete_devices_database = app.get('/delete')(delete_devices_database)
 
 create_new_project = app.post('/upload_new_project')(create_new_project)
-# new_project_1 = app.post('/new_project')(new_project_1)
-# create_new_project = app.post('/new_project')(create_new_project)
 
 get_new_task = app.get('/get_new_task', response_model=SentTask)(get_new_task)  # TODO: not working
-app.exception_handler(IDNotFoundError)(handle_id_not_found_error)
+
+
+app.exception_handler(ServerError)(handle_server_error)
+
 
 if __name__ == '__main__':
     init_server()

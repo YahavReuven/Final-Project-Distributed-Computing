@@ -1,22 +1,20 @@
 # TODO: change name of file
 import csv
 from itertools import islice
+from typing import Callable
+from collections.abc import Iterable  # TODO: maybe also Callable
 
 import manager
 
 iteration_manager = manager.IterationManager()
-iteration_manager.iteration_number = 0 #TODO: get from json sent with the code
-iteration_manager.results_path = "C:\\Projects\\python\\final_project\\" #TODO: change demo path
-
-# def init()
-#    global iteration_manager
 
 
-def pmap(fn, iterable, iteration_size, *args, **kwargs):
+def init():
+    iteration_manager.iteration_number = 0  # TODO: get from json sent with the code
+    iteration_manager.results_path = "C:\\Projects\\python\\final_project\\"  # TODO: change demo path
 
-    global iteration_manager
 
-
+def pmap(fn: Callable, iterable: Iterable, iteration_size: int, *args, **kwargs):
 
     iteration_manager.iteration_size = iteration_size
 

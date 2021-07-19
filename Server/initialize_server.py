@@ -1,5 +1,5 @@
 """
-Module used to initialize the server and update
+Module used to initialize the server and update the database in file
 """
 
 import time
@@ -10,15 +10,20 @@ from db_handler import DBHandler
 
 
 def update_db(db: DBHandler):
+    """
+    Updates the server to a file every consts.UPDATE_DB_DELAY time
+    """
     while True:
         time.sleep(consts.UPDATE_DB_DELAY)
         db.update_db()
 
 
 def init_server():
+    """
+    Initializes the servers database files
+    """
     init_devices_database()
     init_projects_database()
-    # db = DBHandler()  # TODO: not sure if needed
 
 
 def init_devices_database():
