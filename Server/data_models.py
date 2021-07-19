@@ -22,8 +22,6 @@ class SentTask(BaseModel):
 
 @dataclass
 class Task:
-    sent_date: datetime
-    is_finished: bool = False
     workers_ids: list[str] = field(default_factory=list)
 
 
@@ -49,3 +47,10 @@ class DeviceDB:
     """A device's representation in the file database"""
     device_id: str
     projects_ids: list[str] = field(default_factory=list)
+
+
+@dataclass
+class NewWorker:
+    device_id: str
+    sent_date: datetime
+    is_finished: bool = False

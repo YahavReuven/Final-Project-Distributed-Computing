@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 import consts
 from consts import DatabaseType
-from data_models import Task, SentTask
+from data_models import Task, SentTask, NewWorker
 from db_handler import DBHandler, find_project
 from handle_projects import encode_zipped_project
 
@@ -53,15 +53,17 @@ async def get_new_task(device_id: str) -> SentTask:
                 tasks[i]
             except IndexError:
                 task, task_num = add_new_task_to_database(project.project_id)
-                task.workers_ids.append(device_id)
+                add_worker_to_task(task, device_id)
                 return create_task_to_send(project.project_id, task_num)
 
-            # TODO: remove expired workers
-            # checks if the task is expired and resends it in case it is
-            is_expired = datetime.utcnow() - tasks[i].sent_date > consts.SENT_TASK_VALIDITY
-            if (not tasks[i].is_finished) and is_expired:
-                tasks[i].workers_ids.append(device_id)
-                return create_task_to_send(project.project_id, i)
+            # TODO: change in case more than one worker is needed for the task
+            for worker in tasks[i].workers_ids:
+                # checks if the task is expired and resends it in case it is
+                is_expired = datetime.utcnow() - worker.sent_date > consts.SENT_TASK_VALIDITY
+                if (not worker.is_finished) and is_expired:
+                    worker = create_new_worker(device_id)
+                    tasks[i].workers_ids = list(worker)
+                    return create_task_to_send(project.project_id, i)
 
             i += 1
 
@@ -76,9 +78,10 @@ async def return_task_results():
 
 
 def add_new_task_to_database(project_id: str):
-    sent_date = datetime.utcnow()
+    # sent_date = datetime.utcnow()
 
-    new_task = Task(sent_date=sent_date)
+    # new_worker = NewWorker(sent_date=sent_date)
+    new_task = Task()
 
     project = find_project(project_id)
     project.tasks.append(new_task)
@@ -91,4 +94,13 @@ def create_task_to_send(project_id: str, task_number: int):
                     base64_zipped_project=encode_zipped_project(project_id))
 
 
+def create_new_worker(device_id: str):
+    sent_date = datetime.utcnow()
+    new_worker = NewWorker(device_id=device_id, sent_date=sent_date)
+    return new_worker
+
+
+def add_worker_to_task(task: Task, device_id: str):
+    worker = create_new_worker(device_id)
+    task.workers_ids.append(worker)
 

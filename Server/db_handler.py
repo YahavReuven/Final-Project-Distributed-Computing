@@ -1,9 +1,9 @@
 """
 Module used to update the database and load it to memory correctly.
 """
-import codecs
+# import codecs
+# import pickle
 import json
-import pickle
 import datetime
 from typing import Union, Any
 from dataclasses import asdict
@@ -12,7 +12,7 @@ from typing import Union
 
 import consts
 from consts import DatabaseType
-from data_models import Device, DeviceDB, Project, Task
+from data_models import Device, DeviceDB, Project, Task, NewWorker
 
 
 def singleton(cls):
@@ -36,15 +36,17 @@ class CustomEncoder(json.JSONEncoder):
         if isinstance(obj, Project):
             return asdict(obj)
         if isinstance(obj, Task):
-            task = asdict(obj)
+            return asdict(obj)
+        if isinstance(obj, NewWorker):
             # task['sent_date'] = pickle.dumps(task['sent_date'])
-            return task
+            return asdict(obj)
         if isinstance(obj, datetime.datetime):
             # pickled = pickle.dumps(obj).decode('base64')
-            pickled = pickle.dumps(obj)  # returns a pickled object of obj (in bytes)
-            encoded_base64 = codecs.encode(pickled, "base64")  # returns the pickled object in base64 encoding
-            return encoded_base64.decode()  # decodes the pickled object in base64 from bytes into str
+            # pickled = pickle.dumps(obj)  # returns a pickled object of obj (in bytes)
+            # encoded_base64 = codecs.encode(pickled, "base64")  # returns the pickled object in base64 encoding
+            # return encoded_base64.decode()  # decodes the pickled object in base64 from bytes into str
             # TODO: add an explanation
+            return obj.strftime(consts.DATETIME_FORMAT_IN_DB)
         return json.JSONEncoder.default(self, obj)
 
 
@@ -60,14 +62,18 @@ class CustomDecoder(json.JSONDecoder):
             return device_db_to_device(device_db)
         if isinstance(obj, dict) and 'project_id' in obj:
             return Project(**obj)
+        if isinstance(obj, dict) and 'workrs_ids' in obj:
+            return Task(**obj)
         if isinstance(obj, dict) and 'sent_date' in obj:
             values = {**obj}
-            decoded_pickle_base64 = values['sent_date']  # holds a str representation of a pickled object in base64
-            encoded_pickle_base64 = decoded_pickle_base64.encode()  # converts the str representation back to bytes
-            pickled = codecs.decode(encoded_pickle_base64, "base64")  # decodes the base64 to an ordinary pickle object
-            values['sent_date'] = pickle.loads(pickled)  # stores the unpickled object back in the dict
+            # decoded_pickle_base64 = values['sent_date']  # holds a str representation of a pickled object in base64
+            # encoded_pickle_base64 = decoded_pickle_base64.encode()  # converts the str representation back to bytes
+            # pickled = codecs.decode(encoded_pickle_base64, "base64")  # decodes the base64 to an ordinary pickle object
+            # values['sent_date'] = pickle.loads(pickled)  # stores the unpickled object back in the dict
             # TODO: add an explanation and check names
-            return Task(**values)
+            values[consts.SENT_TASK_DATE_KEY] = datetime.datetime.strptime(
+                values[consts.SENT_TASK_DATE_KEY], consts.DATETIME_FORMAT_IN_DB)
+            return NewWorker(**values)
 
         return obj
 
