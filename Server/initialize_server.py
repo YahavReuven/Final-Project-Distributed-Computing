@@ -47,7 +47,8 @@ def init_projects_database():
 
     if not os.path.isfile(consts.PROJECTS_DATABASE_NAME):
         with open(consts.PROJECTS_DATABASE_NAME, 'w') as database:
-            database.write('{ "' + consts.PROJECTS_DATABASE_KEY + '" : [] }')
+            database.write('{ "' + consts.PROJECTS_DATABASE_KEY + '" : [] , "'
+                           + consts.FINISHED_PROJECTS_DATABASE_KEY + '" : [] }')
 
 
 def init_project_storage(project_id: str):

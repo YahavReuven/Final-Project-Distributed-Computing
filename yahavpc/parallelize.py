@@ -54,7 +54,6 @@ def pmap_function(fn: Callable, iterable: Iterable, iteration_size: int, *, stop
         return Returns.normal
 
 
-
 def pmap(fn: Callable, iterable: Iterable, iteration_size: int, *, stop_function: Callable = None, **kwargs):
     result = pmap_function(fn, iterable, iteration_size, stop_function=stop_function, **kwargs)
     print(result)

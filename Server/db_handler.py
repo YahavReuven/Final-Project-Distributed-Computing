@@ -11,7 +11,7 @@ from functools import wraps
 from typing import Union
 
 import consts
-from consts import DatabaseType
+from consts import DatabaseType, ProjectsDatabaseType
 from data_models import Device, DeviceDB, Project, Task, NewWorker
 
 
@@ -98,17 +98,14 @@ class DBHandler:
         with open(consts.PROJECTS_DATABASE_NAME, 'w') as file:
             json.dump(self._projects_db, file, cls=CustomEncoder)
 
-    def get_database(self, database_type: DatabaseType, *, lst_form: bool = False) -> \
-            Union[dict[str, list[Device]], list[Device],
-                  dict[str, list[Project]], list[Project]]:
+    def get_database(self, database_type: DatabaseType) -> \
+            Union[list[Device], list[Project]]:
         if database_type == DatabaseType.devices_db:
-            if lst_form:
-                return self._devices_db[consts.DEVICES_DATABASE_KEY]
-            return self._devices_db
+            return self._devices_db[consts.DEVICES_DATABASE_KEY]
         if database_type == DatabaseType.projects_db:
-            if lst_form:
-                return self._projects_db[consts.PROJECTS_DATABASE_KEY]
-            return self._projects_db
+            return self._projects_db[consts.PROJECTS_DATABASE_KEY]
+        if database_type == DatabaseType.finished_projects_db:
+            return self._projects_db[consts.FINISHED_PROJECTS_DATABASE_KEY]
 
     def add_to_database(self, obj: Union[Device, Project]) -> bool:
 
@@ -159,15 +156,17 @@ def device_db_to_device(device_db: DeviceDB) -> Device:
     device_id = device_db.device_id
     projects = list()
     if not device_db.projects_ids:
-        projects = [find_project(project_id) for project_id in device_db.projects_ids]
+        projects = [find_project(project_id, ProjectsDatabaseType.both) for project_id in device_db.projects_ids]
     return Device(device_id=device_id, projects=projects)
 
 
-def find_project(project_id: str) -> Union[Project, None]:
+def find_project(project_id: str, database_type: ProjectsDatabaseType) -> Union[Project, None]:
     """
 
     Args:
         project_id (str): the project's id of the desired project.
+        database_type (ProjectsDatabaseType): the project's database
+            fields in which to look for the project.
 
     Returns:
         Project: the project with the specified project id.
@@ -176,7 +175,16 @@ def find_project(project_id: str) -> Union[Project, None]:
     """
 
     db = DBHandler()
-    projects = db.get_database(DatabaseType.projects_db, lst_form=True)
+    if database_type == ProjectsDatabaseType.both:
+        result = find_project(project_id, ProjectsDatabaseType.projects_db)
+        if not result:
+            result = find_project(project_id, ProjectsDatabaseType.finished_projects_db)
+        return result
+    if database_type == ProjectsDatabaseType.projects_db:
+        projects = db.get_database(DatabaseType.projects_db)
+    if database_type == ProjectsDatabaseType.finished_projects_db:
+        projects = db.get_database(DatabaseType.finished_projects_db)
+
     for project in projects:
         if project.project_id == project_id:
             return project
@@ -196,7 +204,7 @@ def find_device(device_id: str) -> Union[Device, None]:
     """
 
     db = DBHandler()
-    devices = db.get_database(DatabaseType.devices_db, lst_form=True)
+    devices = db.get_database(DatabaseType.devices_db)
     for device in devices:
         if device.device_id == device_id:
             return device

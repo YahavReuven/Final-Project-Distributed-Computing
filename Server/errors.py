@@ -17,8 +17,18 @@ class BadRequestError(ServerError):
 
 
 class IDNotFoundError(BadRequestError):
-    """Error raised if the received ID is invalid or is not present in the database."""
+    """Error raised if the received ID is not present in the database."""
     message = 'id not found'
+
+
+class ProjectFinished(IDNotFoundError):
+    """Error raised if a client tries to upload a new task to an already finished project."""
+    message = 'project is finished'
+
+
+class WorkerNotAuthenticated(IDNotFoundError):
+    """Error raised if a worker is not authenticated to upload results to the task"""
+    message = 'worker is not authenticated'
 
 
 async def handle_server_error(request: Request, exc: ServerError) -> JSONResponse:

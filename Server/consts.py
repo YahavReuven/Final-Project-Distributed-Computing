@@ -14,6 +14,8 @@ PROJECTS_DIRECTORY = './projects'
 PROJECTS_DATABASE_NAME = PROJECTS_DIRECTORY + '/projects_database.json'
 PROJECTS_DATABASE_KEY = 'projects'
 
+FINISHED_PROJECTS_DATABASE_KEY = 'finished'
+
 PROJECT_STORAGE_PROJECT = '/project'
 PROJECT_STORAGE_RESULTS = '/results'
 
@@ -29,6 +31,13 @@ UPDATE_DB_DELAY = 60*0.1
 class DatabaseType(str, Enum):
     devices_db = 'devices_db'
     projects_db = 'projects_db'
+    finished_projects_db = 'finished_db'
+
+
+class ProjectsDatabaseType(str, Enum):
+    projects_db = 'projects_db'
+    finished_projects_db = 'finished_db'
+    both = 'both'
 
 
 

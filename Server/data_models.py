@@ -17,7 +17,16 @@ class SentTask(BaseModel):
     """A task sent to the client"""
     project_id: str
     task_number: int
-    base64_zipped_project: str  # in base64
+    base64_zipped_project: str
+
+
+class ReturnedTask(BaseModel):
+    worker_id: str
+    project_id: str
+    task_number: int
+    base64_zipped_results: str
+    stop_called: bool = False
+    is_exhausted: bool = False
 
 
 @dataclass
