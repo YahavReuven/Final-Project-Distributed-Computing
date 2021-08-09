@@ -12,7 +12,7 @@ from typing import Union
 
 import consts
 from consts import DatabaseType, ProjectsDatabaseType
-from data_models import Device, DeviceDB, Project, Task, NewWorker
+from data_models import Device, DeviceDB, Project, Task, Worker
 
 
 def singleton(cls):
@@ -37,7 +37,7 @@ class CustomEncoder(json.JSONEncoder):
             return asdict(obj)
         if isinstance(obj, Task):
             return asdict(obj)
-        if isinstance(obj, NewWorker):
+        if isinstance(obj, Worker):
             # task['sent_date'] = pickle.dumps(task['sent_date'])
             return asdict(obj)
         if isinstance(obj, datetime.datetime):
@@ -62,7 +62,7 @@ class CustomDecoder(json.JSONDecoder):
             return device_db_to_device(device_db)
         if isinstance(obj, dict) and 'project_id' in obj:
             return Project(**obj)
-        if isinstance(obj, dict) and 'workrs_ids' in obj:
+        if isinstance(obj, dict) and 'workers_ids' in obj:
             return Task(**obj)
         if isinstance(obj, dict) and 'worker_id' in obj:
             values = {**obj}
@@ -73,7 +73,7 @@ class CustomDecoder(json.JSONDecoder):
             # TODO: add an explanation and check names
             values[consts.SENT_TASK_DATE_KEY] = datetime.datetime.strptime(
                 values[consts.SENT_TASK_DATE_KEY], consts.DATETIME_FORMAT_IN_DB)
-            return NewWorker(**values)
+            return Worker(**values)
 
         return obj
 
@@ -107,15 +107,37 @@ class DBHandler:
         if database_type == DatabaseType.finished_projects_db:
             return self._projects_db[consts.FINISHED_PROJECTS_DATABASE_KEY]
 
-    def add_to_database(self, obj: Union[Device, Project]) -> bool:
+    def add_to_database(self, obj: Union[Device, Project], database_type: DatabaseType) -> bool:
 
-        if isinstance(obj, Device):
-            self._devices_db[consts.DEVICES_DATABASE_KEY].append(obj)
+        if database_type == DatabaseType.devices_db:
+            self.get_database(DatabaseType.devices_db).append(obj)
             return True
-        if isinstance(obj, Project):
-            self._projects_db[consts.PROJECTS_DATABASE_KEY].append(obj)
+        if database_type == DatabaseType.projects_db:
+            self.get_database(DatabaseType.projects_db).append(obj)
+            return True
+        if database_type == DatabaseType.finished_projects_db:
+            self.get_database(DatabaseType.finished_projects_db).append(obj)
             return True
         return False
+
+    # TODO: allow to remove a Device and project from finished projects
+    def remove_from_database(self, obj: Union[Device, Project], database_type: DatabaseType) -> bool:
+
+        # if isinstance(obj, Device):
+        #     self._devices_db[consts.DEVICES_DATABASE_KEY].append(obj)
+        #     return True
+        if database_type == DatabaseType.projects_db:
+            self.get_database(DatabaseType.projects_db).remove(obj)
+            return True
+        return False
+
+        pass
+
+    # TODO: check if succeeded
+    def move_project_to_finished(self, project: Project):  # -> bool:
+        self.add_to_database(project, DatabaseType.finished_projects_db)
+        self.remove_from_database(project, DatabaseType.projects_db)
+        pass
 
 
     # @property

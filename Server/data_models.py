@@ -30,8 +30,20 @@ class ReturnedTask(BaseModel):
 
 
 @dataclass
+class Worker:
+    worker_id: str
+    sent_date: datetime
+    is_finished: bool = False
+
+
+@dataclass
 class Task:
-    workers_ids: list[str] = field(default_factory=list)
+    workers: list[Worker] = field(default_factory=list)
+
+
+# @dataclass
+# class TaskDB:
+#     workers_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -58,8 +70,3 @@ class DeviceDB:
     projects_ids: list[str] = field(default_factory=list)
 
 
-@dataclass
-class NewWorker:
-    worker_id: str
-    sent_date: datetime
-    is_finished: bool = False

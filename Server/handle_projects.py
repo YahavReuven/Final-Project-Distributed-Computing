@@ -13,6 +13,7 @@ import asyncio
 # from pydantic import BaseModel
 
 import consts
+from consts import DatabaseType
 from data_models import Project, NewProject
 from errors import IDNotFoundError
 from db_handler import DBHandler, find_device
@@ -64,7 +65,7 @@ async def create_new_project(new_project: NewProject) -> str:
         raise IDNotFoundError()
     db = DBHandler()
 
-    db.add_to_database(project)
+    db.add_to_database(project, DatabaseType.projects_db)
     # db.projects_db[consts.PROJECTS_DATABASE_KEY].append(project)
     creator.projects.append(project)
 
@@ -96,3 +97,18 @@ def encode_zipped_project(project_id: str) -> bytes:
     encoded_project = base64.b64encode(zipped_project)
 
     return encoded_project
+
+
+def is_project_done(project: Project) -> bool:
+
+    if project.stop_immediately:
+        return True
+
+    if project.stop_number >= 0:
+        for i in range(project.stop_number):
+            for worker in project.tasks[i].workers:
+                if not worker.is_finished:
+                    return False
+        return True
+
+    return False

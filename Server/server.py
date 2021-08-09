@@ -16,6 +16,7 @@ from errors import IDNotFoundError, ServerError,  handle_server_error
 
 app = FastAPI()
 
+a = 5
 
 register_device = app.post('/register_device')(register_device)
 # get_device_database = app.get('/devices')(get_device_database)

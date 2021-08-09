@@ -26,6 +26,12 @@ class ProjectFinished(IDNotFoundError):
     message = 'project is finished'
 
 
+class UnnecessaryTask(ProjectFinished):
+    """Error raised if a client tries to upload a task which is no longer needed
+    (mainly do to a stop number being set)"""
+    message = 'task is no longer needed'
+
+
 class WorkerNotAuthenticated(IDNotFoundError):
     """Error raised if a worker is not authenticated to upload results to the task"""
     message = 'worker is not authenticated'
