@@ -2,22 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="964114a0-9bf3-4d9a-ba53-2fdd532fd86b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Server/projects/cb5c45be07f149da9c35b32adf2d6015/project/zipped_project.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/projects/cb5c45be07f149da9c35b32adf2d6015/results/1/folder 2/python.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Server/projects/cb5c45be07f149da9c35b32adf2d6015/results/1/hello.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/data_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/data_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/db_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/db_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/devices/devices_database.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/devices/devices_database.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/errors.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/errors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/handle_devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_devices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/handle_projects.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_projects.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/handle_tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/handle_tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/projects/6fd62c3db6904b0f8100dfff530b011a/project/zipped_project.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/projects/6fd62c3db6904b0f8100dfff530b011a/results/folder 2/python.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/projects/6fd62c3db6904b0f8100dfff530b011a/results/hello.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/projects/projects_database.json" beforeDir="false" afterPath="$PROJECT_DIR$/Server/projects/projects_database.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -159,7 +145,7 @@
       <workItem from="1628178130100" duration="7427000" />
       <workItem from="1628276451933" duration="91000" />
       <workItem from="1628276614067" duration="126000" />
-      <workItem from="1628436672081" duration="7828000" />
+      <workItem from="1628436672081" duration="8416000" />
     </task>
     <servers />
   </component>
