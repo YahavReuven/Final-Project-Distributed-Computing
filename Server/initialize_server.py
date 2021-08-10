@@ -64,8 +64,8 @@ def init_project_storage(project_id: str):
 
     """
 
-    project_directory = consts.PROJECTS_DIRECTORY + '/' + project_id
+    project_directory = f'{consts.PROJECTS_DIRECTORY}/{project_id}'
 
     # TODO: shouldn't return False since ids are unique. maybe check.
-    os.makedirs(project_directory + consts.PROJECT_STORAGE_PROJECT)
-    os.makedirs(project_directory + consts.PROJECT_STORAGE_RESULTS)
+    os.makedirs(f'{project_directory}{consts.PROJECT_STORAGE_PROJECT}')
+    os.makedirs(f'{project_directory}{consts.PROJECT_STORAGE_RESULTS}')

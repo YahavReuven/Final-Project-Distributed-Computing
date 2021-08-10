@@ -10,7 +10,8 @@ from pydantic import BaseModel
 class NewProject(BaseModel):
     """A new project sent from the client"""
     creator_id: str  # TODO: the device id of the creator of the project. maybe change to user
-    zip_project: str  # in base 64 encoding
+    base64_serialized_class: str
+    base64_serialized_iterable: str
 
 
 class SentTask(BaseModel):

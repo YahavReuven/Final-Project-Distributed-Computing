@@ -5,6 +5,7 @@ Module used to handle projects and the projects' database
 import os
 import base64
 from uuid import uuid4
+import json
 from typing import Union
 
 import asyncio
@@ -21,23 +22,6 @@ from db_handler import DBHandler, find_device
 
 from initialize_server import init_project_storage
 
-
-#
-# class ProjectDB(BaseModel):
-#     project_id: int
-#     creator_id: int
-#     tasks: dict[int, int]  # dict[iteration, return value]
-
-# ---------------------------------------------------------------------------
-# send request:
-# import requests
-# import base64
-# device1 = requests.post('http://127.0.0.1:8000/register_device')
-# print(device1.text)
-# device2 = requests.post('http://127.0.0.1:8000/register_device')
-# b64 = base64.b64encode(b'\x54\x43\x65')
-# project1 = requests.post('http://127.0.0.1:8000/upload_new_project', json={'creator_id': device1.text[1:-1],'zip_project': b64.decode('utf-8')})
-# ---------------------------------------------------------------------------
 
 # TODO: make it work with UploadFile instead of bytes
 async def create_new_project(new_project: NewProject) -> str:
@@ -56,9 +40,8 @@ async def create_new_project(new_project: NewProject) -> str:
 
     """
     project_id = uuid4().hex
-    # TODO: check if id is already in use.
     init_project_storage(project_id)
-    store_zipped_project(new_project.zip_project, project_id)
+    store_serialized_project(new_project, project_id)
 
     project = Project(project_id=project_id)
     if not (creator := find_device(new_project.creator_id)):
@@ -76,20 +59,27 @@ async def return_project_results():
     pass
 
 
-def store_zipped_project(base64_project: str, project_id: str):
-    decoded_project = base64.b64decode(base64_project)
-    zipped_project_path = consts.PROJECTS_DIRECTORY + '/' + project_id \
-                          + consts.PROJECT_STORAGE_PROJECT \
-                          + consts.PROJECT_STORAGE_ZIPPED_PROJECT_NAME_AND_TYPE
+def store_serialized_project(base64_project: NewProject, project_id: str):
+    decoded_class = base64.b64decode(base64_project.base64_serialized_class.encode('utf-8'))
+    decoded_iterable = base64.b64decode(base64_project.base64_serialized_iterable.encode('utf-8'))
+    serialized_project_path = (
+                                f'{consts.PROJECTS_DIRECTORY}/{project_id}'
+                                f'{consts.PROJECT_STORAGE_PROJECT}'
+                                f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
+    )
 
-    with open(zipped_project_path, 'wb') as file:
-        file.write(decoded_project)
+    project = {'decoded_class': decoded_class, 'decoded_iterable': decoded_iterable}
+    with open(serialized_project_path, 'wb') as file:
+        json.dump(project, file)
 
+
+#x
+#======================================================================================================================
 
 def encode_zipped_project(project_id: str) -> bytes:
     zipped_project_path = consts.PROJECTS_DIRECTORY + '/' + project_id \
                           + consts.PROJECT_STORAGE_PROJECT \
-                          + consts.PROJECT_STORAGE_ZIPPED_PROJECT_NAME_AND_TYPE
+                          + consts.PROJECT_STORAGE_JSON_PROJECT
 
     with open(zipped_project_path, 'rb') as file:
         zipped_project = file.read()
