@@ -15,12 +15,26 @@ class Distribute:
         self.iterable = iterable
         self.task_size = task_size
 
+    def __call__(self, cls):
+        print('in __call__ decorator factory')
+        return self.Decorator(self.iterable, self.task_size, cls)
+
     class Decorator:
 
-        # def __init__(self):
-        #     # self.cls = cls
+        def __init__(self, iterable: Iterable, task_size: int, cls: type):
+            self.iterable = iterable
+            self.task_size = task_size
+            self.cls = cls
+
 
         def __call__(self):
+            """
+
+            Requests the server to create a new project.
+
+            Returns:
+                An instance of the decorator
+            """
             # device = requests.get('http://127.0.0.1:8000/register_device')
             # print(device.text[1:-1])
             # serialized_class = dill.dumps(cls)
@@ -36,9 +50,21 @@ class Distribute:
 
             # TODO: deal with imports
             print(1)
-            return self.get_results
+            return self
 
         def get_results(self):
+            """
+
+            Once called, the function requests the project's results from the server.
+
+            Note:
+                  The function blocks until the results are received.
+                  This function shouldn't be called until the results are required.
+
+            Returns:
+                dict {iteration_number: result}: a dictionary containing the results with
+                their corresponding iteration number.
+            """
             results = None
             i = 0
             while not results:
@@ -47,13 +73,12 @@ class Distribute:
                     break
                 print('asking server')
 
-                time.sleep(5)
+                time.sleep(1)
                 i += 1
+            print("done asking server")
             return results
 
-    def __call__(self, cls):
-        print('in __call__ decorator factory')
-        return self.Decorator()
+
 
 
 
@@ -116,6 +141,6 @@ class A:
 
 
 # A = Distribute(range(100), 10)(A)
-get_results = A()
-get_results()
+project = A()
+project.get_results()
 
