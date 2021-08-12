@@ -16,7 +16,7 @@ import asyncio
 import consts
 from consts import DatabaseType
 from data_models import Project, NewProject
-from errors import IDNotFoundError
+from errors import DeviceNotFoundError
 from db_handler import DBHandler, find_device
 # from db_functions import find_device
 
@@ -26,7 +26,7 @@ from initialize_server import init_project_storage
 # TODO: make it work with UploadFile instead of bytes
 async def create_new_project(new_project: NewProject) -> str:
     """
-    Create a new project, initializes its storage and updates the database.
+    Creates a new project, initializes its storage and updates the database.
 
     Args:
         new_project (NewProject): contains the needed information about
@@ -45,11 +45,10 @@ async def create_new_project(new_project: NewProject) -> str:
 
     project = Project(project_id=project_id)
     if not (creator := find_device(new_project.creator_id)):
-        raise IDNotFoundError()
+        raise DeviceNotFoundError
     db = DBHandler()
 
     db.add_to_database(project, DatabaseType.projects_db)
-    # db.projects_db[consts.PROJECTS_DATABASE_KEY].append(project)
     creator.projects.append(project)
 
     return project_id
@@ -60,22 +59,25 @@ async def return_project_results():
 
 
 def store_serialized_project(base64_project: NewProject, project_id: str):
-    decoded_class = base64.b64decode(base64_project.base64_serialized_class.encode('utf-8'))
-    decoded_iterable = base64.b64decode(base64_project.base64_serialized_iterable.encode('utf-8'))
+    # decoded_class = base64.b64decode(base64_project.base64_serialized_class.encode('utf-8'))
+    # decoded_iterable = base64.b64decode(base64_project.base64_serialized_iterable.encode('utf-8'))
     serialized_project_path = (
                                 f'{consts.PROJECTS_DIRECTORY}/{project_id}'
                                 f'{consts.PROJECT_STORAGE_PROJECT}'
                                 f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
     )
 
-    project = {'decoded_class': decoded_class, 'decoded_iterable': decoded_iterable}
-    with open(serialized_project_path, 'wb') as file:
+    project = {consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS: base64_project.base64_serialized_class,
+               consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE: base64_project.base64_serialized_iterable}
+    with open(serialized_project_path, 'w') as file:
         json.dump(project, file)
 
 
 #x
 #======================================================================================================================
 
+
+# TODO: not sure that is needed
 def encode_zipped_project(project_id: str) -> bytes:
     zipped_project_path = consts.PROJECTS_DIRECTORY + '/' + project_id \
                           + consts.PROJECT_STORAGE_PROJECT \

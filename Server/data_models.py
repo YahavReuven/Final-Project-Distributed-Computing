@@ -10,6 +10,7 @@ from pydantic import BaseModel
 class NewProject(BaseModel):
     """A new project sent from the client"""
     creator_id: str  # TODO: the device id of the creator of the project. maybe change to user
+    task_size: int
     base64_serialized_class: str
     base64_serialized_iterable: str
 
@@ -18,7 +19,8 @@ class SentTask(BaseModel):
     """A task sent to the client"""
     project_id: str
     task_number: int
-    base64_zipped_project: str
+    base64_serialized_class: str
+    base64_serialized_iterable: str
 
 
 class ReturnedTask(BaseModel):

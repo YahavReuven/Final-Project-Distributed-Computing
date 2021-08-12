@@ -35,18 +35,19 @@ class Distribute:
             Returns:
                 An instance of the decorator
             """
-            # device = requests.get('http://127.0.0.1:8000/register_device')
-            # print(device.text[1:-1])
-            # serialized_class = dill.dumps(cls)
-            # serialized_iterable = dill.dumps(self.iterable)
-            #
-            # encoded_class = base64.b64encode(serialized_class).decode('utf-8')
-            # encoded_iterable = base64.b64encode(serialized_iterable).decode('utf-8')
-            # project1 = requests.post('http://127.0.0.1:8000/upload_new_project',
-            #                          json={'creator_id': device.text[1:-1],
-            #                                'base64_serialized_class': encoded_class,
-            #                                'base64_serialized_iterable': encoded_iterable})
-            # print(project1.text[1:-1])
+            device = requests.get('http://127.0.0.1:8000/register_device')
+            print(device.text[1:-1])
+            serialized_class = dill.dumps(self.cls)
+            serialized_iterable = dill.dumps(self.iterable)
+
+            encoded_class = base64.b64encode(serialized_class).decode('utf-8')
+            encoded_iterable = base64.b64encode(serialized_iterable).decode('utf-8')
+            project1 = requests.post('http://127.0.0.1:8000/upload_new_project',
+                                     json={'creator_id': device.text[1:-1],
+                                           'task_size': self.task_size,
+                                           'base64_serialized_class': encoded_class,
+                                           'base64_serialized_iterable': encoded_iterable})
+            print(project1.text[1:-1])
 
             # TODO: deal with imports
             print(1)
@@ -142,5 +143,5 @@ class A:
 
 # A = Distribute(range(100), 10)(A)
 project = A()
-project.get_results()
+# project.get_results()
 

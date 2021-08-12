@@ -3,7 +3,7 @@ import threading
 import uvicorn
 from fastapi import FastAPI
 
-from handle_devices import (register_device)
+from handle_devices import register_device
 from handle_projects import create_new_project
 # from handle_projects_database import create_new_project
 import consts
@@ -16,8 +16,6 @@ app = FastAPI()
 
 
 register_device = app.get('/register_device')(register_device)
-# get_device_database = app.get('/devices')(get_device_database)
-# delete_devices_database = app.get('/delete')(delete_devices_database)
 
 create_new_project = app.post('/upload_new_project')(create_new_project)
 

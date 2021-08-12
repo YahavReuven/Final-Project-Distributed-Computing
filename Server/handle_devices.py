@@ -3,7 +3,7 @@ Module used to handle devices
 """
 """passed check"""
 
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from consts import DatabaseType
 from data_models import Device

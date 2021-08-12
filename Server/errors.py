@@ -21,18 +21,29 @@ class IDNotFoundError(BadRequestError):
     message = 'id not found'
 
 
-class ProjectFinished(IDNotFoundError):
+class DeviceNotFoundError(IDNotFoundError):
+    """Error raised if the received device id is not present in devices database."""
+    message = 'device not found'
+    pass
+
+
+class ProjectNotFoundError(IDNotFoundError):
+    """Error raised if the received project id is not present in projects database."""
+    message = 'project not found'
+
+
+class ProjectFinishedError(ProjectNotFoundError):
     """Error raised if a client tries to upload a new task to an already finished project."""
     message = 'project is finished'
 
 
-class UnnecessaryTask(ProjectFinished):
+class UnnecessaryTaskError(ProjectFinishedError):
     """Error raised if a client tries to upload a task which is no longer needed
     (mainly do to a stop number being set)"""
     message = 'task is no longer needed'
 
 
-class WorkerNotAuthenticated(IDNotFoundError):
+class WorkerNotAuthenticatedError(IDNotFoundError):
     """Error raised if a worker is not authenticated to upload results to the task"""
     message = 'worker is not authenticated'
 
