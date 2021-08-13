@@ -17,17 +17,6 @@ from errors import IDNotFoundError, ProjectNotFoundError, ProjectFinishedError, 
 from db_handler import DBHandler, find_project
 from handle_projects import encode_zipped_project, is_project_done
 
-# class ReturnTasks(BaseModel):
-#     worker_id: int
-#
-
-# class ReturnTasks(BaseModel):
-#     worker_id: int
-
-
-
-
-
 
 async def get_new_task(device_id: str) -> SentTask:
 
@@ -46,7 +35,7 @@ async def get_new_task(device_id: str) -> SentTask:
         stop_number = project.stop_number
         tasks = project.tasks
 
-        while 0 <= stop_number < i:
+        while stop_number < i:
             # if the stop number is less than 0, it means that it isn't set
             # and should be ignored.
             # if the stop number is less than the task position
@@ -70,7 +59,6 @@ async def get_new_task(device_id: str) -> SentTask:
                     return create_task_to_send(project.project_id, i)
 
             i += 1
-
 
 
 # TODO: check if the project is finished and move to finished in database
@@ -191,12 +179,3 @@ def find_worker(worker_id: str, task: Task) -> Union[Worker, None]:
             return worker
 
     return None
-
-
-# def authenticate_worker_in_task(worker_id: str, task: Task) -> bool:
-#
-#     for worker in task.workers:
-#         if worker_id == worker.worker_id:
-#             return True
-#     return False
-
