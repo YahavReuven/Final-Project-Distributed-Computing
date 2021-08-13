@@ -2,24 +2,15 @@
 """
 Module used to handle projects and the projects' database
 """
-import os
 import base64
-from uuid import uuid4
 import json
-from typing import Union
-
-import asyncio
-
-# from fastapi import File, UploadFile, Body
-# from pydantic import BaseModel
+from uuid import uuid4
 
 import consts
 from consts import DatabaseType
 from data_models import Project, NewProject
 from errors import DeviceNotFoundError
-from db_handler import DBHandler, find_device
-# from db_functions import find_device
-
+from db import DBHandler, DBUtils
 from initialize_server import init_project_storage
 
 
@@ -44,7 +35,7 @@ async def create_new_project(new_project: NewProject) -> str:
     store_serialized_project(new_project, project_id)
 
     project = Project(project_id=project_id)
-    if not (creator := find_device(new_project.creator_id)):
+    if not (creator := DBUtils.find_device(new_project.creator_id)):
         raise DeviceNotFoundError
     db = DBHandler()
 
@@ -61,20 +52,15 @@ async def return_project_results():
 def store_serialized_project(base64_project: NewProject, project_id: str):
     # decoded_class = base64.b64decode(base64_project.base64_serialized_class.encode('utf-8'))
     # decoded_iterable = base64.b64decode(base64_project.base64_serialized_iterable.encode('utf-8'))
-    serialized_project_path = (
-                                f'{consts.PROJECTS_DIRECTORY}/{project_id}'
-                                f'{consts.PROJECT_STORAGE_PROJECT}'
-                                f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
-    )
+    serialized_project_path = f'{consts.PROJECTS_DIRECTORY}/{project_id}'\
+                              f'{consts.PROJECT_STORAGE_PROJECT}'\
+                              f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
+    # TODO: validate base64
 
     project = {consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS: base64_project.base64_serialized_class,
                consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE: base64_project.base64_serialized_iterable}
     with open(serialized_project_path, 'w') as file:
         json.dump(project, file)
-
-
-#x
-#======================================================================================================================
 
 
 # TODO: not sure that is needed

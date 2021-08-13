@@ -48,8 +48,11 @@ class WorkerNotAuthenticatedError(IDNotFoundError):
     message = 'worker is not authenticated'
 
 
-async def handle_server_error(request: Request, exc: ServerError) -> JSONResponse:
+class InvalidBase64Error(BadRequestError):
 
+    message = 'invalid base64 string'
+
+async def handle_server_error(request: Request, exc: ServerError) -> JSONResponse:
     return JSONResponse(status_code=exc.status_code,
                         content={'message': exc.message})
 

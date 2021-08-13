@@ -6,7 +6,7 @@ import time
 import os
 
 import consts
-from db_handler import DBHandler
+from db import DBHandler
 
 
 def update_db(db: DBHandler):
@@ -20,10 +20,12 @@ def update_db(db: DBHandler):
 
 def init_server():
     """
-    Initializes the servers database files
+    Initializes the servers database files.
     """
     init_devices_database()
     init_projects_database()
+    db = DBHandler()
+    db.init_device_dbs_to_devices()
 
 
 def init_devices_database():
@@ -53,19 +55,16 @@ def init_projects_database():
 
 def init_project_storage(project_id: str):
     """
-
     Initializes the project with the project's id storage space.
 
     Note:
         Assumes that the project's id appears once in the database.
 
     Args:
-        project_id (str): the project's id
-
+        project_id (str): the project's id.
     """
 
     project_directory = f'{consts.PROJECTS_DIRECTORY}/{project_id}'
 
-    # TODO: shouldn't return False since ids are unique. maybe check.
     os.makedirs(f'{project_directory}{consts.PROJECT_STORAGE_PROJECT}')
     os.makedirs(f'{project_directory}{consts.PROJECT_STORAGE_RESULTS}')

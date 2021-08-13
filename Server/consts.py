@@ -28,7 +28,7 @@ JSON_PROJECT_BASE64_SERIALIZED_ITERABLE = 'base64_serialized_iterable'
 
 SENT_TASK_VALIDITY = timedelta(days=1)
 SENT_TASK_DATE_KEY = 'sent_date'
-DATETIME_FORMAT_IN_DB = '%d-%m-%Y %H:%M:%S'
+DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
 
 
 RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE = '/temp.zip'

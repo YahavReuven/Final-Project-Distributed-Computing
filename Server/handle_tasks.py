@@ -1,22 +1,20 @@
-import os
 import base64
 import json
-from datetime import datetime
 import zipfile
 import os
 import shutil
 from typing import Union
+from datetime import datetime
 
-from fastapi import File, UploadFile, Body
-from pydantic import BaseModel
 
 import consts
 from consts import DatabaseType, ProjectsDatabaseType
 from data_models import Task, SentTask, ReturnedTask, Worker, Project
-from errors import IDNotFoundError, ProjectNotFoundError, ProjectFinishedError, WorkerNotAuthenticatedError, UnnecessaryTaskError
-from db_handler import DBHandler, find_project
+from errors import (ProjectNotFoundError, ProjectFinishedError,
+                    WorkerNotAuthenticatedError, UnnecessaryTaskError)
+from db import DBHandler, DBUtils
 from handle_projects import encode_zipped_project, is_project_done
-
+from utils import validate_base64_and_decode
 
 async def get_new_task(device_id: str) -> SentTask:
 
@@ -36,6 +34,7 @@ async def get_new_task(device_id: str) -> SentTask:
         tasks = project.tasks
 
         while stop_number < i:
+            # TODO: check comments
             # if the stop number is less than 0, it means that it isn't set
             # and should be ignored.
             # if the stop number is less than the task position
@@ -61,13 +60,14 @@ async def get_new_task(device_id: str) -> SentTask:
             i += 1
 
 
+# TODO: function too long
 # TODO: check if the project is finished and move to finished in database
 async def return_task_results(returned_task: ReturnedTask):
 
     db = DBHandler()
-    project = find_project(returned_task.project_id, ProjectsDatabaseType.projects_db)
+    project = DBUtils.find_project(returned_task.project_id, ProjectsDatabaseType.projects_db)
     if not project:
-        project = find_project(returned_task.project_id, ProjectsDatabaseType.finished_projects_db)
+        project = DBUtils.find_project(returned_task.project_id, ProjectsDatabaseType.finished_projects_db)
         if project:
             raise ProjectFinishedError
         raise ProjectNotFoundError
@@ -106,11 +106,9 @@ def add_new_task_to_database(project: Project) -> Task:
 
 
 def create_task_to_send(project_id: str, task_number: int):
-    project_json_path = (
-                            f'{consts.PROJECTS_DIRECTORY}/{project_id}'
-                            f'{consts.PROJECT_STORAGE_PROJECT}'
-                            f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
-    )
+    project_json_path = f'{consts.PROJECTS_DIRECTORY}/{project_id}'\
+                        f'{consts.PROJECT_STORAGE_PROJECT}'\
+                        f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
 
     with open(project_json_path, 'r') as file:
         project = json.load(file)
@@ -133,12 +131,10 @@ def add_worker_to_task(task: Task, device_id: str):
 
 
 def store_task_results(project_id: str, base64_zipped_results: str, task_number: int):
+    decoded_project = validate_base64_and_decode(base64_zipped_results)
+    results_path = f'{consts.PROJECTS_DIRECTORY}/{project_id}'\
+                   f'{consts.PROJECT_STORAGE_RESULTS}/{task_number}'
 
-    decoded_project = base64.b64decode(base64_zipped_results)
-    results_path = (
-                    f'{consts.PROJECTS_DIRECTORY}/{project_id}'
-                    f'{consts.PROJECT_STORAGE_RESULTS}/{task_number}'
-    )
     os.makedirs(results_path)
 
     with open(results_path + consts.RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE, 'wb') as file:
@@ -159,11 +155,8 @@ def store_task_results(project_id: str, base64_zipped_results: str, task_number:
 
 
 def delete_unnecessary_tasks_storage(project: Project, stop_called_task_number: int):
-
-    results_path = (
-                    f'{consts.PROJECTS_DIRECTORY}/{project.project_id}'
-                    f'{consts.PROJECT_STORAGE_RESULTS}'
-    )
+    results_path = f'{consts.PROJECTS_DIRECTORY}/{project.project_id}'\
+                   f'{consts.PROJECT_STORAGE_RESULTS}'
 
     tasks_directories = os.listdir(results_path)
 
@@ -173,9 +166,7 @@ def delete_unnecessary_tasks_storage(project: Project, stop_called_task_number: 
 
 
 def find_worker(worker_id: str, task: Task) -> Union[Worker, None]:
-
     for worker in task.workers:
         if worker.worker_id == worker_id:
             return worker
-
     return None
