@@ -13,8 +13,8 @@ def validate_base64_and_decode(encoded: str, return_obj=True):
         return obj
 
 
-
-def create_path_string(from_current_directory = True, *directories):
+# TODO: maybe replace with os.path.join
+def create_path_string(*directories, from_current_directory = True):
     path = list()
     if from_current_directory:
         path.append('.')

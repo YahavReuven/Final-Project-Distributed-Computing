@@ -8,10 +8,11 @@ from uuid import uuid4
 
 import consts
 from consts import DatabaseType
-from data_models import Project, NewProject
+from data_models import Project, NewProject, ReturnedProject
 from errors import DeviceNotFoundError
 from db import DBHandler, DBUtils
 from initialize_server import init_project_storage
+from storage_handler import merge_results, zip_additional_results
 
 
 # TODO: make it work with UploadFile instead of bytes
@@ -45,14 +46,21 @@ async def create_new_project(new_project: NewProject) -> str:
     return project_id
 
 
-async def return_project_results(device_id: str, project_id: str):
+async def return_project_results(device_id: str, project_id: str) -> ReturnedProject:
     # authenticate device and project id
     # merge results to json file
     # zip the additional results
     # remove files
     #
     #
-    pass
+
+    results = merge_results(project_id)
+    additional_results = zip_additional_results(project_id)
+
+    returned_project = ReturnedProject(results=results, base64_zipped_additional_results=additional_results)
+
+    return returned_project
+
 
 
 def store_serialized_project(base64_project: NewProject, project_id: str):

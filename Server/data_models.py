@@ -29,6 +29,7 @@ class SentTask(BaseModel):
     base64_serialized_iterable: str
 
 
+# TODO: add results json
 class ReturnedTask(BaseModel):
     worker_id: str
     project_id: str

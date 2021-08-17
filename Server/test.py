@@ -14,6 +14,7 @@ task2 = requests.get(f'http://127.0.0.1:8000/get_new_task?device_id={device2.tex
 task3 = requests.get(f'http://127.0.0.1:8000/get_new_task?device_id={device2.text[1:-1]}')
 task4 = requests.get(f'http://127.0.0.1:8000/get_new_task?device_id={device2.text[1:-1]}')
 
+
 # test return task results
 # a project is exhausted
 # SHOULD RETURN:

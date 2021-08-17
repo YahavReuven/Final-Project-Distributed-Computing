@@ -30,19 +30,19 @@ class Distribute:
             Returns:
                 An instance of the decorator
             """
-            device = requests.get('http://127.0.0.1:8000/register_device')
-            print(device.text[1:-1])
+            self.device = requests.get('http://127.0.0.1:8000/register_device')
+            print(self.device.text[1:-1])
             serialized_class = dill.dumps(self.cls)
             serialized_iterable = dill.dumps(self.iterable)
 
             encoded_class = base64.b64encode(serialized_class).decode('utf-8')
             encoded_iterable = base64.b64encode(serialized_iterable).decode('utf-8')
-            project1 = requests.post('http://127.0.0.1:8000/upload_new_project',
+            self.project = requests.post('http://127.0.0.1:8000/upload_new_project',
                                      json={'creator_id': device.text[1:-1],
                                            'task_size': self.task_size,
                                            'base64_serialized_class': encoded_class,
                                            'base64_serialized_iterable': encoded_iterable})
-            print(project1.text[1:-1])
+            print(self.project.text[1:-1])
 
             # TODO: deal with imports
             print(1)
@@ -61,16 +61,23 @@ class Distribute:
                 dict {iteration_number: result}: a dictionary containing the results with
                 their corresponding iteration number.
             """
-            results = None
-            i = 0
-            while not results:
-                if i == 10:
-                    results = 1
-                    break
-                print('asking server')
+            # results = None
+            # i = 0
+            # while not results:
+            #     if i == 10:
+            #         results = 1
+            #         break
+            #     print('asking server')
+            #
+            #     time.sleep(1)
+            #     i += 1
+            # print("done asking server")
+            # return results
 
+            results = None
+            while not results:
+                results = requests.get(f'http://127.0.0.1:8000/get_project_results?device_id={self.device.text[1:-1]}&project_id={self.project.text[1:-1]}')
                 time.sleep(1)
-                i += 1
             print("done asking server")
             return results
 

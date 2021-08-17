@@ -54,6 +54,7 @@ def init_projects_database():
                            + consts.FINISHED_PROJECTS_DB_KEY + '" : [] }')
 
 
+# TODO: move to storage_handler
 def init_project_storage(project_id: str):
     """
     Initializes the project with the project's id storage space.
