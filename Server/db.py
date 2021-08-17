@@ -9,7 +9,7 @@ from functools import wraps
 from typing import Union
 
 import consts
-from consts import DatabaseType, ProjectsDatabaseType
+from consts import DatabaseType
 from data_models import Device, DeviceDB, Project, Task, Worker
 
 
@@ -66,39 +66,74 @@ class DBHandler:
         self._load_db()
 
     def _load_db(self) -> None:
+        """
+        Loads the database into memory.
+        """
+
         with open(consts.DEVICES_DATABASE_NAME, 'r') as file:
             self._devices_db = json.load(file, cls=CustomDecoder)
         with open(consts.PROJECTS_DATABASE_NAME, 'r') as file:
             self._projects_db = json.load(file, cls=CustomDecoder)
 
     def init_device_dbs_to_devices(self):
+        """
+        Converts every device (DeviceDB) in the starting database to its Device representation.
+        """
+
         devices = self._devices_db[consts.DEVICES_DATABASE_KEY]
         for i in range(len(devices)):
             devices[i] = DBUtils.device_db_to_device(devices[i])
 
     def update_db(self) -> None:
+        """
+        Updates the database backup files.
+        """
+
         print('updating db...')  # TODO: remove after testing
         with open(consts.DEVICES_DATABASE_NAME, 'w') as file:
             json.dump(self._devices_db, file, cls=CustomEncoder)
         with open(consts.PROJECTS_DATABASE_NAME, 'w') as file:
             json.dump(self._projects_db, file, cls=CustomEncoder)
 
+    # TODO: check annotations
     def get_database(self, database_type: DatabaseType) -> \
-            Union[list[Device], list[Project]]:
-        if database_type == DatabaseType.devices_db:
-            return self._devices_db[consts.DEVICES_DATABASE_KEY]
-        if database_type == DatabaseType.projects_db:
-            return self._projects_db[consts.PROJECTS_DATABASE_KEY]
-        if database_type == DatabaseType.finished_projects_db:
-            return self._projects_db[consts.FINISHED_PROJECTS_DATABASE_KEY]
+            Union[list[list[Device]], list[list[Project]]]:
+        """
+        Returns the database sections as specified in the database_type.
+        Args:
+            database_type (DatabaseType): the database sections to be returned.
+
+        Returns:
+            Union[list[list[Device]], list[list[Project]]]: a list containing
+            lists for every section of the database that is to be returned.
+        """
+        results = list()
+
+        # TODO: raise error
+        if database_type & DatabaseType.devices_db and database_type & DatabaseType.projects_db:
+            return None
+
+        if database_type & DatabaseType.devices_db:
+            results.append(self._devices_db[consts.DEVICES_DATABASE_KEY])
+        if database_type & DatabaseType.active_projects_db:
+            results.append(self._projects_db[consts.ACTIVE_PROJECTS_DB_KEY])
+        if database_type & DatabaseType.waiting_to_return_projects_db:
+            results.append(self._projects_db[consts.WAITING_TO_RETURN_PROJECTS_DB_KEY])
+        if database_type & DatabaseType.finished_projects_db:
+            results.append(self._projects_db[consts.FINISHED_PROJECTS_DB_KEY])
+
+        return results
+
 
     def add_to_database(self, obj: Union[Device, Project], database_type: DatabaseType) -> None:
         if database_type == DatabaseType.devices_db:
-            self.get_database(DatabaseType.devices_db).append(obj)
-        if database_type == DatabaseType.projects_db:
-            self.get_database(DatabaseType.projects_db).append(obj)
+            self.get_database(DatabaseType.devices_db)[0].append(obj)
+        if database_type == DatabaseType.active_projects_db:
+            self.get_database(DatabaseType.active_projects_db)[0].append(obj)
         if database_type == DatabaseType.finished_projects_db:
-            self.get_database(DatabaseType.finished_projects_db).append(obj)
+            self.get_database(DatabaseType.finished_projects_db)[0].append(obj)
+        if database_type == DatabaseType.waiting_to_return_projects_db:
+            self.get_database(DatabaseType.waiting_to_return_projects_db)[0].append(obj)
 
     # TODO: allow to remove a Device and project from finished projects
     def remove_from_database(self, obj: Union[Device, Project], database_type: DatabaseType) -> bool:
@@ -106,15 +141,18 @@ class DBHandler:
         # if isinstance(obj, Device):
         #     self._devices_db[consts.DEVICES_DATABASE_KEY].append(obj)
         #     return True
-        if database_type == DatabaseType.projects_db:
-            self.get_database(DatabaseType.projects_db).remove(obj)
+        if database_type == DatabaseType.active_projects_db:
+            self.get_database(DatabaseType.active_projects_db)[0].remove(obj)
+            return True
+        if database_type == DatabaseType.waiting_to_return_projects_db:
+            self.get_database(DatabaseType.waiting_to_return_projects_db)[0].remove(obj)
             return True
         return False
 
     # TODO: check if succeeded
-    def move_project_to_finished(self, project: Project):  # -> bool:
-        self.add_to_database(project, DatabaseType.finished_projects_db)
-        self.remove_from_database(project, DatabaseType.projects_db)
+    def move_project(self, project: Project, move_from: DatabaseType, move_to: DatabaseType ):  # -> bool:
+        self.add_to_database(project, move_to)
+        self.remove_from_database(project, move_from)
 
 
 # TODO: add sort devices, sort projects, sort projects in device
@@ -123,6 +161,7 @@ class DBUtils:
     @staticmethod
     def device_to_device_db(device: Device) -> DeviceDB:
         """
+        Converts a Device object to a DeviceDB object.
 
         Args:
             device (Device): a device.
@@ -138,6 +177,7 @@ class DBUtils:
     @staticmethod
     def device_db_to_device(device_db: DeviceDB) -> Device:
         """
+        Converts a DeviceDB object to a Device object.
 
         Args:
             device_db (DeviceDB): a database representation of a device.
@@ -148,57 +188,100 @@ class DBUtils:
         """
 
         device_id = device_db.device_id
-        projects = [DBUtils.find_project(project_id, ProjectsDatabaseType.both)
+        # TODO: maybe change
+        projects = [DBUtils.find_in_db(project_id, DatabaseType.projects_db)
                     for project_id in device_db.projects_ids]
         return Device(device_id=device_id, projects=projects)
 
-    @staticmethod
-    def find_project(project_id: str, database_type: ProjectsDatabaseType) -> Union[Project, None]:
-        """
-
-        Args:
-            project_id (str): the project's id of the desired project.
-            database_type (ProjectsDatabaseType): the project's database
-                fields in which to look for the project.
-
-        Returns:
-            Project: the project with the specified project id.
-            None: if no project has the specified project id.
-
-        """
-
-        db = DBHandler()
-        if database_type == ProjectsDatabaseType.both:
-            result = DBUtils.find_project(project_id, ProjectsDatabaseType.projects_db)
-            if not result:
-                result = DBUtils.find_project(project_id, ProjectsDatabaseType.finished_projects_db)
-            return result
-        if database_type == ProjectsDatabaseType.projects_db:
-            projects = db.get_database(DatabaseType.projects_db)
-        else:
-            projects = db.get_database(DatabaseType.finished_projects_db)
-
-        for project in projects:
-            if project.project_id == project_id:
-                return project
-        return None
 
     @staticmethod
-    def find_device(device_id: str) -> Union[Device, None]:
+    def find_in_db(id: str, database_type: DatabaseType) -> Union[Device, Project, None]:
         """
+        Looks for the object with the given id in the database specified in database_type.
 
+        Note:
+             the database_type should never include a combination of DatabaseType.device_db
+             and another value which is contained in DatabaseType.projects_db.
+             i.e. the following command should never return True:
+                (database_type & DatabaseType.devices_db and database_type & DatabaseType.projects_db)
         Args:
-            device_id (str): the device's id of the desired device.
+            id (str): the id of the object to be returned.
+            database_type (DatabaseType): the database type in which to look for the object.
 
         Returns:
-            Device: the device with the specified device id.
-            None: if no project has the specified device id.
-
+            Union[Device, Project]: the device or project with the corresponding id.
+            None: when no object with the given id is present in the given DatabaseType.
         """
-
         db = DBHandler()
-        devices = db.get_database(DatabaseType.devices_db)
-        for device in devices:
-            if device.device_id == device_id:
-                return device
+        database = db.get_database(database_type)
+
+        if database_type & DatabaseType.devices_db:
+            for device in database[0]:
+                if device.device_id == id:
+                    return device
+
+        if database_type & DatabaseType.projects_db:
+            for sub_database in database:
+                for project in sub_database:
+                    if project.project_id == id:
+                        return project
+
         return None
+
+    # @staticmethod
+    # def find_project(project_id: str, database_type: DatabaseType) -> Union[Project, None]:
+    #     """
+    #
+    #     Args:
+    #         project_id (str): the project's id of the desired project.
+    #         database_type (ProjectsDatabaseType): the project's database
+    #             fields in which to look for the project.
+    #
+    #     Returns:
+    #         Project: the project with the specified project id.
+    #         None: if no project has the specified project id.
+    #
+    #     """
+    #
+    #     db = DBHandler()
+    #     if database_type == ProjectsDatabaseType.all:
+    #         result = DBUtils.find_project(project_id, ProjectsDatabaseType.active_projects_db)
+    #         if not result:
+    #             result = DBUtils.find_project(project_id, ProjectsDatabaseType.finished_projects_db)
+    #         return result
+    #     if database_type == ProjectsDatabaseType.active_projects_db:
+    #         projects = db.get_database(DatabaseType.active_projects_db)
+    #     else:
+    #         projects = db.get_database(DatabaseType.finished_projects_db)
+    #
+    #     for project in projects:
+    #         if project.project_id == project_id:
+    #             return project
+    #     return None
+    #
+    # @staticmethod
+    # def find_project_in_multiple_db(project_id: str, database_types: list[ProjectsDatabaseType]):
+    #     for database_type in database_types:
+    #         if project := DBUtils.find_project(project_id, database_type):
+    #             return project
+    #     return None
+    #
+    # @staticmethod
+    # def find_device(device_id: str) -> Union[Device, None]:
+    #     """
+    #
+    #     Args:
+    #         device_id (str): the device's id of the desired device.
+    #
+    #     Returns:
+    #         Device: the device with the specified device id.
+    #         None: if no project has the specified device id.
+    #
+    #     """
+    #
+    #     db = DBHandler()
+    #     devices = db.get_database(DatabaseType.devices_db)
+    #     for device in devices:
+    #         if device.device_id == device_id:
+    #             return device
+    #     return None

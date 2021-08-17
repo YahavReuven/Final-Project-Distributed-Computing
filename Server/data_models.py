@@ -15,6 +15,12 @@ class NewProject(BaseModel):
     base64_serialized_iterable: str
 
 
+# TODO: check annotation for dict
+class ReturnedProject(BaseModel):
+    results: dict
+    base64_zipped_additional_results: str
+
+
 class SentTask(BaseModel):
     """A task sent to the client"""
     project_id: str

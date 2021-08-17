@@ -35,17 +35,23 @@ async def create_new_project(new_project: NewProject) -> str:
     store_serialized_project(new_project, project_id)
 
     project = Project(project_id=project_id)
-    if not (creator := DBUtils.find_device(new_project.creator_id)):
+    if not (creator := DBUtils.find_in_db(new_project.creator_id, DatabaseType.devices_db)):
         raise DeviceNotFoundError
     db = DBHandler()
 
-    db.add_to_database(project, DatabaseType.projects_db)
+    db.add_to_database(project, DatabaseType.active_projects_db)
     creator.projects.append(project)
 
     return project_id
 
 
-async def return_project_results():
+async def return_project_results(device_id: str, project_id: str):
+    # authenticate device and project id
+    # merge results to json file
+    # zip the additional results
+    # remove files
+    #
+    #
     pass
 
 
@@ -63,18 +69,7 @@ def store_serialized_project(base64_project: NewProject, project_id: str):
         json.dump(project, file)
 
 
-# TODO: not sure that is needed
-def encode_zipped_project(project_id: str) -> bytes:
-    zipped_project_path = consts.PROJECTS_DIRECTORY + '/' + project_id \
-                          + consts.PROJECT_STORAGE_PROJECT \
-                          + consts.PROJECT_STORAGE_JSON_PROJECT
 
-    with open(zipped_project_path, 'rb') as file:
-        zipped_project = file.read()
-
-    encoded_project = base64.b64encode(zipped_project)
-
-    return encoded_project
 
 
 def is_project_done(project: Project) -> bool:
@@ -90,3 +85,19 @@ def is_project_done(project: Project) -> bool:
         return True
 
     return False
+
+
+
+
+# TODO: not sure that is needed
+def encode_zipped_project(project_id: str) -> bytes:
+    zipped_project_path = consts.PROJECTS_DIRECTORY + '/' + project_id \
+                          + consts.PROJECT_STORAGE_PROJECT \
+                          + consts.PROJECT_STORAGE_JSON_PROJECT
+
+    with open(zipped_project_path, 'rb') as file:
+        zipped_project = file.read()
+
+    encoded_project = base64.b64encode(zipped_project)
+
+    return encoded_project

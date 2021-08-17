@@ -8,7 +8,7 @@ from datetime import datetime
 
 
 import consts
-from consts import DatabaseType, ProjectsDatabaseType
+from consts import DatabaseType
 from data_models import Task, SentTask, ReturnedTask, Worker, Project
 from errors import (ProjectNotFoundError, ProjectFinishedError,
                     WorkerNotAuthenticatedError, UnnecessaryTaskError)
@@ -20,9 +20,11 @@ async def get_new_task(device_id: str) -> SentTask:
 
     # TODO: authenticate device id
 
+    # TODO: maybe send sliced iterator
+
     db = DBHandler()
 
-    for project in db.get_database(DatabaseType.projects_db):
+    for project in db.get_database(DatabaseType.active_projects_db)[0]:
 
         # if the project has a stop_immediately with a value True,
         # the project is finished and doesn't create more tasks
@@ -60,14 +62,15 @@ async def get_new_task(device_id: str) -> SentTask:
             i += 1
 
 
+# TODO: check waiting database
 # TODO: function too long
 # TODO: check if the project is finished and move to finished in database
 async def return_task_results(returned_task: ReturnedTask):
 
     db = DBHandler()
-    project = DBUtils.find_project(returned_task.project_id, ProjectsDatabaseType.projects_db)
+    project = DBUtils.find_in_db(returned_task.project_id, DatabaseType.active_projects_db)
     if not project:
-        project = DBUtils.find_project(returned_task.project_id, ProjectsDatabaseType.finished_projects_db)
+        project = DBUtils.find_in_db(returned_task.project_id, DatabaseType.finished_projects_db)
         if project:
             raise ProjectFinishedError
         raise ProjectNotFoundError
@@ -96,7 +99,7 @@ async def return_task_results(returned_task: ReturnedTask):
         project.stop_number = returned_task.task_number
 
     if is_project_done(project):
-        db.move_project_to_finished(project)
+        db.move_project(project, DatabaseType.active_projects_db, DatabaseType.waiting_to_return_projects_db)
 
 
 def add_new_task_to_database(project: Project) -> Task:
