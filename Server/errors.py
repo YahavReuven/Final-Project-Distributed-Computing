@@ -5,13 +5,13 @@ from fastapi.responses import JSONResponse
 
 
 class ServerError(Exception):
-    """Error raised for a general error in the server"""
+    """Error raised for a general error in the server."""
     message = 'internal server error'
     status_code = HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 class BadRequestError(ServerError):
-    """Error raised when a bad request is received"""
+    """Error raised when a bad request is received."""
     message = 'bad request'
     status_code = HTTPStatus.BAD_REQUEST
 
@@ -39,8 +39,13 @@ class ProjectFinishedError(ProjectNotFoundError):
 
 class UnnecessaryTaskError(ProjectFinishedError):
     """Error raised if a client tries to upload a task which is no longer needed
-    (mainly do to a stop number being set)"""
+    (mainly due to a stop number being set)"""
     message = 'task is no longer needed'
+
+
+# TODO: check if needed
+class IDAuthenticationError(BadRequestError):
+    """Error raised if a given id is not authenticated to do the action which caused the error to be raised"""
 
 
 class WorkerNotAuthenticatedError(IDNotFoundError):
@@ -49,8 +54,9 @@ class WorkerNotAuthenticatedError(IDNotFoundError):
 
 
 class InvalidBase64Error(BadRequestError):
-
+    """Error raised if an invalid base64 string is received from the client."""
     message = 'invalid base64 string'
+
 
 async def handle_server_error(request: Request, exc: ServerError) -> JSONResponse:
     return JSONResponse(status_code=exc.status_code,

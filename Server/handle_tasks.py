@@ -16,6 +16,8 @@ from db import DBHandler, DBUtils
 from handle_projects import encode_zipped_project, is_project_done
 from utils import validate_base64_and_decode
 
+
+
 async def get_new_task(device_id: str) -> SentTask:
 
     # TODO: authenticate device id

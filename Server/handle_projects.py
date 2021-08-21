@@ -13,6 +13,7 @@ from errors import DeviceNotFoundError
 from db import DBHandler, DBUtils
 from initialize_server import init_project_storage
 from storage_handler import merge_results, zip_additional_results
+from authentication import authenticate_creator
 
 
 # TODO: make it work with UploadFile instead of bytes
@@ -54,6 +55,8 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
     #
     #
 
+    authenticate_creator(device_id, project_id)
+
     results = merge_results(project_id)
     additional_results = zip_additional_results(project_id)
 
@@ -62,12 +65,11 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
     return returned_project
 
 
-
 def store_serialized_project(base64_project: NewProject, project_id: str):
     # decoded_class = base64.b64decode(base64_project.base64_serialized_class.encode('utf-8'))
     # decoded_iterable = base64.b64decode(base64_project.base64_serialized_iterable.encode('utf-8'))
-    serialized_project_path = f'{consts.PROJECTS_DIRECTORY}/{project_id}'\
-                              f'{consts.PROJECT_STORAGE_PROJECT}'\
+    serialized_project_path = f'{consts.PROJECTS_DIRECTORY}/{project_id}' \
+                              f'{consts.PROJECT_STORAGE_PROJECT}' \
                               f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
     # TODO: validate base64
 
@@ -77,11 +79,7 @@ def store_serialized_project(base64_project: NewProject, project_id: str):
         json.dump(project, file)
 
 
-
-
-
 def is_project_done(project: Project) -> bool:
-
     if project.stop_immediately:
         return True
 
@@ -93,8 +91,6 @@ def is_project_done(project: Project) -> bool:
         return True
 
     return False
-
-
 
 
 # TODO: not sure that is needed

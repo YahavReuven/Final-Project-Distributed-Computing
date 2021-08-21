@@ -11,7 +11,7 @@ from db import DBHandler
 
 def update_db(db: DBHandler):
     """
-    Updates the server to a file every consts.UPDATE_DB_DELAY time
+    Updates the server to a backup file every consts.UPDATE_DB_DELAY time.
     """
     while True:
         time.sleep(consts.UPDATE_DB_DELAY)
@@ -20,7 +20,7 @@ def update_db(db: DBHandler):
 
 def init_server():
     """
-    Initializes the servers database files.
+    Initializes the server's database backup files.
     """
     init_devices_database()
     init_projects_database()
@@ -30,9 +30,8 @@ def init_server():
 
 def init_devices_database():
     """
-    Initializes devices database and creates needed directories.
+    Initializes devices' database backup files and creates the needed directories.
     """
-
     os.makedirs(consts.DEVICES_DATABASE_DIRECTORY, exist_ok=True)
 
     if not os.path.isfile(consts.DEVICES_DATABASE_NAME):
@@ -42,9 +41,8 @@ def init_devices_database():
 
 def init_projects_database():
     """
-    Initializes projects database and creates needed directories.
+    Initializes projects' database backup files and creates the needed directories.
     """
-
     os.makedirs(consts.PROJECTS_DIRECTORY, exist_ok=True)
 
     if not os.path.isfile(consts.PROJECTS_DATABASE_NAME):

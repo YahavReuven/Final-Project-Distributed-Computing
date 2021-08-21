@@ -8,16 +8,16 @@ from data_models import Device
 from db import DBHandler
 
 
-# TODO: maybe change return value to device id
-async def register_device() -> str:  # device_info: DeviceInfo
+async def register_device() -> str:
     """
+    Creates a new device and adds it to the database.
 
     Note:
         Assumes that './devices/devices_database.json' exists and contains '{}'
         or other devices.
 
     Returns:
-        str: the device id.
+        str: the new device's id.
 
     """
     db = DBHandler()

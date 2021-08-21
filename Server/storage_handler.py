@@ -35,7 +35,7 @@ def zip_additional_results(project_id) -> str:
 
     returned_results_path = create_path_string(base_results_path, consts.TEMP_PROJECT_ADDITIONAL_RESULTS_DIRECTORY)
 
-    directories = (os.listdir(base_results_path)).sort()
+    directories = sorted(os.listdir(base_results_path))
 
     os.makedirs(returned_results_path)
 
