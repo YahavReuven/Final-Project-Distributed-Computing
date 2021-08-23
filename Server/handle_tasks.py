@@ -6,23 +6,21 @@ import shutil
 from typing import Union
 from datetime import datetime
 
-
 import consts
 from consts import DatabaseType
 from data_models import Task, SentTask, ReturnedTask, Worker, Project
-from errors import (ProjectNotFoundError, ProjectFinishedError,
+from errors import (ProjectNotFoundError, ProjectFinishedError, ProjectIsActive,
                     WorkerNotAuthenticatedError, UnnecessaryTaskError)
 from db import DBHandler, DBUtils
-from handle_projects import encode_zipped_project, is_project_done
-from utils import validate_base64_and_decode
-
+from handle_projects import encode_zipped_project, is_project_done, get_project_state
+from utils import validate_base64_and_decode, create_path_string
+from authentication import authenticate_device, authenticate_worker
 
 
 async def get_new_task(device_id: str) -> SentTask:
-
-    # TODO: authenticate device id
-
     # TODO: maybe send sliced iterator
+
+    authenticate_device(device_id)
 
     db = DBHandler()
 
@@ -37,13 +35,12 @@ async def get_new_task(device_id: str) -> SentTask:
         stop_number = project.stop_number
         tasks = project.tasks
 
-        while stop_number < i:
+        while stop_number < 0 or i < stop_number:
             # TODO: check comments
             # if the stop number is less than 0, it means that it isn't set
             # and should be ignored.
             # if the stop number is less than the task position
             # (also task num) the server is looking for, the project is finished
-
 
             # creates a new task if no task has been created or
             # all of the other tasks are still valid.
@@ -55,7 +52,7 @@ async def get_new_task(device_id: str) -> SentTask:
             # TODO: change in case more than one worker is needed for the task
             for worker in tasks[i].workers:
                 # checks if the task is expired and resends it in case it is.
-                is_expired = datetime.utcnow() - worker.sent_date > consts.SENT_TASK_VALIDITY
+                is_expired = is_task_expired(worker)
                 if (not worker.is_finished) and is_expired:
                     worker = create_new_worker(device_id)
                     tasks[i].workers = list(worker)
@@ -68,28 +65,31 @@ async def get_new_task(device_id: str) -> SentTask:
 # TODO: function too long
 # TODO: check if the project is finished and move to finished in database
 async def return_task_results(returned_task: ReturnedTask):
-
     db = DBHandler()
-    project = DBUtils.find_in_db(returned_task.project_id, DatabaseType.active_projects_db)
-    if not project:
-        project = DBUtils.find_in_db(returned_task.project_id, DatabaseType.finished_projects_db)
-        if project:
-            raise ProjectFinishedError
+
+    project, project_state = get_project_state(returned_task.project_id)
+    if (project_state & DatabaseType.waiting_to_return_projects_db or
+            project_state & DatabaseType.finished_projects_db):
+        raise ProjectFinishedError
+    if not project_state:
         raise ProjectNotFoundError
 
     # TODO: maybe delete worker. maybe delete when stop number is called. maybe store in database
     if 0 <= project.stop_number < returned_task.task_number:
         raise UnnecessaryTaskError
 
-    # TODO: error check
     task = project.tasks[returned_task.task_number]
+
+    validate_base64_and_decode(returned_task.base64_zipped_additional_results,
+                               return_obj=False)
 
     # TODO: check if the task is already finished
 
-    if not (worker := find_worker(returned_task.worker_id, task)):
-        raise WorkerNotAuthenticatedError
+    worker = authenticate_worker(returned_task.worker_id, task)
 
-    store_task_results(returned_task.project_id, returned_task.base64_zipped_results, returned_task.task_number)
+    store_task_results(returned_task.project_id, returned_task.results, returned_task.task_number)
+    store_task_additional_results(returned_task.project_id, returned_task.base64_zipped_additional_results,
+                                  returned_task.task_number)
 
     worker.is_finished = True
 
@@ -110,18 +110,16 @@ def add_new_task_to_database(project: Project) -> Task:
     return new_task
 
 
-def create_task_to_send(project_id: str, task_number: int):
-    project_json_path = f'{consts.PROJECTS_DIRECTORY}/{project_id}'\
-                        f'{consts.PROJECT_STORAGE_PROJECT}'\
-                        f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
-
+def create_task_to_send(project_id: str, task_number: int) -> SentTask:
+    project_json_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
+                                           consts.PROJECT_STORAGE_PROJECT,
+                                           consts.PROJECT_STORAGE_JSON_PROJECT)
     with open(project_json_path, 'r') as file:
         project = json.load(file)
 
     return SentTask(project_id=project_id, task_number=task_number,
-                    base64_serialized_class=project.get(consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS),
-                    base64_serialized_iterable=project.get(consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE))
-                    # base64_zipped_project=encode_zipped_project(project_id))
+                    base64_serialized_class=project[consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS],
+                    base64_serialized_iterable=project[consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE])
 
 
 def create_new_worker(device_id: str) -> Worker:
@@ -135,43 +133,68 @@ def add_worker_to_task(task: Task, device_id: str):
     task.workers.append(worker)
 
 
-def store_task_results(project_id: str, base64_zipped_results: str, task_number: int):
-    decoded_project = validate_base64_and_decode(base64_zipped_results)
-    results_path = f'{consts.PROJECTS_DIRECTORY}/{project_id}'\
-                   f'{consts.PROJECT_STORAGE_RESULTS}/{task_number}'
+def store_task_results(project_id: str, task_results: dict, task_number: int):
+    results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
+                                      consts.PROJECT_STORAGE_RESULTS, task_number,
+                                      consts.RETURNED_TASK_RESULTS_DIRECTORY)
+    os.makedirs(results_path, exist_ok=True)
 
-    os.makedirs(results_path)
+    result_file = create_path_string(results_path, consts.RESULTS_FILE,
+                                     from_current_directory=False)
+    with open(result_file, 'w') as file:
+        json.dump(task_results, file)
 
-    with open(results_path + consts.RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE, 'wb') as file:
-        file.write(decoded_project)
 
-    with zipfile.ZipFile(results_path + consts.RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE) as zip_file:
+def store_task_additional_results(project_id: str, base64_zipped_additional_results: str, task_number: int):
+    decoded_additional_results = validate_base64_and_decode(base64_zipped_additional_results)
+    results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
+                                      consts.PROJECT_STORAGE_RESULTS, task_number,
+                                      consts.RETURNED_TASK_RESULTS_DIRECTORY)
+
+    os.makedirs(results_path, exist_ok=True)
+
+    temp_results_file = create_path_string(results_path, consts.RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE,
+                                           from_current_directory=False)
+    with open(temp_results_file, 'wb') as file:
+        file.write(decoded_additional_results)
+
+    with zipfile.ZipFile(temp_results_file) as zip_file:
         zip_file.extractall(results_path)
 
-    file_names = os.listdir(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY)
-
-    for file_name in file_names:
-        shutil.move(
-            os.path.join(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY, file_name),
-            results_path)
-
-    os.rmdir(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY)
-    os.remove(results_path + consts.RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE)
+    # file_names = os.listdir(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY)
+    #
+    # for file_name in file_names:
+    #     shutil.move(
+    #         os.path.join(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY, file_name),
+    #         results_path)
+    #
+    # os.rmdir(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY)
+    os.remove(temp_results_file)
 
 
 def delete_unnecessary_tasks_storage(project: Project, stop_called_task_number: int):
-    results_path = f'{consts.PROJECTS_DIRECTORY}/{project.project_id}'\
-                   f'{consts.PROJECT_STORAGE_RESULTS}'
-
+    results_path = create_path_string(consts.PROJECTS_DIRECTORY,
+                                      project.project_id,
+                                      consts.PROJECT_STORAGE_RESULTS)
     tasks_directories = os.listdir(results_path)
 
     for task_directory in tasks_directories:
         if task_directory != str(stop_called_task_number):
-            shutil.rmtree(f'{results_path}/{task_directory}')
+            task_path = create_path_string(results_path, task_directory,
+                                           from_current_directory=False)
+            shutil.rmtree(task_path)
 
 
-def find_worker(worker_id: str, task: Task) -> Union[Worker, None]:
-    for worker in task.workers:
-        if worker.worker_id == worker_id:
-            return worker
-    return None
+def is_task_expired(worker: Worker) -> bool:
+    """
+    Checks if the task sent to the worker is expired.
+
+    Args:
+        worker (Worker): information about the worker relevant to a particular task.
+
+    Returns:
+        True: if the task is expired.
+        False: if the task is still valid.
+    """
+
+    return datetime.utcnow() - worker.sent_date > consts.SENT_TASK_VALIDITY

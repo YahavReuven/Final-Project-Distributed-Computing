@@ -2,9 +2,12 @@
 Module used for the authentication of id's sent to the server from the client.
 """
 
+from typing import Union
+
 from db import DBUtils
 from consts import DatabaseType
-from errors import DeviceNotFoundError, ProjectNotFoundError
+from data_models import Worker, Task
+from errors import DeviceNotFoundError, ProjectNotFoundError, WorkerNotAuthenticatedError
 
 
 # TODO: check docstring
@@ -41,3 +44,21 @@ def authenticate_creator(device_id: str, project_id: str) -> bool:
             return True
 
     raise ProjectNotFoundError
+
+
+def authenticate_project(project_id: str) -> bool:
+
+    project = DBUtils.find_in_db(project_id, DatabaseType.projects_db)
+
+    if not project:
+        raise ProjectNotFoundError
+
+    return True
+
+
+def authenticate_worker(worker_id: str, task: Task) -> Union[Worker, None]:
+    for worker in task.workers:
+        if worker.worker_id == worker_id:
+            return worker
+
+    raise WorkerNotAuthenticatedError

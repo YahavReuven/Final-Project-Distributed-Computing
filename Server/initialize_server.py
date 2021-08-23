@@ -7,6 +7,7 @@ import os
 
 import consts
 from db import DBHandler
+from utils import create_path_string
 
 
 def update_db(db: DBHandler):
@@ -32,10 +33,12 @@ def init_devices_database():
     """
     Initializes devices' database backup files and creates the needed directories.
     """
-    os.makedirs(consts.DEVICES_DATABASE_DIRECTORY, exist_ok=True)
+    os.makedirs(create_path_string(consts.DEVICES_DIRECTORY), exist_ok=True)
 
-    if not os.path.isfile(consts.DEVICES_DATABASE_NAME):
-        with open(consts.DEVICES_DATABASE_NAME, 'w') as database:
+    devices_database_file = create_path_string(consts.DEVICES_DIRECTORY,
+                                               consts.DEVICES_DATABASE_NAME)
+    if not os.path.isfile(devices_database_file):
+        with open(devices_database_file, 'w') as database:
             database.write('{ "' + consts.DEVICES_DATABASE_KEY + '" : [] }')
 
 
@@ -43,10 +46,12 @@ def init_projects_database():
     """
     Initializes projects' database backup files and creates the needed directories.
     """
-    os.makedirs(consts.PROJECTS_DIRECTORY, exist_ok=True)
+    os.makedirs(create_path_string(consts.PROJECTS_DIRECTORY), exist_ok=True)
 
-    if not os.path.isfile(consts.PROJECTS_DATABASE_NAME):
-        with open(consts.PROJECTS_DATABASE_NAME, 'w') as database:
+    projects_database_file = create_path_string(consts.PROJECTS_DIRECTORY,
+                                                consts.PROJECTS_DATABASE_NAME)
+    if not os.path.isfile(projects_database_file):
+        with open(projects_database_file, 'w') as database:
             database.write('{ "' + consts.ACTIVE_PROJECTS_DB_KEY + '" : [] , "'
                            + consts.WAITING_TO_RETURN_PROJECTS_DB_KEY + '" : [] , "'
                            + consts.FINISHED_PROJECTS_DB_KEY + '" : [] }')
@@ -64,7 +69,9 @@ def init_project_storage(project_id: str):
         project_id (str): the project's id.
     """
 
-    project_directory = f'{consts.PROJECTS_DIRECTORY}/{project_id}'
+    project_directory = create_path_string(consts.PROJECTS_DIRECTORY, project_id)
 
-    os.makedirs(f'{project_directory}{consts.PROJECT_STORAGE_PROJECT}')
-    os.makedirs(f'{project_directory}{consts.PROJECT_STORAGE_RESULTS}')
+    os.makedirs(create_path_string(project_directory, consts.PROJECT_STORAGE_PROJECT,
+                                   from_current_directory=False))
+    os.makedirs(create_path_string(project_directory, consts.PROJECT_STORAGE_RESULTS,
+                                   from_current_directory=False))

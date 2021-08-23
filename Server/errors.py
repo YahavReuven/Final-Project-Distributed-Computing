@@ -33,8 +33,13 @@ class ProjectNotFoundError(IDNotFoundError):
 
 
 class ProjectFinishedError(ProjectNotFoundError):
-    """Error raised if a client tries to upload a new task to an already finished project."""
+    """Error raised if an illegal operation was done on a finished project."""
     message = 'project is finished'
+
+
+class ProjectIsActive(ProjectNotFoundError):
+    """Error raised if an illegal operation was done on an active project."""
+    message = 'project is active'
 
 
 class UnnecessaryTaskError(ProjectFinishedError):

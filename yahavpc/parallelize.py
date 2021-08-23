@@ -38,7 +38,7 @@ class Distribute:
             encoded_class = base64.b64encode(serialized_class).decode('utf-8')
             encoded_iterable = base64.b64encode(serialized_iterable).decode('utf-8')
             self.project = requests.post('http://127.0.0.1:8000/upload_new_project',
-                                     json={'creator_id': device.text[1:-1],
+                                     json={'creator_id': self.device.text[1:-1],
                                            'task_size': self.task_size,
                                            'base64_serialized_class': encoded_class,
                                            'base64_serialized_iterable': encoded_iterable})
@@ -76,23 +76,38 @@ class Distribute:
 
             results = None
             while not results:
-                results = requests.get(f'http://127.0.0.1:8000/get_project_results?device_id={self.device.text[1:-1]}&project_id={self.project.text[1:-1]}')
+                response = requests.get(f'http://127.0.0.1:8000/get_project_results?device_id={self.device.text[1:-1]}&project_id={self.project.text[1:-1]}')
+                results = response.text
                 time.sleep(1)
             print("done asking server")
             return results
 
 
-@Distribute(range(100), 10)
-class A:
-    @staticmethod
-    def a():
-        return 'a'
-
-    @staticmethod
-    def b():
-        return 'b'
-
-
-# A = Distribute(range(100), 10)(A)
-project = A()
+# @Distribute(range(100), 10)
+# class A:
+#     @staticmethod
+#     def a():
+#         return 'a'
+#
+#     @staticmethod
+#     def b():
+#         return 'b'
+#
+#
+# # A = Distribute(range(100), 10)(A)
+# project = A()
 # project.get_results()
+
+
+# import os
+# import json
+# import base64
+#
+# returned_project = json.loads(c)
+# temp_results_file = './results.zip'
+# results_path = './results'
+# os.makedirs(results_path, exist_ok=True)
+# with open(temp_results_file, 'wb') as file:
+#     file.write(base64.b64decode(returned_project['base64_zipped_additional_results']))
+# with zipfile.ZipFile(temp_results_file) as zip_file:
+#     zip_file.extractall(results_path)

@@ -5,15 +5,18 @@ Module used to handle projects and the projects' database
 import base64
 import json
 from uuid import uuid4
+from typing import Union
 
 import consts
 from consts import DatabaseType
 from data_models import Project, NewProject, ReturnedProject
-from errors import DeviceNotFoundError
+from errors import (DeviceNotFoundError, ProjectNotFoundError, ProjectIsActive,
+                    ProjectFinishedError)
 from db import DBHandler, DBUtils
 from initialize_server import init_project_storage
 from storage_handler import merge_results, zip_additional_results
 from authentication import authenticate_creator
+from utils import create_path_string
 
 
 # TODO: make it work with UploadFile instead of bytes
@@ -56,6 +59,13 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
     #
 
     authenticate_creator(device_id, project_id)
+    project, project_state = get_project_state(project_id)
+    if project_state & DatabaseType.active_projects_db:
+        raise ProjectIsActive
+    if project_state & DatabaseType.finished_projects_db:
+        raise ProjectFinishedError
+    if not project_state:
+        raise ProjectNotFoundError
 
     results = merge_results(project_id)
     additional_results = zip_additional_results(project_id)
@@ -68,9 +78,10 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
 def store_serialized_project(base64_project: NewProject, project_id: str):
     # decoded_class = base64.b64decode(base64_project.base64_serialized_class.encode('utf-8'))
     # decoded_iterable = base64.b64decode(base64_project.base64_serialized_iterable.encode('utf-8'))
-    serialized_project_path = f'{consts.PROJECTS_DIRECTORY}/{project_id}' \
-                              f'{consts.PROJECT_STORAGE_PROJECT}' \
-                              f'{consts.PROJECT_STORAGE_JSON_PROJECT}'
+
+    serialized_project_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
+                                                 consts.PROJECT_STORAGE_PROJECT,
+                                                 consts.PROJECT_STORAGE_JSON_PROJECT)
     # TODO: validate base64
 
     project = {consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS: base64_project.base64_serialized_class,
@@ -93,11 +104,22 @@ def is_project_done(project: Project) -> bool:
     return False
 
 
+def get_project_state(project_id: str):  # -> Union[(Project, DatabaseType), (None, None)]:
+    if project := DBUtils.find_in_db(project_id, DatabaseType.active_projects_db):
+        return project, DatabaseType.active_projects_db
+    if project := DBUtils.find_in_db(project_id, DatabaseType.waiting_to_return_projects_db):
+        return project, DatabaseType.waiting_to_return_projects_db
+    if project := DBUtils.find_in_db(project_id, DatabaseType.finished_projects_db):
+        return project, DatabaseType.finished_projects_db
+
+    return None, None
+
+
 # TODO: not sure that is needed
 def encode_zipped_project(project_id: str) -> bytes:
-    zipped_project_path = consts.PROJECTS_DIRECTORY + '/' + project_id \
-                          + consts.PROJECT_STORAGE_PROJECT \
-                          + consts.PROJECT_STORAGE_JSON_PROJECT
+    zipped_project_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
+                                             consts.PROJECT_STORAGE_PROJECT,
+                                             consts.PROJECT_STORAGE_JSON_PROJECT)
 
     with open(zipped_project_path, 'rb') as file:
         zipped_project = file.read()

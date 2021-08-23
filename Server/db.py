@@ -11,7 +11,7 @@ from typing import Union
 import consts
 from consts import DatabaseType
 from data_models import Device, DeviceDB, Project, Task, Worker
-
+from utils import create_path_string
 
 def singleton(cls):
     """ An implementation of singleton using decorator. """
@@ -70,9 +70,13 @@ class DBHandler:
         Loads the database into memory.
         """
 
-        with open(consts.DEVICES_DATABASE_NAME, 'r') as file:
+        devices_database_file = create_path_string(consts.DEVICES_DIRECTORY,
+                                                   consts.DEVICES_DATABASE_NAME)
+        with open(devices_database_file, 'r') as file:
             self._devices_db = json.load(file, cls=CustomDecoder)
-        with open(consts.PROJECTS_DATABASE_NAME, 'r') as file:
+        projects_database_file = create_path_string(consts.PROJECTS_DIRECTORY,
+                                                    consts.PROJECTS_DATABASE_NAME)
+        with open(projects_database_file, 'r') as file:
             self._projects_db = json.load(file, cls=CustomDecoder)
 
     def init_device_dbs_to_devices(self):
@@ -90,9 +94,13 @@ class DBHandler:
         """
 
         print('updating db...')  # TODO: remove after testing
-        with open(consts.DEVICES_DATABASE_NAME, 'w') as file:
+        devices_database_file = create_path_string(consts.DEVICES_DIRECTORY,
+                                                   consts.DEVICES_DATABASE_NAME)
+        with open(devices_database_file, 'w') as file:
             json.dump(self._devices_db, file, cls=CustomEncoder)
-        with open(consts.PROJECTS_DATABASE_NAME, 'w') as file:
+        projects_database_file = create_path_string(consts.PROJECTS_DIRECTORY,
+                                                    consts.PROJECTS_DATABASE_NAME)
+        with open(projects_database_file, 'w') as file:
             json.dump(self._projects_db, file, cls=CustomEncoder)
 
     # TODO: check annotations

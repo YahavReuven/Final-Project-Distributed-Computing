@@ -4,6 +4,8 @@ Module used to define data classes and fastapi base models
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -34,7 +36,8 @@ class ReturnedTask(BaseModel):
     worker_id: str
     project_id: str
     task_number: int
-    base64_zipped_results: str
+    results: Optional[dict]
+    base64_zipped_additional_results: Optional[str]
     stop_called: bool = False
     is_exhausted: bool = False
 
