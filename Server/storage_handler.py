@@ -12,7 +12,7 @@ def merge_results(project_id: str) -> dict:
     results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                       consts.PROJECT_STORAGE_RESULTS)
 
-    results = dict()
+    results = {}
 
     directories = sorted(os.listdir(results_path))
 

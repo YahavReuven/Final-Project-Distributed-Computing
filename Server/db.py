@@ -115,7 +115,7 @@ class DBHandler:
             Union[list[list[Device]], list[list[Project]]]: a list containing
             lists for every section of the database that is to be returned.
         """
-        results = list()
+        results = []
 
         # TODO: raise error
         if database_type & DatabaseType.devices_db and database_type & DatabaseType.projects_db:

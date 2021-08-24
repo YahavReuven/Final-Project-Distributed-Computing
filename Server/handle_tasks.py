@@ -3,16 +3,14 @@ import json
 import zipfile
 import os
 import shutil
-from typing import Union
 from datetime import datetime
 
 import consts
 from consts import DatabaseType
 from data_models import Task, SentTask, ReturnedTask, Worker, Project
-from errors import (ProjectNotFoundError, ProjectFinishedError, ProjectIsActive,
-                    WorkerNotAuthenticatedError, UnnecessaryTaskError)
-from db import DBHandler, DBUtils
-from handle_projects import encode_zipped_project, is_project_done, get_project_state
+from errors import ProjectNotFoundError, ProjectFinishedError, UnnecessaryTaskError
+from db import DBHandler
+from handle_projects import is_project_done, get_project_state
 from utils import validate_base64_and_decode, create_path_string
 from authentication import authenticate_device, authenticate_worker
 
@@ -80,14 +78,15 @@ async def return_task_results(returned_task: ReturnedTask):
 
     task = project.tasks[returned_task.task_number]
 
-    validate_base64_and_decode(returned_task.base64_zipped_additional_results,
-                               return_obj=False)
-
     # TODO: check if the task is already finished
 
     worker = authenticate_worker(returned_task.worker_id, task)
 
+    # TODO: check if there are results and additional results
     store_task_results(returned_task.project_id, returned_task.results, returned_task.task_number)
+
+    validate_base64_and_decode(returned_task.base64_zipped_additional_results,
+                               return_obj=False)
     store_task_additional_results(returned_task.project_id, returned_task.base64_zipped_additional_results,
                                   returned_task.task_number)
 
@@ -105,12 +104,31 @@ async def return_task_results(returned_task: ReturnedTask):
 
 
 def add_new_task_to_database(project: Project) -> Task:
+    """
+    Adds an empty task to the project.
+
+    Args:
+        project (Project): the project to add the task to.
+
+    Returns:
+        Task: the empty task.
+    """
     new_task = Task()
     project.tasks.append(new_task)
     return new_task
 
 
 def create_task_to_send(project_id: str, task_number: int) -> SentTask:
+    """
+    Creates a new task to send to a worker.
+
+    Args:
+        project_id (str): the project id of the project associated with the task.
+        task_number (int): the task number of the sent task.
+
+    Returns:
+        SentTask: a new task.
+    """
     project_json_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                            consts.PROJECT_STORAGE_PROJECT,
                                            consts.PROJECT_STORAGE_JSON_PROJECT)
@@ -123,17 +141,41 @@ def create_task_to_send(project_id: str, task_number: int) -> SentTask:
 
 
 def create_new_worker(device_id: str) -> Worker:
+    """
+    Creates a new worker.
+
+    Args:
+        device_id (str): the device id of the worker.
+
+    Returns:
+        Worker: a new worker.
+    """
     sent_date = datetime.utcnow()
     new_worker = Worker(worker_id=device_id, sent_date=sent_date)
     return new_worker
 
 
 def add_worker_to_task(task: Task, device_id: str):
+    """
+    Adds a new worker to the task given.
+
+    Args:
+        task (Task): the task to add the worker to.
+        device_id (str): the device id of the worker.
+    """
     worker = create_new_worker(device_id)
     task.workers.append(worker)
 
 
 def store_task_results(project_id: str, task_results: dict, task_number: int):
+    """
+    Stores a returned task's results.
+
+    Args:
+        project_id (str): the project id of the project which the task is associated with.:
+        task_results (dict): the results of the task.
+        task_number (int): the task number of the returned task.
+    """
     results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                       consts.PROJECT_STORAGE_RESULTS, task_number,
                                       consts.RETURNED_TASK_RESULTS_DIRECTORY)
@@ -146,6 +188,14 @@ def store_task_results(project_id: str, task_results: dict, task_number: int):
 
 
 def store_task_additional_results(project_id: str, base64_zipped_additional_results: str, task_number: int):
+    """
+    Unzips a returned task's additional results and stores them in server's storage.
+
+    Args:
+        project_id (str): the project id of the project which the task is associated with.
+        base64_zipped_additional_results (str): the zipped additional results in base64.
+        task_number (int): the task number of the returned task.
+    """
     decoded_additional_results = validate_base64_and_decode(base64_zipped_additional_results)
     results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                       consts.PROJECT_STORAGE_RESULTS, task_number,
@@ -173,6 +223,18 @@ def store_task_additional_results(project_id: str, base64_zipped_additional_resu
 
 
 def delete_unnecessary_tasks_storage(project: Project, stop_called_task_number: int):
+    """
+    Deletes all of the tasks storage in a project, besides the task
+    which has the stop_called_task_number task number.
+
+    Note:
+        The function is called if a returned task of a project has a stop_called set.
+
+    Args:
+        project (Project): the project which is associated with the returned task.
+        stop_called_task_number (int): the task number of the task which has the
+            stop_called set
+    """
     results_path = create_path_string(consts.PROJECTS_DIRECTORY,
                                       project.project_id,
                                       consts.PROJECT_STORAGE_RESULTS)
@@ -187,14 +249,13 @@ def delete_unnecessary_tasks_storage(project: Project, stop_called_task_number: 
 
 def is_task_expired(worker: Worker) -> bool:
     """
-    Checks if the task sent to the worker is expired.
+    Checks if the task that was sent to the worker is expired.
 
     Args:
-        worker (Worker): information about the worker relevant to a particular task.
+        worker (Worker): information about the worker (relevant to a particular task).
 
     Returns:
         True: if the task is expired.
         False: if the task is still valid.
     """
-
     return datetime.utcnow() - worker.sent_date > consts.SENT_TASK_VALIDITY

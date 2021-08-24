@@ -26,7 +26,7 @@ def create_path_string(*directories, from_current_directory: bool = True) -> str
     Returns:
         str: a string representing the desired path.
     """
-    path = list()
+    path = []
     if from_current_directory:
         path.append('.')
 
