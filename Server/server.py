@@ -11,6 +11,8 @@ from initialize_server import init_server, update_db
 from data_models import SentTask, ReturnedProject
 from errors import ServerError,  handle_server_error
 
+a = 5
+
 app = FastAPI()
 
 register_device = app.get('/register_device')(register_device)
