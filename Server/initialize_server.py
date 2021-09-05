@@ -1,7 +1,7 @@
 """
-Module used to initialize the server and update the database in file
+Module used to initialize the server and update the backup database files.
 """
-
+import json
 import time
 import os
 
@@ -31,30 +31,33 @@ def init_server():
 
 def init_devices_database():
     """
-    Initializes devices' database backup files and creates the needed directories.
+    Initializes the devices' database backup files and creates the needed directories.
     """
     os.makedirs(create_path_string(consts.DEVICES_DIRECTORY), exist_ok=True)
 
     devices_database_file = create_path_string(consts.DEVICES_DIRECTORY,
                                                consts.DEVICES_DATABASE_NAME)
     if not os.path.isfile(devices_database_file):
-        with open(devices_database_file, 'w') as database:
-            database.write('{ "' + consts.DEVICES_DATABASE_KEY + '" : [] }')
+        template = {consts.DEVICES_DATABASE_KEY: []}
+        with open(devices_database_file, 'w') as file:
+            json.dump(template, file)
 
 
 def init_projects_database():
     """
-    Initializes projects' database backup files and creates the needed directories.
+    Initializes the projects' database backup files and creates the needed directories.
     """
     os.makedirs(create_path_string(consts.PROJECTS_DIRECTORY), exist_ok=True)
 
     projects_database_file = create_path_string(consts.PROJECTS_DIRECTORY,
                                                 consts.PROJECTS_DATABASE_NAME)
     if not os.path.isfile(projects_database_file):
-        with open(projects_database_file, 'w') as database:
-            database.write('{ "' + consts.ACTIVE_PROJECTS_DB_KEY + '" : [] , "'
-                           + consts.WAITING_TO_RETURN_PROJECTS_DB_KEY + '" : [] , "'
-                           + consts.FINISHED_PROJECTS_DB_KEY + '" : [] }')
+        template = {consts.ACTIVE_PROJECTS_DB_KEY: [],
+                    consts.WAITING_TO_RETURN_PROJECTS_DB_KEY: [],
+                    consts.FINISHED_PROJECTS_DB_KEY: []
+                    }
+        with open(projects_database_file, 'w') as file:
+            json.dump(template, file)
 
 
 # TODO: move to storage_handler

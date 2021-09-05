@@ -16,7 +16,7 @@ from db import DBHandler, DBUtils
 from initialize_server import init_project_storage
 from storage_handler import merge_results, zip_additional_results
 from authentication import authenticate_creator
-from utils import create_path_string
+from utils import create_path_string, validate_base64_and_decode
 
 
 # TODO: make it work with UploadFile instead of bytes
@@ -32,18 +32,24 @@ async def create_new_project(new_project: NewProject) -> str:
         str: the project's id.
 
     Raises:
-        IDNotFoundError
+        DeviceNotFoundError: if the received NewProject contains a creator
+            id which is not present in the database.
+        InvalidBase64Error: if the received NewProject contains invalid base64.
 
     """
+    validate_base64_and_decode(new_project.base64_serialized_class)
+    validate_base64_and_decode(new_project.base64_serialized_iterable)
+
     project_id = uuid4().hex
     init_project_storage(project_id)
     store_serialized_project(new_project, project_id)
 
     project = Project(project_id=project_id)
-    if not (creator := DBUtils.find_in_db(new_project.creator_id, DatabaseType.devices_db)):
+    if not (creator := DBUtils.find_in_db(new_project.creator_id,
+                                          DatabaseType.devices_db)):
         raise DeviceNotFoundError
-    db = DBHandler()
 
+    db = DBHandler()
     db.add_to_database(project, DatabaseType.active_projects_db)
     creator.projects.append(project)
 
@@ -75,19 +81,30 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
     return returned_project
 
 
-def store_serialized_project(base64_project: NewProject, project_id: str):
-    # decoded_class = base64.b64decode(base64_project.base64_serialized_class.encode('utf-8'))
-    # decoded_iterable = base64.b64decode(base64_project.base64_serialized_iterable.encode('utf-8'))
+def store_serialized_project(project: NewProject, project_id: str):
+    """
+    Stores the project's code (class) and iterable.
+
+    Note:
+        Assumes that the project's storage is already  initialized.
+        Assumes that the given base64 data is valid.
+
+    Args:
+        project (NewProject): the project which needs to be stored.
+        project_id: the project's id of the project.
+
+    """
 
     serialized_project_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                                  consts.PROJECT_STORAGE_PROJECT,
                                                  consts.PROJECT_STORAGE_JSON_PROJECT)
-    # TODO: validate base64
 
-    project = {consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS: base64_project.base64_serialized_class,
-               consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE: base64_project.base64_serialized_iterable}
+    project_code = {consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS:
+                        project.base64_serialized_class,
+                    consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE:
+                        project.base64_serialized_iterable}
     with open(serialized_project_path, 'w') as file:
-        json.dump(project, file)
+        json.dump(project_code, file)
 
 
 def is_project_done(project: Project) -> bool:

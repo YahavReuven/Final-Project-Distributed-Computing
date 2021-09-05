@@ -105,7 +105,7 @@ class DBHandler:
 
     # TODO: check annotations
     def get_database(self, database_type: DatabaseType) -> \
-            Union[list[list[Device]], list[list[Project]]]:
+            Union[list[list[Device]], list[list[Project]], None]:
         """
         Returns the database sections as specified in the database_type.
         Args:

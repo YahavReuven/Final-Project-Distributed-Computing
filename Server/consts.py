@@ -4,7 +4,8 @@ Module used to define constants.
 
 from datetime import timedelta
 from enum import Flag, auto
-# import data_models
+
+PORT = 8000
 
 DEVICES_DIRECTORY = 'devices'
 DEVICES_DATABASE_NAME = 'devices_database.json'

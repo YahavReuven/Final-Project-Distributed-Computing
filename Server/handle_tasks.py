@@ -1,4 +1,6 @@
-import base64
+"""
+Module used to handle tasks
+"""
 import json
 import zipfile
 import os
@@ -24,8 +26,8 @@ async def get_new_task(device_id: str) -> SentTask:
 
     for project in db.get_database(DatabaseType.active_projects_db)[0]:
 
-        # if the project has a stop_immediately with a value True,
-        # the project is finished and doesn't create more tasks
+        # if the project has a stop_immediately set to True,
+        # the project is finished and doesn't create additional tasks
         if project.stop_immediately:
             continue
 
@@ -34,11 +36,10 @@ async def get_new_task(device_id: str) -> SentTask:
         tasks = project.tasks
 
         while stop_number < 0 or i < stop_number:
-            # TODO: check comments
             # if the stop number is less than 0, it means that it isn't set
             # and should be ignored.
-            # if the stop number is less than the task position
-            # (also task num) the server is looking for, the project is finished
+            # if the task position (also task num) the server is looking for,
+            # is greater than the stop number, the project is finished.
 
             # creates a new task if no task has been created or
             # all of the other tasks are still valid.
@@ -157,7 +158,7 @@ def create_new_worker(device_id: str) -> Worker:
 
 def add_worker_to_task(task: Task, device_id: str):
     """
-    Adds a new worker to the task given.
+    Adds a new worker to the given task.
 
     Args:
         task (Task): the task to add the worker to.

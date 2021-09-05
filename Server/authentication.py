@@ -11,26 +11,21 @@ from errors import DeviceNotFoundError, ProjectNotFoundError, WorkerNotAuthentic
 
 
 # TODO: check docstring
-def authenticate_device(device_id: str) -> bool:
+def authenticate_device(device_id: str):
     """
     Checks if a device with the given device_id is present in the database.
 
     Args:
         device_id (str): the device id of the desired device.
 
-    Returns:
-        True: if the device with the given device_id is present in the database.
-
     Raises:
-        DeviceNotFoundError: if the is no device with the given device_id in the database.
+        DeviceNotFoundError: if a device with the given device_id is not
+        present in the database.
     """
 
     device = DBUtils.find_in_db(device_id, DatabaseType.devices_db)
     if not device:
         raise DeviceNotFoundError
-
-    return True
-
 
 
 def authenticate_creator(device_id: str, project_id: str) -> bool:

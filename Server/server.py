@@ -10,8 +10,7 @@ from db import DBHandler
 from initialize_server import init_server, update_db
 from data_models import SentTask, ReturnedProject
 from errors import ServerError,  handle_server_error
-
-a = 5
+import consts
 
 app = FastAPI()
 
@@ -33,4 +32,4 @@ if __name__ == '__main__':
     db = DBHandler()
     th = threading.Thread(target=update_db, args=(db,))
     th.start()
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=consts.PORT)

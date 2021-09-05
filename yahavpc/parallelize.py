@@ -5,6 +5,9 @@ from collections.abc import Iterable
 import requests
 import dill
 
+import consts
+from errors import ParallelFunctionNotFound
+
 
 class Distribute:
     def __init__(self, iterable: Iterable, task_size: int):
@@ -15,6 +18,8 @@ class Distribute:
         print('in __call__ decorator factory')
         return self.Decorator(cls, self.iterable, self.task_size)
 
+
+
     class Decorator:
 
         def __init__(self, cls, iterable: Iterable, task_size: int):
@@ -22,13 +27,15 @@ class Distribute:
             self.iterable = iterable
             self.task_size = task_size
 
+            self._check_parallel_function()
+
         def __call__(self):
             """
-
             Requests the server to create a new project.
 
             Returns:
                 An instance of the decorator
+
             """
             self.device = requests.get('http://127.0.0.1:8000/register_device')
             print(self.device.text[1:-1])
@@ -48,9 +55,22 @@ class Distribute:
             print(1)
             return self
 
+        def _check_parallel_function(self):
+            """
+            Checks if a parallel function is present in the given class.
+
+            Raises:
+                ParallelFunctionNotFound: if a parallel function is not
+                    present in the class.
+            """
+            for attribute in dir(self.cls):
+                if callable(attribute) and not attribute.startswith("__"):
+                    if attribute == consts.PARALLEL_FUNCTION_NAME:
+                        return
+            raise ParallelFunctionNotFound
+
         def get_results(self):
             """
-
             Once called, the function requests the project's results from the server.
 
             Note:
@@ -60,6 +80,7 @@ class Distribute:
             Returns:
                 dict {iteration_number: result}: a dictionary containing the results with
                 their corresponding iteration number.
+
             """
             # results = None
             # i = 0

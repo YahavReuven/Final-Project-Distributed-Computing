@@ -1,5 +1,5 @@
 """
-Module used to handle devices
+Module used to handle devices.
 """
 from uuid import uuid4
 
@@ -13,8 +13,8 @@ async def register_device() -> str:
     Creates a new device and adds it to the database.
 
     Note:
-        Assumes that './devices/devices_database.json' exists and contains '{}'
-        or other devices.
+        Assumes that './devices/devices_database.json' exists and contains
+        a json object.
 
     Returns:
         str: the new device's id.

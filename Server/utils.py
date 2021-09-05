@@ -20,11 +20,13 @@ def create_path_string(*directories, from_current_directory: bool = True) -> str
 
     Args:
         *directories: the directories which make the full path.
+            The arguments given need to have a string representation.
         from_current_directory (bool) = True: whether or not to start
-        the path from the current directory ("./").
+            the path from the current directory ('./').
 
     Returns:
         str: a string representing the desired path.
+
     """
     path = []
     if from_current_directory:

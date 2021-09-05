@@ -61,6 +61,7 @@ class Task:
 
 @dataclass
 class Project:
+    """A project's representation in the database."""
     project_id: str
     tasks: list[Task] = field(default_factory=list)
     stop_number: int = -1
@@ -71,14 +72,14 @@ class Project:
 
 @dataclass
 class Device:
-    """A device's representation in the memory database"""
+    """A device's representation in the memory database."""
     device_id: str
     projects: list[Project] = field(default_factory=list)
 
 
 @dataclass
 class DeviceDB:
-    """A device's representation in the file database"""
+    """A device's representation in the file database."""
     device_id: str
     projects_ids: list[str] = field(default_factory=list)
 
