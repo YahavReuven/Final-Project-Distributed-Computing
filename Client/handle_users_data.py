@@ -39,8 +39,12 @@ def name_based_singleton(cls):
 
     @wraps(cls)
     def wrapper(user_name):
-        return _instances.setdefault(user_name, cls(user_name))
-
+        instance = _instances.get(user_name)
+        # _instances.setdefault(user_name, cls(user_name))
+        if not instance:
+            instance = cls(user_name)
+            _instances[user_name] = instance
+        return instance
 
     return wrapper
 
@@ -79,7 +83,6 @@ class UsersDataHandler:
         if not (server_port.isdigit() and
                 consts.MIN_PORT_NUM <= int(server_port) <= consts.MAX_PORT_NUM):
             raise InvalidPortNumber
-
 
     def _load_data(self):
         data_file_path = create_path_string(consts.USERS_DIRECTORY, self.user_name,
