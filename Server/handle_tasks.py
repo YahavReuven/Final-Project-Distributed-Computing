@@ -201,7 +201,8 @@ def store_task_additional_results(project_id: str, base64_zipped_additional_resu
     decoded_additional_results = validate_base64_and_decode(base64_zipped_additional_results)
     results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                       consts.PROJECT_STORAGE_RESULTS, task_number,
-                                      consts.RETURNED_TASK_RESULTS_DIRECTORY)
+                                      consts.RETURNED_TASK_RESULTS_DIRECTORY,
+                                      consts.RETURNED_TASK_ADDITIONAL_RESULTS_DIRECTORY)
 
     os.makedirs(results_path, exist_ok=True)
 

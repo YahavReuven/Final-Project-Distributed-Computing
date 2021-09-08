@@ -33,6 +33,7 @@ class SentTask(BaseModel):
 
 
 # TODO: add results json
+# TODO: maybe change results to not optional
 class ReturnedTask(BaseModel):
     worker_id: str
     project_id: str
