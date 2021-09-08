@@ -1,7 +1,6 @@
 
 import os
 
-from utils import create_path_string
 import consts
 from errors import UserNotFound
 

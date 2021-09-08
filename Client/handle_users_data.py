@@ -12,6 +12,8 @@ import consts
 from errors import InvalidIPv4Address, InvalidPortNumber
 
 
+from uuid import uuid4
+
 # TODO: add costume json encoder and decoder
 
 # TODO: check for a better way
@@ -52,13 +54,16 @@ class UsersDataHandler:
     def __init__(self, user_name):
         self.user_name = user_name
 
-        # TODO: change to gui
-        server_ip = input("please enter the server's ip:")
-        server_port = input("please enter the port number:")
-        device_id = request_register_device(server_ip, server_port)
-        print(user_name, device_id)
-        self.config_new_user(server_ip, server_port, device_id)
-        self._update_data_file()
+        try:
+            self._load_data()
+        except FileNotFoundError:
+            # TODO: change to gui
+            server_ip = input("please enter the server's ip:")
+            server_port = input("please enter the port number:")
+            device_id = uuid4().hex #request_register_device(server_ip, server_port)
+            print(user_name, device_id)
+            self.config_new_user(server_ip, server_port, device_id)
+            self._update_data_file()
 
     def config_new_user(self, server_ip, server_port, device_id):
         """
@@ -91,8 +96,8 @@ class UsersDataHandler:
         """
         Loads the user's data from its file.
         """
-        data_file_path = create_path_string(consts.USERS_DIRECTORY, self.user_name,
-                                            consts.JSON_EXTENSION)
+        data_file_path = create_path_string(consts.USERS_DIRECTORY,
+                                            self.user_name + consts.JSON_EXTENSION)
 
         with open(data_file_path, 'r') as file:
             data = json.load(file)
@@ -117,3 +122,6 @@ class UsersDataHandler:
 
         with open(data_file_path, 'w') as file:
             json.dump(data, file)
+
+    def add_task(self):
+        pass

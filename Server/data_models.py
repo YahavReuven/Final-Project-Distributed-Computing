@@ -27,6 +27,7 @@ class SentTask(BaseModel):
     """A task sent to the client"""
     project_id: str
     task_number: int
+    task_size: int  # TODO: maybe change
     base64_serialized_class: str
     base64_serialized_iterable: str
 

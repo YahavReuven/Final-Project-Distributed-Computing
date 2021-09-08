@@ -8,6 +8,8 @@ DATA_DEVICE_ID_KEY = 'device_id'
 DATA_PROJECTS_KEY = 'projects'
 DATA_TASKS_KEY = 'tasks'
 
+TASKS_DIRECTORY = 'task'
+
 JSON_EXTENSION = '.json'
 
 

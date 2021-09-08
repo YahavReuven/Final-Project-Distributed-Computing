@@ -26,6 +26,7 @@ PROJECT_STORAGE_JSON_PROJECT = 'project.json'
 
 JSON_PROJECT_BASE64_SERIALIZED_CLASS = 'base64_serialized_class'
 JSON_PROJECT_BASE64_SERIALIZED_ITERABLE = 'base64_serialized_iterable'
+JSON_PROJECT_TASK_SIZE = 'task_size'
 
 
 SENT_TASK_VALIDITY = timedelta(days=1)

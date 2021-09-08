@@ -37,8 +37,8 @@ async def create_new_project(new_project: NewProject) -> str:
         InvalidBase64Error: if the received NewProject contains invalid base64.
 
     """
-    validate_base64_and_decode(new_project.base64_serialized_class)
-    validate_base64_and_decode(new_project.base64_serialized_iterable)
+    validate_base64_and_decode(new_project.base64_serialized_class, return_obj=False)
+    validate_base64_and_decode(new_project.base64_serialized_iterable, return_obj=False)
 
     project_id = uuid4().hex
     init_project_storage(project_id)
@@ -81,9 +81,10 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
     return returned_project
 
 
+# TODO: maybe change name
 def store_serialized_project(project: NewProject, project_id: str):
     """
-    Stores the project's code (class) and iterable.
+    Stores the project's code (class), iterable and task size.
 
     Note:
         Assumes that the project's storage is already  initialized.
@@ -102,7 +103,8 @@ def store_serialized_project(project: NewProject, project_id: str):
     project_code = {consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS:
                         project.base64_serialized_class,
                     consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE:
-                        project.base64_serialized_iterable}
+                        project.base64_serialized_iterable,
+                    consts.JSON_PROJECT_TASK_SIZE: project.task_size}
     with open(serialized_project_path, 'w') as file:
         json.dump(project_code, file)
 

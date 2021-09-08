@@ -137,6 +137,7 @@ def create_task_to_send(project_id: str, task_number: int) -> SentTask:
         project = json.load(file)
 
     return SentTask(project_id=project_id, task_number=task_number,
+                    task_size=project[consts.JSON_PROJECT_TASK_SIZE],
                     base64_serialized_class=project[consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS],
                     base64_serialized_iterable=project[consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE])
 

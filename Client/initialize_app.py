@@ -29,3 +29,8 @@ def init_user():
     return UsersDataHandler(user_name)
 
 
+def init_tasks():
+    tasks_path = create_path_string(consts.TASKS_DIRECTORY)
+    os.makedirs(tasks_path, exist_ok=True)
+
+
