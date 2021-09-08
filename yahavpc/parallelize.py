@@ -1,29 +1,34 @@
 import time
 import base64
 from collections.abc import Iterable
+import json
 
 import requests
 import dill
 
 import consts
 from errors import ParallelFunctionNotFound
+from utils import validate_user_name, create_path_string
 
 
 class Distribute:
-    def __init__(self, iterable: Iterable, task_size: int):
+    def __init__(self, user_name: str, iterable: Iterable, task_size: int):
+        self.user_name = user_name
+        validate_user_name(self.user_name)
         self.iterable = iterable
         self.task_size = task_size
 
     def __call__(self, cls):
         print('in __call__ decorator factory')
-        return self.Decorator(cls, self.iterable, self.task_size)
+        return self.Decorator(cls, self.user_name, self.iterable, self.task_size)
 
 
 
     class Decorator:
 
-        def __init__(self, cls, iterable: Iterable, task_size: int):
+        def __init__(self, cls, user_name, iterable: Iterable, task_size: int):
             self.cls = cls
+            self.user_name = user_name
             self.iterable = iterable
             self.task_size = task_size
 
@@ -37,15 +42,14 @@ class Distribute:
                 An instance of the decorator
 
             """
-            self.device = requests.get('http://127.0.0.1:8000/register_device')
-            print(self.device.text[1:-1])
+            self.device_id = self._get_device_id(self.user_name)
             serialized_class = dill.dumps(self.cls)
             serialized_iterable = dill.dumps(self.iterable)
 
             encoded_class = base64.b64encode(serialized_class).decode('utf-8')
             encoded_iterable = base64.b64encode(serialized_iterable).decode('utf-8')
             self.project = requests.post('http://127.0.0.1:8000/upload_new_project',
-                                     json={'creator_id': self.device.text[1:-1],
+                                     json={'creator_id': self.device_id,
                                            'task_size': self.task_size,
                                            'base64_serialized_class': encoded_class,
                                            'base64_serialized_iterable': encoded_iterable})
@@ -68,6 +72,16 @@ class Distribute:
                     if attribute == consts.PARALLEL_FUNCTION_NAME:
                         return
             raise ParallelFunctionNotFound
+
+        def _get_device_id(self, user_name: str) -> str:
+            data_file_path = create_path_string(consts.USERS_DIRECTORY, self.user_name,
+                                                consts.JSON_EXTENSION)
+
+            with open(data_file_path, 'r') as file:
+                data = json.load(file)
+
+            return data[consts.DATA_DEVICE_ID_KEY]
+
 
         def get_results(self):
             """

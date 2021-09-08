@@ -6,13 +6,10 @@ import json
 from functools import wraps
 import ipaddress
 
-from handle_requests import register_device
+from handle_requests import request_register_device
 from utils import create_path_string
 import consts
 from errors import InvalidIPv4Address, InvalidPortNumber
-
-def create_data_file(server_ip: str, server_port: int, device_id: str):
-    pass
 
 
 # TODO: add costume json encoder and decoder
@@ -58,12 +55,15 @@ class UsersDataHandler:
         # TODO: change to gui
         server_ip = input("please enter the server's ip:")
         server_port = input("please enter the port number:")
-        device_id = register_device(server_ip, server_port)
+        device_id = request_register_device(server_ip, server_port)
         print(user_name, device_id)
         self.config_new_user(server_ip, server_port, device_id)
         self._update_data_file()
 
     def config_new_user(self, server_ip, server_port, device_id):
+        """
+        Configures the new user.
+        """
         self._validate_new_user(server_ip, server_port)
         self.ip = server_ip
         self.port = server_port
@@ -74,6 +74,9 @@ class UsersDataHandler:
 
     @staticmethod
     def _validate_new_user(server_ip, server_port):
+        """
+        Validates the user's data.
+        """
         try:
             ipaddress.ip_address(server_ip)
         except ValueError:
@@ -85,6 +88,9 @@ class UsersDataHandler:
             raise InvalidPortNumber
 
     def _load_data(self):
+        """
+        Loads the user's data from its file.
+        """
         data_file_path = create_path_string(consts.USERS_DIRECTORY, self.user_name,
                                             consts.JSON_EXTENSION)
 
@@ -97,6 +103,9 @@ class UsersDataHandler:
             self.tasks = data[consts.DATA_TASKS_KEY]
 
     def _update_data_file(self):
+        """
+        Updates the user's data file.
+        """
         data_file_path = create_path_string(consts.USERS_DIRECTORY,
                                             self.user_name + consts.JSON_EXTENSION)
 
