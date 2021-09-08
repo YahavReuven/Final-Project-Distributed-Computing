@@ -132,17 +132,3 @@ def get_project_state(project_id: str):  # -> Union[(Project, DatabaseType), (No
         return project, DatabaseType.finished_projects_db
 
     return None, None
-
-
-# TODO: not sure that is needed
-def encode_zipped_project(project_id: str) -> bytes:
-    zipped_project_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
-                                             consts.PROJECT_STORAGE_PROJECT,
-                                             consts.PROJECT_STORAGE_JSON_PROJECT)
-
-    with open(zipped_project_path, 'rb') as file:
-        zipped_project = file.read()
-
-    encoded_project = base64.b64encode(zipped_project)
-
-    return encoded_project

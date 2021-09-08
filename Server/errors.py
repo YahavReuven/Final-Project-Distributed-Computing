@@ -24,7 +24,6 @@ class IDNotFoundError(BadRequestError):
 class DeviceNotFoundError(IDNotFoundError):
     """Error raised if the received device id is not present in devices database."""
     message = 'device not found'
-    pass
 
 
 class ProjectNotFoundError(IDNotFoundError):
@@ -47,6 +46,10 @@ class UnnecessaryTaskError(ProjectFinishedError):
     (mainly due to a stop number being set)"""
     message = 'task is no longer needed'
 
+
+class NoTaskAvailable(BadRequestError):
+    """Error raised if there isn't a task available to send to the worker."""
+    message = 'no task available'
 
 # TODO: check if needed
 class IDAuthenticationError(BadRequestError):

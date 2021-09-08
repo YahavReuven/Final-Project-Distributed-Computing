@@ -31,12 +31,14 @@ def init_server():
 
 def init_devices_database():
     """
-    Initializes the devices' database backup files and creates the needed directories.
+    Initializes the devices' database backup file and creates the needed directories.
     """
-    os.makedirs(create_path_string(consts.DEVICES_DIRECTORY), exist_ok=True)
+    devices_path = create_path_string(consts.DEVICES_DIRECTORY)
+    os.makedirs(devices_path, exist_ok=True)
 
-    devices_database_file = create_path_string(consts.DEVICES_DIRECTORY,
-                                               consts.DEVICES_DATABASE_NAME)
+    devices_database_file = create_path_string(devices_path,
+                                               consts.DEVICES_DATABASE_NAME,
+                                               from_current_directory=False)
     if not os.path.isfile(devices_database_file):
         template = {consts.DEVICES_DATABASE_KEY: []}
         with open(devices_database_file, 'w') as file:
@@ -47,10 +49,12 @@ def init_projects_database():
     """
     Initializes the projects' database backup files and creates the needed directories.
     """
-    os.makedirs(create_path_string(consts.PROJECTS_DIRECTORY), exist_ok=True)
+    projects_path = create_path_string(consts.PROJECTS_DIRECTORY)
+    os.makedirs(projects_path, exist_ok=True)
 
-    projects_database_file = create_path_string(consts.PROJECTS_DIRECTORY,
-                                                consts.PROJECTS_DATABASE_NAME)
+    projects_database_file = create_path_string(projects_path,
+                                                consts.PROJECTS_DATABASE_NAME,
+                                                from_current_directory=False)
     if not os.path.isfile(projects_database_file):
         template = {consts.ACTIVE_PROJECTS_DB_KEY: [],
                     consts.WAITING_TO_RETURN_PROJECTS_DB_KEY: [],
@@ -64,14 +68,7 @@ def init_projects_database():
 def init_project_storage(project_id: str):
     """
     Initializes the project with the project's id storage space.
-
-    Note:
-        Assumes that the project's id appears once in the database.
-
-    Args:
-        project_id (str): the project's id.
     """
-
     project_directory = create_path_string(consts.PROJECTS_DIRECTORY, project_id)
 
     os.makedirs(create_path_string(project_directory, consts.PROJECT_STORAGE_PROJECT,
