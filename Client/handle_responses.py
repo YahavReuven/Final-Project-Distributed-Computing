@@ -5,9 +5,10 @@ import json
 
 from requests import Response
 
-from data_models import Task
+from data_models import ReceivedTask
 
-# TODO: add error handler
+
+# TODO: check for errors
 
 
 def handle_register_response(response: Response):
@@ -17,8 +18,8 @@ def handle_register_response(response: Response):
 def handle_new_task_response(response: Response):
     content = response.text
     task_data = json.loads(content)
-    return Task(**task_data)
+    return ReceivedTask(**task_data)
 
 
 def handle_upload_task_results(response: Response):
-    return True
+    pass

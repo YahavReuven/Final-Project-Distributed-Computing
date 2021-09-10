@@ -10,7 +10,7 @@ from handle_requests import request_register_device
 from utils import create_path_string
 import consts
 from errors import InvalidIPv4Address, InvalidPortNumber
-
+from users_utils import get_users_names
 
 from uuid import uuid4
 
@@ -60,22 +60,42 @@ class UsersDataHandler:
             # TODO: change to gui
             server_ip = input("please enter the server's ip:")
             server_port = input("please enter the port number:")
-            device_id = uuid4().hex #request_register_device(server_ip, server_port)
-            print(user_name, device_id)
-            self.config_new_user(server_ip, server_port, device_id)
+
+            self._set_device_id()
+            print(user_name, self.device_id)
+            self._config_new_user(server_ip, server_port, self.device_id)
             self._update_data_file()
 
-    def config_new_user(self, server_ip, server_port, device_id):
+    @property
+    def ip(self):
+        return self._ip
+
+    @property
+    def port(self):
+        return self._port
+
+    @property
+    def device_id(self):
+        return self._device_id
+
+    @property
+    def projects(self):
+        return self._projects
+
+    @property
+    def tasks(self):
+        return self._tasks
+
+    def _config_new_user(self, server_ip, server_port, device_id):
         """
         Configures the new user.
         """
         self._validate_new_user(server_ip, server_port)
-        self.ip = server_ip
-        self.port = server_port
-        self.device_id = device_id
-        self.projects = []
-        self.tasks = []
-
+        self._ip = server_ip
+        self._port = server_port
+        self._device_id = device_id
+        self._projects = []
+        self._tasks = []
 
     @staticmethod
     def _validate_new_user(server_ip, server_port):
@@ -101,11 +121,11 @@ class UsersDataHandler:
 
         with open(data_file_path, 'r') as file:
             data = json.load(file)
-            self.ip = data[consts.DATA_IP_KEY]
-            self.port = data[consts.DATA_PORT_KEY]
-            self.device_id = data[consts.DATA_DEVICE_ID_KEY]
-            self.projects = data[consts.DATA_PROJECTS_KEY]
-            self.tasks = data[consts.DATA_TASKS_KEY]
+            self._ip = data[consts.USER_IP_KEY]
+            self._port = data[consts.USER_PORT_KEY]
+            self._device_id = data[consts.USER_DEVICE_ID_KEY]
+            self._projects = data[consts.USER_PROJECTS_KEY]
+            self._tasks = data[consts.USER_TASKS_KEY]
 
     def _update_data_file(self):
         """
@@ -114,14 +134,24 @@ class UsersDataHandler:
         data_file_path = create_path_string(consts.USERS_DIRECTORY,
                                             self.user_name + consts.JSON_EXTENSION)
 
-        data = {consts.DATA_IP_KEY: self.ip,
-                consts.DATA_PORT_KEY: self.port,
-                consts.DATA_DEVICE_ID_KEY: self.device_id,
-                consts.DATA_PROJECTS_KEY: self.projects,
-                consts.DATA_TASKS_KEY: self.tasks}
+        data = {consts.USER_IP_KEY: self._ip,
+                consts.USER_PORT_KEY: self._port,
+                consts.USER_DEVICE_ID_KEY: self._device_id,
+                consts.USER_PROJECTS_KEY: self._projects,
+                consts.USER_TASKS_KEY: self._tasks}
 
         with open(data_file_path, 'w') as file:
             json.dump(data, file)
+
+    def _set_device_id(self):
+        names = get_users_names()
+        for name in names:
+            user = UsersDataHandler(name)
+            if user.ip == self.ip and user.port == self.port:
+                self._device_id = user.device_id
+                return
+
+        self._device_id = uuid4().hex  # request_register_device(server_ip, server_port)
 
     def add_task(self):
         pass

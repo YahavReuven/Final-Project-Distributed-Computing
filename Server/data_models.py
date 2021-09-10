@@ -38,8 +38,8 @@ class ReturnedTask(BaseModel):
     worker_id: str
     project_id: str
     task_number: int
-    results: Optional[dict]
-    base64_zipped_additional_results: Optional[str]
+    results: dict
+    base64_zipped_additional_results: Optional[str] = None
     stop_called: bool = False
     is_exhausted: bool = False
 

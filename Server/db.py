@@ -225,7 +225,7 @@ class DBUtils:
 
         if database_type & DatabaseType.devices_db:
             for device in database[0]:
-                if device.device_id == id:
+                if device._device_id == id:
                     return device
 
         if database_type & DatabaseType.projects_db:

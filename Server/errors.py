@@ -1,3 +1,7 @@
+"""
+Module used for custom errors and error handling.
+"""
+
 from http import HTTPStatus
 
 from fastapi import Request

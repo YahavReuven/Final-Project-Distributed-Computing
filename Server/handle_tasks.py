@@ -101,7 +101,7 @@ async def return_task_results(returned_task: ReturnedTask):
     if 0 <= project.stop_number < returned_task.task_number:
         raise UnnecessaryTaskError
 
-    task = project.tasks[returned_task.task_number]
+    task = project._tasks[returned_task.task_number]
 
     # TODO: check if the task is already finished
 

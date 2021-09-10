@@ -1,5 +1,5 @@
 """
-Module contains helper functions for the handle_task files.
+Module contains helper functions for the handle_task module.
 """
 import json
 import zipfile

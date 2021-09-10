@@ -24,3 +24,13 @@ def create_path_string(*directories, from_current_directory: bool = True) -> str
     return '\\'.join(path)
 
 
+def is_file_json(file_name: str) -> bool:
+    """
+    If a file has the json extension.
+    Args:
+        file_name:
+
+    Returns:
+
+    """
+    return file_name.endswith('.json')
