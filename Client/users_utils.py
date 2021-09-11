@@ -7,6 +7,7 @@ from utils import create_path_string, is_file_json
 import consts
 
 
+# TODO: check with remove suffix
 def get_users_names() -> list:
     users_path = create_path_string(consts.USERS_DIRECTORY)
 

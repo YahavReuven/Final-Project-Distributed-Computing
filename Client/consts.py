@@ -36,7 +36,7 @@ MIN_PORT_NUM = 1
 MAX_PORT_NUM = 65535
 
 
-class ReturnTypes(Enum):
+class ReturnTypes(str, Enum):
     normal = 'normal'
     exhausted = 'exhausted'
     stopped = 'stopped'

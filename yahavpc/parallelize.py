@@ -9,27 +9,33 @@ import dill
 import consts
 from errors import ParallelFunctionNotFound
 from utils import create_path_string
-from handle_users import validate_user_name, get_device_id
-
+from handle_users import validate_user_name, get_user
+from handle_requests import request_upload_new_project, request_get_project_results
+from data_models import NewProject
+from project_utils import create_class_to_send, create_iterable_to_send
+from handle_results import save_results
 
 class Distribute:
-    def __init__(self, user_name: str, iterable: Iterable, task_size: int):
+    def __init__(self, user_name: str, iterable: Iterable, task_size: int, results_path):
         self._user_name = user_name
         validate_user_name(self._user_name)
         self._iterable = iterable
         self._task_size = task_size
+        # TODO: delete and find a way to do it from client
+        self._results_path = results_path
 
     def __call__(self, cls):
         print('in __call__ decorator factory')
-        return self.Decorator(cls, self._user_name, self._iterable, self._task_size)
+        return self.Decorator(cls, self._user_name, self._iterable, self._task_size, self._results_path)
 
     class Decorator:
 
-        def __init__(self, cls, user_name, iterable: Iterable, task_size: int):
+        def __init__(self, cls, user_name, iterable: Iterable, task_size: int, results_path):
             self._cls = cls
             self._user_name = user_name
             self._iterable = iterable
             self._task_size = task_size
+            self._results_path = results_path
 
             validate_user_name(self._cls)
 
@@ -41,23 +47,20 @@ class Distribute:
                 An instance of the decorator
 
             """
-            self.device_id = get_device_id(self._user_name)
-            serialized_class = dill.dumps(self._cls)
-            serialized_iterable = dill.dumps(self._iterable)
+            self._user = get_user(self._user_name)
+            self._cls = create_class_to_send(self._cls)
+            self._iterable = create_iterable_to_send(self._iterable)
 
-            encoded_class = base64.b64encode(serialized_class).decode('utf-8')
-            encoded_iterable = base64.b64encode(serialized_iterable).decode('utf-8')
-            self.project = requests.post('http://127.0.0.1:8000/upload_new_project',
-                                         json={'creator_id': self.device_id,
-                                               'task_size': self._task_size,
-                                               'base64_serialized_class': encoded_class,
-                                               'base64_serialized_iterable': encoded_iterable})
-            print(self.project.text[1:-1])
+            project = NewProject(creator_id=self._user.device_id, task_size=self._task_size,
+                                 base64_serialized_class=self._cls,
+                                 base64_serialized_iterable=self._iterable)
+            self._project_id = request_upload_new_project(self._user.ip, self._user.port, project)
+
+            print(self._project_id)
 
             # TODO: deal with imports
             print(1)
             return self
-
 
         def get_results(self):
             """
@@ -72,14 +75,14 @@ class Distribute:
                 their corresponding iteration number.
 
             """
-            results = None
-            while not results:
-                response = requests.get(
-                    f'http://127.0.0.1:8000/get_project_results?device_id={self.device.text[1:-1]}&project_id={self.project.text[1:-1]}')
-                results = response.text
+            project_results = None
+            while not project_results:
+                project_results = request_get_project_results(self._user.ip, self._user.port,
+                                                      self._user.device_id, self._project_id)
                 time.sleep(1)
             print("done asking server")
-            return results
+            save_results(project_results, self._results_path)
+            return project_results.results
 
 # @Distribute(range(100), 10)
 # class A:

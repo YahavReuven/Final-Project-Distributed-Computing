@@ -90,6 +90,7 @@ class UsersDataHandler:
         """
         Configures the new user.
         """
+        # TODO: maybe use dataclas
         self._validate_new_user(server_ip, server_port)
         self._ip = server_ip
         self._port = server_port
@@ -121,11 +122,11 @@ class UsersDataHandler:
 
         with open(data_file_path, 'r') as file:
             data = json.load(file)
-            self._ip = data[consts.USER_IP_KEY]
-            self._port = data[consts.USER_PORT_KEY]
-            self._device_id = data[consts.USER_DEVICE_ID_KEY]
-            self._projects = data[consts.USER_PROJECTS_KEY]
-            self._tasks = data[consts.USER_TASKS_KEY]
+        self._ip = data[consts.USER_IP_KEY]
+        self._port = data[consts.USER_PORT_KEY]
+        self._device_id = data[consts.USER_DEVICE_ID_KEY]
+        self._projects = data[consts.USER_PROJECTS_KEY]
+        self._tasks = data[consts.USER_TASKS_KEY]
 
     def _update_data_file(self):
         """
@@ -148,7 +149,7 @@ class UsersDataHandler:
         for name in names:
             user = UsersDataHandler(name)
             if user.ip == self.ip and user.port == self.port:
-                self._device_id = user.device_id
+                self._device_id = user._device_id
                 return
 
         self._device_id = uuid4().hex  # request_register_device(server_ip, server_port)

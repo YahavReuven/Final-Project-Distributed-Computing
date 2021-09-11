@@ -5,7 +5,7 @@ import json
 from utils import create_path_string
 import consts
 from errors import UserNotFound
-
+from data_models import User
 
 def validate_user_name(user_name: str):
     """
@@ -24,10 +24,20 @@ def validate_user_name(user_name: str):
 
 
 def get_device_id(user_name: str) -> str:
-    data_file_path = create_path_string(consts.USERS_DIRECTORY, user_name,
-                                        consts.JSON_EXTENSION)
+    data_file_path = create_path_string(consts.USERS_DIRECTORY,
+                                        user_name + consts.JSON_EXTENSION)
 
     with open(data_file_path, 'r') as file:
         data = json.load(file)
 
     return data[consts.DATA_DEVICE_ID_KEY]
+
+
+def get_user(user_name: str) -> User:
+    data_file_path = create_path_string(consts.USERS_DIRECTORY,
+                                        user_name + consts.JSON_EXTENSION)
+
+    with open(data_file_path, 'r') as file:
+        data = json.load(file)
+
+    return User(**data)

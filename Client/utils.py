@@ -1,6 +1,6 @@
 
 
-
+import consts
 
 def create_path_string(*directories, from_current_directory: bool = True) -> str:
     """
@@ -13,6 +13,7 @@ def create_path_string(*directories, from_current_directory: bool = True) -> str
 
     Returns:
         str: a string representing the desired path.
+
     """
     path = []
     if from_current_directory:

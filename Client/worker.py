@@ -92,4 +92,4 @@ def return_task(user: UsersDataHandler, return_type: ReturnTypes):
 
     returned_task = ReturnedTask(**data)
 
-    return request_upload_task_results(returned_task)
+    return request_upload_task_results(user.ip, user.port, returned_task)
