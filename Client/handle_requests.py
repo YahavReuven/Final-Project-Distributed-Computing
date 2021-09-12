@@ -5,23 +5,57 @@ import requests
 
 from handle_responses import (handle_register_response, handle_new_task_response,
                               handle_upload_task_results)
-from data_models import ReturnedTask
+from data_models import ReturnedTask, ReceivedTask
 
 # TODO: maybe change that the functions receive a UsersDataHandler object
 
 
 def request_register_device(server_ip, server_port) -> str:
+    """
+    Sends a register_device request to the server.
+
+    Args:
+        server_ip: the ip of the server.
+        server_port: the port on the server to send the request to.
+
+    Returns:
+        str: the device_id of the new device.
+
+    """
     response = requests.get(f'http://{server_ip}:{server_port}/register_device')
     return handle_register_response(response)
 
 
-def request_get_new_task(server_ip, server_port, device_id) -> ReturnedTask:
+def request_get_new_task(server_ip, server_port, device_id) -> ReceivedTask:
+    """
+    Sends a get_new_task request to the server.
+
+    Args:
+        server_ip: the ip of the server.
+        server_port: the port on the server to send the request to.
+        device_id: the device_id of the worker.
+
+    Returns:
+        ReceivedTask: te task received from the server.
+
+    """
     response = requests.get(f'http://{server_ip}:{server_port}/get_new_task?'
                             f'device_id={device_id}')
     return handle_new_task_response(response)
 
 
 def request_upload_task_results(server_ip, server_port, returned_task: ReturnedTask):
+    """
+    Sends an upload_task_results request to the server.
+
+    Args:
+        server_ip: the ip of the server.
+        server_port: the port on the server to send the request to.
+        returned_task (ReturnedTask): the task results, including additional information.
+
+    Returns:
+        ???????????
+    """
     response = requests.post(f'http://{server_ip}:{server_port}/upload_task_results',
                             json={'worker_id': returned_task.device_id,
                                   'project_id': returned_task.project_id,

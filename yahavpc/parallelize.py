@@ -15,6 +15,7 @@ from data_models import NewProject
 from project_utils import create_class_to_send, create_iterable_to_send
 from handle_results import save_results
 
+
 class Distribute:
     def __init__(self, user_name: str, iterable: Iterable, task_size: int, results_path):
         self._user_name = user_name
@@ -78,7 +79,7 @@ class Distribute:
             project_results = None
             while not project_results:
                 project_results = request_get_project_results(self._user.ip, self._user.port,
-                                                      self._user.device_id, self._project_id)
+                                                              self._user.device_id, self._project_id)
                 time.sleep(1)
             print("done asking server")
             save_results(project_results, self._results_path)

@@ -1,19 +1,18 @@
+"""
+The main module of the client application.
+"""
 
-import os
-
-
-from handle_users_data import UsersDataHandler
-from initialize_app import init_user
-import consts
+from initialize_app import init_user, init_task_storage
+from handle_users import switch_user
 from worker import execute_task
 
-ls = []
+user = init_user()
+init_task_storage()
 while True:
-    user = init_user()
 
     action = int(input('please enter what action to take: '))
 
-    # if action == 1:
-    #     switch_user()
-    if action == 2:
+    if action == 'user':
+        user = switch_user()
+    if action == 'task':
         execute_task(user)

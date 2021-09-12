@@ -7,6 +7,7 @@ from utils import create_path_string
 import consts
 from data_models import ReturnedProject
 
+
 def save_results(returned_project: ReturnedProject, results_path):
     save_results_file(returned_project.results, results_path)
     save_additional_results(returned_project.base64_zipped_additional_results, results_path)

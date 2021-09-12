@@ -1,7 +1,7 @@
 """
 Module used to define data classes.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 
@@ -13,6 +13,7 @@ class Task:
 
 @dataclass
 class ReceivedTask:
+    """ A task sent from the server for execution. """
     project_id: str
     task_number: int
     task_size: int
@@ -24,6 +25,7 @@ class ReceivedTask:
 # TODO: maybe change results to not optional
 @dataclass
 class ReturnedTask:
+    """ A finished task sent to the server. """
     worker_id: str
     project_id: str
     task_number: int
@@ -32,3 +34,13 @@ class ReturnedTask:
     stop_called: bool = False
     is_exhausted: bool = False
 
+
+# TODO: change annotations
+@dataclass
+class User:
+    """ A User in the client side. """
+    ip: str
+    port: str
+    device_id: str
+    projects: Optional[list[object]] = field(default_factory=list)
+    tasks: Optional[list[object]] = field(default_factory=list)

@@ -11,6 +11,8 @@ from utils import create_path_string
 import consts
 from errors import InvalidIPv4Address, InvalidPortNumber
 from users_utils import get_users_names
+from data_models import User
+from handle_json import CustomDecoder, CustomEncoder
 
 from uuid import uuid4
 
@@ -39,7 +41,6 @@ def name_based_singleton(cls):
     @wraps(cls)
     def wrapper(user_name):
         instance = _instances.get(user_name)
-        # _instances.setdefault(user_name, cls(user_name))
         if not instance:
             instance = cls(user_name)
             _instances[user_name] = instance
@@ -52,7 +53,7 @@ def name_based_singleton(cls):
 class UsersDataHandler:
 
     def __init__(self, user_name):
-        self.user_name = user_name
+        self._user_name = user_name
 
         try:
             self._load_data()
@@ -61,42 +62,21 @@ class UsersDataHandler:
             server_ip = input("please enter the server's ip:")
             server_port = input("please enter the port number:")
 
-            self._set_device_id()
-            print(user_name, self.device_id)
-            self._config_new_user(server_ip, server_port, self.device_id)
+            device_id = self._set_device_id()
+            print(user_name, self.user.device_id)
+            self._user = self._config_new_user(server_ip, server_port, device_id)
             self._update_data_file()
 
     @property
-    def ip(self):
-        return self._ip
-
-    @property
-    def port(self):
-        return self._port
-
-    @property
-    def device_id(self):
-        return self._device_id
-
-    @property
-    def projects(self):
-        return self._projects
-
-    @property
-    def tasks(self):
-        return self._tasks
+    def user(self):
+        return self._user
 
     def _config_new_user(self, server_ip, server_port, device_id):
         """
-        Configures the new user.
+        Configures the new user and returns it.
         """
-        # TODO: maybe use dataclas
         self._validate_new_user(server_ip, server_port)
-        self._ip = server_ip
-        self._port = server_port
-        self._device_id = device_id
-        self._projects = []
-        self._tasks = []
+        return User(ip=server_ip, port=server_port, device_id=device_id)
 
     @staticmethod
     def _validate_new_user(server_ip, server_port):
@@ -118,41 +98,30 @@ class UsersDataHandler:
         Loads the user's data from its file.
         """
         data_file_path = create_path_string(consts.USERS_DIRECTORY,
-                                            self.user_name + consts.JSON_EXTENSION)
+                                            self._user_name + consts.JSON_EXTENSION)
 
         with open(data_file_path, 'r') as file:
-            data = json.load(file)
-        self._ip = data[consts.USER_IP_KEY]
-        self._port = data[consts.USER_PORT_KEY]
-        self._device_id = data[consts.USER_DEVICE_ID_KEY]
-        self._projects = data[consts.USER_PROJECTS_KEY]
-        self._tasks = data[consts.USER_TASKS_KEY]
+            self._user = json.load(file, cls=CustomDecoder)
 
     def _update_data_file(self):
         """
         Updates the user's data file.
         """
         data_file_path = create_path_string(consts.USERS_DIRECTORY,
-                                            self.user_name + consts.JSON_EXTENSION)
-
-        data = {consts.USER_IP_KEY: self._ip,
-                consts.USER_PORT_KEY: self._port,
-                consts.USER_DEVICE_ID_KEY: self._device_id,
-                consts.USER_PROJECTS_KEY: self._projects,
-                consts.USER_TASKS_KEY: self._tasks}
+                                            self._user_name + consts.JSON_EXTENSION)
 
         with open(data_file_path, 'w') as file:
-            json.dump(data, file)
+            json.dump(self.user, file, cls=CustomEncoder)
 
-    def _set_device_id(self):
+    # TODO: maybe move outside function
+    def _set_device_id(self, ip, port):
         names = get_users_names()
         for name in names:
             user = UsersDataHandler(name)
-            if user.ip == self.ip and user.port == self.port:
-                self._device_id = user._device_id
-                return
+            if user.user.ip == ip and user.user.port == port:
+                return user.user.device_id
 
-        self._device_id = uuid4().hex  # request_register_device(server_ip, server_port)
+        return uuid4().hex  # request_register_device(server_ip, server_port)
 
     def add_task(self):
         pass

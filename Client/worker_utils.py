@@ -14,15 +14,32 @@ from utils import create_path_string
 import dill
 
 
-def has_stop_function(cls):
+def has_stop_function(cls) -> bool:
+    """
+    Checks if a parallel class has a stop function or not.
+
+    Args:
+        cls: the parallel class
+
+    Returns:
+        whether or not the parallel class has a stop function.
+    """
     for attribute in dir(cls):
-        if callable(attribute) and attribute == consts.STOP_FUNCTION_NAME:
+        if callable(getattr(cls, attribute)) and attribute == consts.STOP_FUNCTION_NAME:
             return True
     return False
 
 
 # TODO: maybe change results to own object
 def results_to_file(results: dict):
+    """
+    Writes the results of a task to he results file.
+    Args:
+        results:
+
+    Returns:
+
+    """
     results_file = create_path_string(consts.TASKS_DIRECTORY,
                                       consts.RESULTS_FILE + consts.JSON_EXTENSION,
                                       from_current_directory=False)
@@ -66,18 +83,37 @@ def get_results():
     return results
 
 
+# TODO: maybe get only the decoded class
 def get_task_cls(task: ReceivedTask):
+    """
+    Turns the decoded class received from task to a class object.
+
+    Args:
+        task (ReceivedTask): the task.
+
+    Returns:
+        the class as an object.
+    """
     parallel_cls = task.base64_serialized_class
     parallel_cls = base64.b64decode(parallel_cls)
     parallel_cls = dill.loads(parallel_cls)
-
     return parallel_cls
 
 
+# TODO: maybe get only the decoded iterable
 def get_task_iterable(task: ReceivedTask):
+    """
+    Turns the decoded iterable received from task to an object.
+
+    Args:
+        task (ReceivedTask): the task.
+
+    Returns:
+        the iterable as an object.
+    """
     iterable = task.base64_serialized_class
     iterable = base64.b64decode(iterable)
-
+    iterable = dill.loads(iterable)
     return iterable
 
 
@@ -90,8 +126,6 @@ def has_additional_results() -> bool:
 
 def init_task_result_storage():
     task_path = create_path_string(consts.TASKS_DIRECTORY)
-
-    os.makedirs(task_path, exist_ok=True)
 
     additional_results_path = create_path_string(task_path, consts.ADDITIONAL_RESULTS_DIRECTORY,
                                                  from_current_directory=False)
