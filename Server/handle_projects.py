@@ -2,10 +2,9 @@
 """
 Module used to handle projects and the projects' database
 """
-import base64
 import json
 from uuid import uuid4
-from typing import Union
+import shutil
 
 import consts
 from consts import DatabaseType
@@ -26,7 +25,7 @@ async def create_new_project(new_project: NewProject) -> str:
 
     Args:
         new_project (NewProject): contains the needed information about
-        the uploaded project.
+            the uploaded project.
 
     Returns:
         str: the project's id.
@@ -56,14 +55,27 @@ async def create_new_project(new_project: NewProject) -> str:
     return project_id
 
 
+# TODO: check annotation
+# TODO: maybe remove the finished field in the database
 async def return_project_results(device_id: str, project_id: str) -> ReturnedProject:
-    # authenticate device and project id
-    # merge results to json file
-    # zip the additional results
-    # remove files
-    #
-    #
+    """
+    Returns a project results.
 
+    Args:
+        device_id (str): the device id of the client requesting the results.
+        project_id (str): the project id of the project that its results
+            are requested.
+
+    Returns:
+        ReturnedProject: the results of the project.
+
+    Raises:
+        ProjectIsActive: if the project is still active.
+        ProjectFinishedError: if the results of a project are requested
+            more than once.
+        ProjectNotFoundError: if the project is not found.
+
+    """
     authenticate_creator(device_id, project_id)
     project, project_state = get_project_state(project_id)
     if project_state & DatabaseType.active_projects_db:
@@ -80,6 +92,8 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
 
     db = DBHandler()
     db.move_project(project, DatabaseType.waiting_to_return_projects_db, DatabaseType.finished_projects_db)
+
+    delete_finished_project_storage(project)
 
     return returned_project
 
@@ -135,3 +149,15 @@ def get_project_state(project_id: str):  # -> Union[(Project, DatabaseType), (No
         return project, DatabaseType.finished_projects_db
 
     return None, None
+
+
+def delete_finished_project_storage(project: Project):
+    """
+    Deletes the storage of a finished project.
+
+    Args:
+        project (Project): the project that its storage is to be deleted.
+
+    """
+    project_path = create_path_string(consts.PROJECTS_DIRECTORY, project.project_id)
+    shutil.rmtree(project_path)

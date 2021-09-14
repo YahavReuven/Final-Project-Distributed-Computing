@@ -1,8 +1,11 @@
-
+"""
+Module used to handle conversion between json and object.
+"""
 import json
 from dataclasses import asdict
 
 from data_models import User
+
 
 class CustomEncoder(json.JSONEncoder):
     """ Custom class to encode client in order to dump to json file. """

@@ -1,5 +1,6 @@
 """
-Module used to handle sending and receiving requests, and handle the connection with the server.
+Module used to handle sending and receiving requests, and handle the
+connection with the server.
 """
 import requests
 
@@ -7,7 +8,7 @@ from handle_responses import (handle_register_response, handle_new_task_response
                               handle_upload_task_results)
 from data_models import ReturnedTask, ReceivedTask
 
-# TODO: maybe change that the functions receive a UsersDataHandler object
+# TODO: maybe change that the functions receives a UsersDataHandler object
 
 
 def request_register_device(server_ip, server_port) -> str:

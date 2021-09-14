@@ -1,11 +1,11 @@
 """
-Module used for custom errors.
+Module used to define custom errors.
 """
 
 
 class InvalidIPv4Address(Exception):
-    """Raised if an invalid IPv4 address is supplied."""
+    """ Error raised if an invalid IPv4 address is supplied. """
 
 
 class InvalidPortNumber(Exception):
-    """Raised if an invalid port number is supplied."""
+    """Error raised if an invalid port number is supplied. """

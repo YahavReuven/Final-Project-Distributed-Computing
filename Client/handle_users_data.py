@@ -25,16 +25,18 @@ def name_based_singleton(cls):
 
     Note:
         The purpose of this function is to allow the creation of
-        a UsersDataHandler instance only if an instance with the same
-        name isn't already created.
-        This is a helper function for the UsersDataHandler class and
+        a UsersDataHandler instance only if an instance (a user)
+        with the same user name isn't already created.
+
+        This is an helper function for the UsersDataHandler class and
         should receive only this class.
 
     Args:
-        cls (UsersDataHandler): the UsersDataHandler class
+        cls (UsersDataHandler): the UsersDataHandler class.
 
     Returns:
         function: a decorator.
+
     """
     _instances = {}
 
@@ -52,37 +54,37 @@ def name_based_singleton(cls):
 @name_based_singleton
 class UsersDataHandler:
 
-    def __init__(self, user_name):
+    def __init__(self, user_name: str):
         self._user_name = user_name
 
         try:
             self._load_data()
         except FileNotFoundError:
-            # TODO: change to gui
-            server_ip = input("please enter the server's ip:")
-            server_port = input("please enter the port number:")
-
-            self._validate_new_user(server_ip, server_port)
-
-            device_id = self._set_device_id(server_ip, server_port)
-
-            self._user = self._config_new_user(server_ip, server_port, device_id)
-            print(user_name, self.user.device_id)
-            self._update_data_file()
+            self._create_new_user()
 
     @property
     def user(self):
         return self._user
 
-    def _config_new_user(self, server_ip, server_port, device_id):
+    def _create_new_user(self):
         """
-        Configures the new user and returns it.
+        Creates a new user.
         """
-        #self._validate_new_user(server_ip, server_port)
-        return User(ip=server_ip, port=server_port, device_id=device_id)
+        # TODO: change to gui
+        server_ip = input("please enter the server's ip:")
+        server_port = input("please enter the port number:")
+
+        self._validate_new_user(server_ip, server_port)
+        server_port = int(server_port)
+
+        device_id = self._set_device_id(server_ip, server_port)
+        self._user = User(ip=server_ip, port=server_port, device_id=device_id)
+        # TODO: only for testing
+        print(self._user_name, self.user.device_id)
+        self._update_data_file()
 
     @staticmethod
-    def _validate_new_user(server_ip, server_port):
+    def _validate_new_user(server_ip: str, server_port: str):
         """
         Validates the user's data.
         """
@@ -117,14 +119,16 @@ class UsersDataHandler:
             json.dump(self.user, file, cls=CustomEncoder)
 
     # TODO: maybe move outside function
-    def _set_device_id(self, ip, port):
+    def _set_device_id(self, ip: str, port: int):
+        """
+        Sets the device id of the user.
+        """
         names = get_users_names()
         for name in names:
             user = UsersDataHandler(name)
             if user.user.ip == ip and user.user.port == port:
                 return user.user.device_id
-
-        return request_register_device(ip, port)  #uuid4().hex
+        return request_register_device(ip, port)
 
     def add_task(self):
         pass

@@ -1,4 +1,6 @@
-
+"""
+Module used to define costume errors.
+"""
 
 class ParallelFunctionNotFoundError(Exception):
     """A parallel function is not present in the given class."""

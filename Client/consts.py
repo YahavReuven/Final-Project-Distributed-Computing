@@ -15,7 +15,6 @@ JSON_EXTENSION = '.json'
 PARALLEL_FUNCTION_NAME = 'parallel_func'
 STOP_FUNCTION_NAME = 'stop_func'
 
-
 MIN_PORT_NUM = 1
 MAX_PORT_NUM = 65535
 
