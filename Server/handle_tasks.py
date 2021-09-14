@@ -101,7 +101,7 @@ async def return_task_results(returned_task: ReturnedTask):
     if 0 <= project.stop_number < returned_task.task_number:
         raise UnnecessaryTaskError
 
-    task = project._tasks[returned_task.task_number]
+    task = project.tasks[returned_task.task_number]
 
     # TODO: check if the task is already finished
 
@@ -110,10 +110,12 @@ async def return_task_results(returned_task: ReturnedTask):
     # TODO: check if there are results and additional results
     store_task_results(returned_task.project_id, returned_task.results, returned_task.task_number)
 
-    validate_base64_and_decode(returned_task.base64_zipped_additional_results,
-                               return_obj=False)
-    store_task_additional_results(returned_task.project_id, returned_task.base64_zipped_additional_results,
-                                  returned_task.task_number)
+
+    if returned_task.base64_zipped_additional_results:
+        validate_base64_and_decode(returned_task.base64_zipped_additional_results,
+                                   return_obj=False)
+        store_task_additional_results(returned_task.project_id, returned_task.base64_zipped_additional_results,
+                                      returned_task.task_number)
 
     worker.is_finished = True
 

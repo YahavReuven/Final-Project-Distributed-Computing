@@ -134,13 +134,13 @@ class DBHandler:
 
 
     def add_to_database(self, obj: Union[Device, Project], database_type: DatabaseType) -> None:
-        if database_type == DatabaseType.devices_db:
+        if database_type & DatabaseType.devices_db:
             self.get_database(DatabaseType.devices_db)[0].append(obj)
-        if database_type == DatabaseType.active_projects_db:
+        if database_type & DatabaseType.active_projects_db:
             self.get_database(DatabaseType.active_projects_db)[0].append(obj)
-        if database_type == DatabaseType.finished_projects_db:
+        if database_type & DatabaseType.finished_projects_db:
             self.get_database(DatabaseType.finished_projects_db)[0].append(obj)
-        if database_type == DatabaseType.waiting_to_return_projects_db:
+        if database_type & DatabaseType.waiting_to_return_projects_db:
             self.get_database(DatabaseType.waiting_to_return_projects_db)[0].append(obj)
 
     # TODO: allow to remove a Device and project from finished projects
@@ -149,16 +149,16 @@ class DBHandler:
         # if isinstance(obj, Device):
         #     self._devices_db[consts.DEVICES_DATABASE_KEY].append(obj)
         #     return True
-        if database_type == DatabaseType.active_projects_db:
+        if database_type & DatabaseType.active_projects_db:
             self.get_database(DatabaseType.active_projects_db)[0].remove(obj)
             return True
-        if database_type == DatabaseType.waiting_to_return_projects_db:
+        if database_type & DatabaseType.waiting_to_return_projects_db:
             self.get_database(DatabaseType.waiting_to_return_projects_db)[0].remove(obj)
             return True
         return False
 
     # TODO: check if succeeded
-    def move_project(self, project: Project, move_from: DatabaseType, move_to: DatabaseType ):  # -> bool:
+    def move_project(self, project: Project, move_from: DatabaseType, move_to: DatabaseType):  # -> bool:
         self.add_to_database(project, move_to)
         self.remove_from_database(project, move_from)
 
@@ -225,7 +225,7 @@ class DBUtils:
 
         if database_type & DatabaseType.devices_db:
             for device in database[0]:
-                if device._device_id == id:
+                if device.device_id == id:
                     return device
 
         if database_type & DatabaseType.projects_db:

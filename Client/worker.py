@@ -9,7 +9,7 @@ from itertools import islice
 
 from worker_utils import (has_stop_function, results_to_file, get_results, has_additional_results,
                           get_zip_additional_results, get_task_cls, get_task_iterable,
-                          init_task_result_storage)
+                          init_task_result_storage, clean_results_directory)
 import consts
 from consts import ReturnTypes
 from data_models import ReceivedTask, ReturnedTask
@@ -18,7 +18,9 @@ from data_models import ReceivedTask, ReturnedTask
 
 def execute_task(user: UsersDataHandler):
     return_type = TaskExecUtils.run_task_code(user)
-    return TaskExecUtils.return_task(user, return_type)
+    response = TaskExecUtils.return_task(user, return_type)
+    clean_results_directory()
+    return response
 
 
 class TaskExecUtils:
@@ -72,6 +74,7 @@ class TaskExecUtils:
 
         return ReturnTypes.normal
 
+    # TODO: handle response
     @classmethod
     def return_task(cls, user: UsersDataHandler, return_type: ReturnTypes):
 

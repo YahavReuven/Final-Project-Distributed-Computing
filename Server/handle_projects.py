@@ -78,6 +78,9 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
 
     returned_project = ReturnedProject(results=results, base64_zipped_additional_results=additional_results)
 
+    db = DBHandler()
+    db.move_project(project, DatabaseType.waiting_to_return_projects_db, DatabaseType.finished_projects_db)
+
     return returned_project
 
 

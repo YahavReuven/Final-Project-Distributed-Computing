@@ -7,7 +7,7 @@ import requests
 import dill
 
 import consts
-from errors import ParallelFunctionNotFound
+from errors import ParallelFunctionNotFoundError, ResultsBeforeCreationError
 from utils import create_path_string
 from handle_users import validate_user_name, get_user
 from handle_requests import request_upload_new_project, request_get_project_results
@@ -38,7 +38,9 @@ class Distribute:
             self._task_size = task_size
             self._results_path = results_path
 
-            validate_user_name(self._cls)
+            self._user = None
+
+            validate_user_name(self._user_name)
 
         def __call__(self):
             """
@@ -72,10 +74,17 @@ class Distribute:
                   This function shouldn't be called until the results are required.
 
             Returns:
-                dict {iteration_number: result}: a dictionary containing the results with
-                their corresponding iteration number.
+                dict {iteration_number: result}: a dictionary containing the
+                results with their corresponding iteration number.
+
+            Raises:
+                ResultsBeforeCreationError: if the method was called before
+                the project is initialized.
 
             """
+            if not self._user:
+                raise ResultsBeforeCreationError
+
             project_results = None
             while not project_results:
                 project_results = request_get_project_results(self._user.ip, self._user.port,
@@ -84,6 +93,29 @@ class Distribute:
             print("done asking server")
             save_results(project_results, self._results_path)
             return project_results.results
+
+
+@Distribute('alex', range(40), 10, './Results')
+class A:
+
+    @classmethod
+    def parallel_func(cls, number):
+        import os
+        print(os.getcwd())
+        cls.b(number)
+        return f'{int(number/10)}-{number}'
+
+    @staticmethod
+    def b(number):
+        with open(f'./task/additional_results/{int(number/10)}-{number}.txt', 'w') as file:
+            file.write("hello: " + str(number))
+
+input('1')
+project = A()
+
+input('2')
+project.get_results()
+
 
 # @Distribute(range(100), 10)
 # class A:

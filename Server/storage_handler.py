@@ -46,11 +46,15 @@ def zip_additional_results(project_id) -> str:
     tasks_storage = sorted(os.listdir(base_results_path))
 
     for task_directory in tasks_storage:
+        # TODO: not sure why this line is here
         if task_directory.isdigit():
             result_path = create_path_string(base_results_path, task_directory,
                                              consts.RETURNED_TASK_RESULTS_DIRECTORY,
                                              consts.RETURNED_TASK_ADDITIONAL_RESULTS_DIRECTORY,
                                              from_current_directory=False)
+
+            if not os.path.isdir(result_path):
+                continue
 
             additional_results = sorted(os.listdir(result_path))
             for file in additional_results:

@@ -111,7 +111,7 @@ def get_task_iterable(task: ReceivedTask):
     Returns:
         the iterable as an object.
     """
-    iterable = task.base64_serialized_class
+    iterable = task.base64_serialized_iterable
     iterable = base64.b64decode(iterable)
     iterable = dill.loads(iterable)
     return iterable
@@ -135,3 +135,8 @@ def init_task_result_storage():
                                       from_current_directory=False)
     with open(results_file, 'w') as file:
         json.dump({}, file)
+
+
+def clean_results_directory():
+    task_path = create_path_string(consts.TASKS_DIRECTORY)
+    shutil.rmtree(task_path)

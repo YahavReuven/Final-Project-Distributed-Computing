@@ -5,6 +5,7 @@ Module used to define constants.
 from datetime import timedelta
 from enum import Flag, auto
 
+# TODO: change every const ending with KEY to dataclass
 PORT = 8000
 
 DEVICES_DIRECTORY = 'devices'

@@ -10,7 +10,7 @@ user = init_user()
 init_task_storage()
 while True:
 
-    action = int(input('please enter what action to take: '))
+    action = input('please enter what action to take: ')
 
     if action == 'user':
         user = switch_user()

@@ -57,7 +57,7 @@ def request_upload_task_results(server_ip, server_port, returned_task: ReturnedT
         ???????????
     """
     response = requests.post(f'http://{server_ip}:{server_port}/upload_task_results',
-                            json={'worker_id': returned_task.device_id,
+                            json={'worker_id': returned_task.worker_id,
                                   'project_id': returned_task.project_id,
                                   'task_number': returned_task.task_number,
                                   'results': returned_task.results,

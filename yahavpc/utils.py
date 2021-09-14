@@ -2,7 +2,7 @@
 import os
 
 import consts
-from errors import ParallelFunctionNotFound
+from errors import ParallelFunctionNotFoundError
 
 
 def create_path_string(*directories, from_current_directory: bool = True) -> str:
@@ -39,4 +39,4 @@ def validate_parallel_function(cls):
         if (callable(getattr(cls, attribute)) and
                 attribute == consts.PARALLEL_FUNCTION_NAME):
             return
-    raise ParallelFunctionNotFound
+    raise ParallelFunctionNotFoundError

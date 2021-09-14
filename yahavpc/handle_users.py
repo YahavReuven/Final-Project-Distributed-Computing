@@ -4,8 +4,9 @@ import json
 
 from utils import create_path_string
 import consts
-from errors import UserNotFound
+from errors import UserNotFoundError
 from data_models import User
+from handle_json import CustomDecoder
 
 def validate_user_name(user_name: str):
     """
@@ -18,9 +19,11 @@ def validate_user_name(user_name: str):
         UserNotFound: if the user was not found.
 
     """
-    file_path = create_path_string(consts.USERS_DIRECTORY, user_name + consts.JSON_EXTENSION)
+    # TODO: only temporary
+    file_path = create_path_string('C:\\Projects\\python\\final_project\\Client', consts.USERS_DIRECTORY, user_name + consts.JSON_EXTENSION,
+                                   from_current_directory=False)
     if not os.path.isfile(file_path):
-        raise UserNotFound
+        raise UserNotFoundError
 
 
 def get_device_id(user_name: str) -> str:
@@ -28,14 +31,16 @@ def get_device_id(user_name: str) -> str:
                                         user_name + consts.JSON_EXTENSION)
 
     with open(data_file_path, 'r') as file:
-        data = json.load(file)
+        user = json.load(file, cls=CustomDecoder)
 
-    return data[consts.DATA_DEVICE_ID_KEY]
+    return user.device_id
 
 
 def get_user(user_name: str) -> User:
-    data_file_path = create_path_string(consts.USERS_DIRECTORY,
-                                        user_name + consts.JSON_EXTENSION)
+    # TODO: only temporary
+    data_file_path = create_path_string('C:\\Projects\\python\\final_project\\Client', consts.USERS_DIRECTORY,
+                                        user_name + consts.JSON_EXTENSION,
+                                        from_current_directory=False)
 
     with open(data_file_path, 'r') as file:
         data = json.load(file)

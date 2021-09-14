@@ -62,9 +62,12 @@ class UsersDataHandler:
             server_ip = input("please enter the server's ip:")
             server_port = input("please enter the port number:")
 
-            device_id = self._set_device_id()
-            print(user_name, self.user.device_id)
+            self._validate_new_user(server_ip, server_port)
+
+            device_id = self._set_device_id(server_ip, server_port)
+
             self._user = self._config_new_user(server_ip, server_port, device_id)
+            print(user_name, self.user.device_id)
             self._update_data_file()
 
     @property
@@ -75,7 +78,7 @@ class UsersDataHandler:
         """
         Configures the new user and returns it.
         """
-        self._validate_new_user(server_ip, server_port)
+        #self._validate_new_user(server_ip, server_port)
         return User(ip=server_ip, port=server_port, device_id=device_id)
 
     @staticmethod
@@ -121,7 +124,7 @@ class UsersDataHandler:
             if user.user.ip == ip and user.user.port == port:
                 return user.user.device_id
 
-        return uuid4().hex  # request_register_device(server_ip, server_port)
+        return request_register_device(ip, port)  #uuid4().hex
 
     def add_task(self):
         pass
