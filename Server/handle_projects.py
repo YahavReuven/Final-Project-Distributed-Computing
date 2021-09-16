@@ -99,6 +99,7 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
 
 
 # TODO: maybe change name
+# TODO: change consts to dataclass
 def store_serialized_project(project: NewProject, project_id: str):
     """
     Stores the project's code (class), iterable and task size.
@@ -121,6 +122,7 @@ def store_serialized_project(project: NewProject, project_id: str):
                         project.base64_serialized_class,
                     consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE:
                         project.base64_serialized_iterable,
+                    consts.JSON_PROJECT_MODULES: project.modules,
                     consts.JSON_PROJECT_TASK_SIZE: project.task_size}
     with open(serialized_project_path, 'w') as file:
         json.dump(project_code, file)

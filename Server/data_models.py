@@ -15,6 +15,7 @@ class NewProject(BaseModel):
     task_size: int
     base64_serialized_class: str
     base64_serialized_iterable: str
+    modules: list
 
 
 # TODO: check annotation for dict
@@ -30,6 +31,7 @@ class SentTask(BaseModel):
     task_size: int  # TODO: maybe change
     base64_serialized_class: str
     base64_serialized_iterable: str
+    modules: list
 
 
 # TODO: add results json

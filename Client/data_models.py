@@ -19,6 +19,7 @@ class ReceivedTask:
     task_size: int
     base64_serialized_class: str
     base64_serialized_iterable: str
+    modules: list
 
 
 # TODO: check if need to change to BaseModel

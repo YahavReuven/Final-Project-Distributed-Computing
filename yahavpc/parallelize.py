@@ -3,6 +3,8 @@ import base64
 from collections.abc import Iterable
 import json
 
+import importlib
+
 import requests
 import dill
 
@@ -14,33 +16,37 @@ from handle_requests import request_upload_new_project, request_get_project_resu
 from data_models import NewProject
 from project_utils import create_class_to_send, create_iterable_to_send
 from handle_results import save_results
+from handle_imports import validate_builtins
 
 
 class Distribute:
-    def __init__(self, user_name: str, iterable: Iterable, task_size: int, results_path):
+    def __init__(self, user_name: str, iterable: Iterable, task_size: int, results_path, *, modules = []):
         self._user_name = user_name
         validate_user_name(self._user_name)
         self._iterable = iterable
         self._task_size = task_size
         # TODO: delete and find a way to do it from client
         self._results_path = results_path
+        self._modules = modules
 
     def __call__(self, cls):
         print('in __call__ decorator factory')
-        return self.Decorator(cls, self._user_name, self._iterable, self._task_size, self._results_path)
+        return self.Decorator(cls, self._user_name, self._iterable, self._task_size, self._results_path, self._modules)
 
     class Decorator:
 
-        def __init__(self, cls, user_name, iterable: Iterable, task_size: int, results_path):
+        def __init__(self, cls, user_name, iterable: Iterable, task_size: int, results_path, modules):
             self._cls = cls
             self._user_name = user_name
             self._iterable = iterable
             self._task_size = task_size
             self._results_path = results_path
+            self._modules = modules
 
             self._user = None
 
             validate_user_name(self._user_name)
+            validate_builtins(self._modules)
 
         def __call__(self):
             """
@@ -56,7 +62,8 @@ class Distribute:
 
             project = NewProject(creator_id=self._user.device_id, task_size=self._task_size,
                                  base64_serialized_class=self._cls,
-                                 base64_serialized_iterable=self._iterable)
+                                 base64_serialized_iterable=self._iterable,
+                                 modules=self._modules)
             self._project_id = request_upload_new_project(self._user.ip, self._user.port, project)
 
             print(self._project_id)
@@ -95,26 +102,43 @@ class Distribute:
             return project_results.results
 
 
-@Distribute('alex', range(40), 10, './Results')
-class A:
+def importer(*modules):
+    def decorating(fn):
+        def inner(num):
+            for i in modules:
+                module = importlib.import_module(i)
+                globals().update({i: module})
+            return fn(num)
+        return inner
+    return decorating
 
-    @classmethod
-    def parallel_func(cls, number):
-        import os
-        print(os.getcwd())
-        cls.b(number)
-        return f'{int(number/10)}-{number}'
+# def decorator(func):
+#     def foo():
+#         math = importlib.import_module('math')
+#         globals().update({'math': math})
+#         func()
+#     return foo
 
-    @staticmethod
-    def b(number):
-        with open(f'./task/additional_results/{int(number/10)}-{number}.txt', 'w') as file:
-            file.write("hello: " + str(number))
-
-input('1')
-project = A()
-
-input('2')
-project.get_results()
+# @Distribute('alex', range(40), 10, './Results')
+# class A:
+#
+#     @classmethod
+#     def parallel_func(cls, number):
+#         # import os
+#         print(os.getcwd())
+#         cls.b(number)
+#         return f'{int(number/10)}-{number}'
+#
+#     @staticmethod
+#     def b(number):
+#         with open(f'./task/additional_results/{int(number/10)}-{number}.txt', 'w') as file:
+#             file.write("hello: " + str(number))
+#
+# input('1')
+# project = A()
+#
+# input('2')
+# project.get_results()
 
 
 # @Distribute(range(100), 10)

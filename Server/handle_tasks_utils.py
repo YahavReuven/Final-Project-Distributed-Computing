@@ -27,7 +27,7 @@ def add_new_task_to_database(project: Project) -> Task:
     project.tasks.append(new_task)
     return new_task
 
-
+# TODO: change consts to dataclass
 def create_task_to_send(project_id: str, task_number: int) -> SentTask:
     """
     Creates a new task to send to a worker.
@@ -51,7 +51,8 @@ def create_task_to_send(project_id: str, task_number: int) -> SentTask:
                     base64_serialized_class=
                     project[consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS],
                     base64_serialized_iterable=
-                    project[consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE])
+                    project[consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE],
+                    modules=project[consts.JSON_PROJECT_MODULES])
 
 
 def create_new_worker(device_id: str) -> Worker:

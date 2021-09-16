@@ -9,7 +9,8 @@ def request_upload_new_project(server_ip: str, server_port, project: NewProject)
                              json={'creator_id': project.creator_id,
                                    'task_size': project.task_size,
                                    'base64_serialized_class': project.base64_serialized_class,
-                                   'base64_serialized_iterable': project.base64_serialized_iterable})
+                                   'base64_serialized_iterable': project.base64_serialized_iterable,
+                                   'modules': project.modules})
 
     return handle_new_project_response(response)
 
