@@ -6,8 +6,9 @@ import time
 import os
 
 import consts
-from db import DBHandler
+from db import DBHandler, CustomEncoder
 from utils import create_path_string
+from data_models import DevicesDB, ProjectsDB
 
 
 def update_db(db: DBHandler):
@@ -40,9 +41,9 @@ def init_devices_database():
                                                consts.DEVICES_DATABASE_NAME,
                                                from_current_directory=False)
     if not os.path.isfile(devices_database_file):
-        template = {consts.DEVICES_DATABASE_KEY: []}
+        #template = {consts.DEVICES_DATABASE_KEY: []}
         with open(devices_database_file, 'w') as file:
-            json.dump(template, file)
+            json.dump(DevicesDB(), file, cls=CustomEncoder)
 
 
 def init_projects_database():
@@ -56,12 +57,12 @@ def init_projects_database():
                                                 consts.PROJECTS_DATABASE_NAME,
                                                 from_current_directory=False)
     if not os.path.isfile(projects_database_file):
-        template = {consts.ACTIVE_PROJECTS_DB_KEY: [],
-                    consts.WAITING_TO_RETURN_PROJECTS_DB_KEY: [],
-                    consts.FINISHED_PROJECTS_DB_KEY: []
-                    }
+        # template = {consts.ACTIVE_PROJECTS_DB_KEY: [],
+        #             consts.WAITING_TO_RETURN_PROJECTS_DB_KEY: [],
+        #             consts.FINISHED_PROJECTS_DB_KEY: []
+        #             }
         with open(projects_database_file, 'w') as file:
-            json.dump(template, file)
+            json.dump(ProjectsDB(), file, cls=CustomEncoder)
 
 
 # TODO: move to storage_handler

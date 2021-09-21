@@ -8,10 +8,10 @@ import shutil
 
 import consts
 from consts import DatabaseType
-from data_models import Project, NewProject, ReturnedProject
+from data_models import Project, NewProject, ReturnedProject, ProjectStorage
 from errors import (DeviceNotFoundError, ProjectNotFoundError, ProjectIsActive,
                     ProjectFinishedError)
-from db import DBHandler, DBUtils
+from db import DBHandler, DBUtils, CustomEncoder
 from initialize_server import init_project_storage
 from storage_handler import merge_results, zip_additional_results
 from authentication import authenticate_creator
@@ -117,15 +117,16 @@ def store_serialized_project(project: NewProject, project_id: str):
     serialized_project_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                                  consts.PROJECT_STORAGE_PROJECT,
                                                  consts.PROJECT_STORAGE_JSON_PROJECT)
+    project_storage = ProjectStorage(base64_serialized_class=
+                                     project.base64_serialized_class,
+                                     base64_serialized_iterable=
+                                     project.base64_serialized_iterable,
+                                     modules=project.modules,
+                                     task_size=project.task_size
+                                     )
 
-    project_code = {consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS:
-                        project.base64_serialized_class,
-                    consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE:
-                        project.base64_serialized_iterable,
-                    consts.JSON_PROJECT_MODULES: project.modules,
-                    consts.JSON_PROJECT_TASK_SIZE: project.task_size}
     with open(serialized_project_path, 'w') as file:
-        json.dump(project_code, file)
+        json.dump(project_storage, file, cls=CustomEncoder)
 
 
 def is_project_done(project: Project) -> bool:

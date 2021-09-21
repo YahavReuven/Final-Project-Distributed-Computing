@@ -7,6 +7,7 @@ import os
 import shutil
 from datetime import datetime
 
+from db import CustomDecoder
 import consts
 from data_models import Task, SentTask, Worker, Project
 from utils import validate_base64_and_decode, create_path_string
@@ -33,7 +34,8 @@ def create_task_to_send(project_id: str, task_number: int) -> SentTask:
     Creates a new task to send to a worker.
 
     Args:
-        project_id (str): the project id of the project associated with the task.
+        project_id (str): the project id of the project associated with
+            the task.
         task_number (int): the task number of the sent task.
 
     Returns:
@@ -44,15 +46,13 @@ def create_task_to_send(project_id: str, task_number: int) -> SentTask:
                                            consts.PROJECT_STORAGE_PROJECT,
                                            consts.PROJECT_STORAGE_JSON_PROJECT)
     with open(project_json_path, 'r') as file:
-        project = json.load(file)
+        project_storage = json.load(file, cls=CustomDecoder)
 
     return SentTask(project_id=project_id, task_number=task_number,
-                    task_size=project[consts.JSON_PROJECT_TASK_SIZE],
-                    base64_serialized_class=
-                    project[consts.JSON_PROJECT_BASE64_SERIALIZED_CLASS],
-                    base64_serialized_iterable=
-                    project[consts.JSON_PROJECT_BASE64_SERIALIZED_ITERABLE],
-                    modules=project[consts.JSON_PROJECT_MODULES])
+                    task_size=project_storage.task_size,
+                    base64_serialized_class=project_storage.base64_serialized_class,
+                    base64_serialized_iterable=project_storage.base64_serialized_iterable,
+                    modules=project_storage.modules)
 
 
 def create_new_worker(device_id: str) -> Worker:

@@ -4,7 +4,7 @@ Module used to define data classes and fastapi base models
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import BaseModel
 
@@ -53,9 +53,20 @@ class Worker:
 
 
 @dataclass
+class WorkerDB:
+    worker_id: str
+    sent_date: str
+    is_finished: bool = False
+
+
+@dataclass
 class Task:
     workers: list[Worker] = field(default_factory=list)
 
+
+@dataclass
+class TaskDB:
+    workers: list[WorkerDB] = field(default_factory=list)
 
 # @dataclass
 # class TaskDB:
@@ -69,6 +80,24 @@ class Project:
     tasks: list[Task] = field(default_factory=list)
     stop_number: int = -1
     stop_immediately: bool = False
+
+
+@dataclass
+class ProjectDB:
+    """A project's representation in the database."""
+    project_id: str
+    tasks: list[TaskDB] = field(default_factory=list)
+    stop_number: int = -1
+    stop_immediately: bool = False
+
+
+@dataclass
+class ProjectStorage:
+    base64_serialized_class: str
+    base64_serialized_iterable: str
+    modules: list
+    task_size: int
+
 
 
 # TODO: maybe add DeviceInfo that Device and DeviceDB will inherit from
@@ -87,3 +116,32 @@ class DeviceDB:
     projects_ids: list[str] = field(default_factory=list)
 
 
+@dataclass
+class DevicesDB:
+    devices: list[Device] = field(default_factory=list)
+    # TODO: add a clarification
+    # should contain DeviceDB only in the beginning when the server converts them to Device
+
+@dataclass
+class EncodedDevicesDB:
+    devices: list[DeviceDB] = field(default_factory=list)
+
+@dataclass
+class ProjectsDB:
+    active_projects: list[Project] = field(default_factory=list)
+    waiting_projects: list[Project] = field(default_factory=list)
+    finished_projects: list[Project] = field(default_factory=list)
+
+
+@dataclass
+class EncodedProjectsDB:
+    """ A representation of the ProjectsDB class in json"""
+    active_projects: list[ProjectDB] = field(default_factory=list)
+    waiting_projects: list[ProjectDB] = field(default_factory=list)
+    finished_projects: list[ProjectDB] = field(default_factory=list)
+
+
+@dataclass
+class DB:
+    devices_db: DevicesDB
+    projects_db: ProjectsDB

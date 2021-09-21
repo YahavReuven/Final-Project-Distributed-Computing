@@ -1,12 +1,6 @@
 """
 Module used to handle all the actions needed for a worker.
 """
-#import importer
-import importlib
-
-import base64
-import dill
-
 from handle_requests import request_get_new_task, request_upload_task_results
 from handle_users_data import UsersDataHandler
 
@@ -18,7 +12,7 @@ from worker_utils import (has_stop_function, results_to_file, get_results, has_a
 import consts
 from consts import ReturnTypes
 from data_models import ReceivedTask, ReturnedTask
-
+from handle_imports import import_modules
 
 
 def execute_task(user: UsersDataHandler):
@@ -27,15 +21,8 @@ def execute_task(user: UsersDataHandler):
     clean_results_directory()
     return response
 
-# def decorator(func):
-#     def foo(*args, **kwargs):
-#         math = importlib.import_module('math')
-#         globals().update({'math': math})
-#         func(*args, **kwargs)
-#     return foo
 
 class TaskExecUtils:
-
     task = None
 
     @classmethod
@@ -43,15 +30,7 @@ class TaskExecUtils:
         cls.task = request_get_new_task(user.user.ip, user.user.port, user.user.device_id)
 
         # load the necessary code
-        # parallel_cls = get_task_cls(cls.task)
-        parallel_cls = cls.task.base64_serialized_class
-        parallel_cls = base64.b64decode(parallel_cls)
-        # parallel_cls.__module__ = '__main__'
-        parallel_cls = dill.loads(parallel_cls)
-        # parallel_cls.parallel_func = decorator(parallel_cls.parallel_func)
-        # parallel_cls.__module__ = 'worker'
-        # print(parallel_cls.__module__)
-
+        parallel_cls = get_task_cls(cls.task)
         iterable = get_task_iterable(cls.task)
 
         # init the task storage for the results
@@ -70,22 +49,12 @@ class TaskExecUtils:
         iteration_index = start
         results = {}
 
-        # mod = ['math']
-        # for i in mod:
-        #     b = importlib.import_module(i)
-        #     globals().update({i: b})
-        # print(globals())
-        #
-        # func = getattr(parallel_cls, consts.PARALLEL_FUNCTION_NAME)
-        fn = parallel_cls.parallel_func
+        # fn = parallel_cls.parallel_func
 
-        for i in parallel_cls.modules:
-            module = importlib.import_module(i)
-            fn.__globals__.update({i: module})
+        import_modules(parallel_cls, cls.task.modules)
 
         for param_value in iterable:
-            return_value = fn(param_value)
-            # return_value = parallel_cls.parallel_func(param_value)
+            return_value = getattr(parallel_cls, consts.PARALLEL_FUNCTION_NAME)(param_value)
             if has_stop_func:
                 write_result = getattr(parallel_cls, consts.STOP_FUNCTION_NAME)(return_value)
                 if write_result:

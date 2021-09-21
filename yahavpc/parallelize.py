@@ -102,23 +102,6 @@ class Distribute:
             return project_results.results
 
 
-def importer(*modules):
-    def decorating(fn):
-        def inner(num):
-            for i in modules:
-                module = importlib.import_module(i)
-                globals().update({i: module})
-            return fn(num)
-        return inner
-    return decorating
-
-# def decorator(func):
-#     def foo():
-#         math = importlib.import_module('math')
-#         globals().update({'math': math})
-#         func()
-#     return foo
-
 # @Distribute('alex', range(40), 10, './Results')
 # class A:
 #
