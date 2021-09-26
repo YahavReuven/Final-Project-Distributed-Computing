@@ -119,8 +119,7 @@ class DeviceDB:
 @dataclass
 class DevicesDB:
     devices: list[Device] = field(default_factory=list)
-    # TODO: add a clarification
-    # should contain DeviceDB only in the beginning when the server converts them to Device
+
 
 @dataclass
 class EncodedDevicesDB:
@@ -144,4 +143,10 @@ class EncodedProjectsDB:
 @dataclass
 class DB:
     devices_db: DevicesDB
+    projects_db: ProjectsDB
+
+
+@dataclass
+class EncodedDB:
+    devices_db: EncodedDevicesDB
     projects_db: ProjectsDB

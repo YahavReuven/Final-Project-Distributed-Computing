@@ -18,9 +18,9 @@ class A:
         with open(f'./task/additional_results/{int(number/10)}-{number}.txt', 'w') as file:
             file.write("hello: " + str(number))
 
-    @staticmethod
-    def stop_func(num):
-        return num % 2 == 0
+    # @staticmethod
+    # def stop_func(num):
+    #     return num % 2 == 0
 
 
 # class A:

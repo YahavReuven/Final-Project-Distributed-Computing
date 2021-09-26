@@ -12,8 +12,15 @@ import consts
 from consts import DatabaseType
 from data_models import (Device, DeviceDB, Project, Task, Worker, ProjectStorage,
                          DB, DevicesDB, ProjectsDB, WorkerDB, TaskDB, ProjectDB,
-                         EncodedProjectsDB, EncodedDevicesDB)
+                         EncodedProjectsDB, EncodedDevicesDB, EncodedDB)
 from utils import create_path_string
+from handle_db_file_conversion import (projects_db_to_encoded_projects_db,
+                                       project_to_project_db, task_to_task_db,
+                                       worker_to_worker_db, datetime_to_str,
+                                       device_to_device_db, devices_db_to_encoded_devices_db,
+                                       encoded_projects_db_to_projects_db,
+                                       project_db_to_project, task_db_to_task,
+                                       worker_db_to_worker)
 
 
 def singleton(cls):
@@ -32,67 +39,24 @@ class CustomEncoder(json.JSONEncoder):
 
     def default(self, obj: object):  # -> dict[str, Union[str, list[str]], bool]:
         """ Called in case json can't serialize object. """
-        # TODO: move to seperate file
+        # TODO: find a better way
         print(obj, type(obj))
         if isinstance(obj, DevicesDB):
-            devices = []
-            for device in obj.devices:
-                devices.append(DBUtils.device_to_device_db(device))
-            # TODO: find a better way which doesnt include literal strings
-            encoded_devices_db = EncodedDevicesDB(devices=devices)
-            return asdict(encoded_devices_db)
-        # TODO: move to seperate file
-        # TODO: find a better way
+            return devices_db_to_encoded_devices_db(obj, dict_form=True)
+        if isinstance(obj, Device):
+            return device_to_device_db(obj, dict_form=True)
         if isinstance(obj, ProjectsDB):
-            active = []
-            waiting = []
-            finished = []
-            for project in obj.active_projects:
-                active.append(self.default(project))
-            for project in obj.waiting_projects:
-                waiting.append(self.default(project))
-            for project in obj.finished_projects:
-                finished.append(self.default(project))
-            encoded_projects_db = EncodedProjectsDB(active_projects=active,
-                                                    waiting_projects=waiting,
-                                                    finished_projects=finished)
-            return asdict(encoded_projects_db)
-        # if isinstance(obj, Project):
-        #     tasks_db = []
-        #     for task in obj.tasks:
-        #         workers_db = []
-        #         for worker in task.workers:
-        #             sent_date_str = worker.sent_date.strftime(consts.DATETIME_FORMAT)
-        #             workers_db.append(WorkerDB(worker_id=worker.worker_id, sent_date_str=sent_date_str,
-        #                                        is_finished=worker.is_finished))
-        #         tasks_db.append(TaskDB(workers=workers_db))
-        #     project_db = ProjectDB(project_id=obj.project_id, tasks=tasks_db,
-        #                            stop_number=obj.stop_number,
-        #                            stop_immediately=obj.stop_immediately)
-        #     return asdict(project_db)
+            return projects_db_to_encoded_projects_db(obj, dict_form=True)
         if isinstance(obj, Project):
-            tasks = []
-            for task in obj.tasks:
-                tasks.append(self.default(task))
-            project_db = ProjectDB(project_id=obj.project_id, tasks=tasks,
-                                   stop_number=obj.stop_number,
-                                   stop_immediately=obj.stop_immediately)
-            return asdict(project_db)
+            return project_to_project_db(obj, dict_form=True)
         if isinstance(obj, Task):
-            workers = []
-            for worker in obj.workers:
-                workers.append(self.default(worker))
-            task_db = TaskDB(workers=workers)
-            return asdict(task_db)
+            return task_to_task_db(obj, dict_form=True)
         if isinstance(obj, Worker):
-            sent_date_str = self.default(obj.sent_date)
-            worker_db = WorkerDB(worker_id=obj.worker_id, sent_date=sent_date_str,
-                                 is_finished=obj.is_finished)
-            return asdict(worker_db)
+            return worker_to_worker_db(obj, dict_form=True)
         if isinstance(obj, ProjectStorage):
             return asdict(obj)
         if isinstance(obj, datetime):
-            return obj.strftime(consts.DATETIME_FORMAT)
+            return datetime_to_str(obj)
         return super().default(obj)
 
 
@@ -104,48 +68,20 @@ class CustomDecoder(json.JSONDecoder):
     def dict_to_object(obj: object) -> Union[Device, Project, Task, Worker, Any]:
         """ Called for every json object. """
         if isinstance(obj, dict) and 'devices' in obj:
-            return DevicesDB(**obj)
-        if isinstance(obj, dict) and 'active_projects' in obj:
-            temp_projects_db = EncodedProjectsDB(**obj)
-            active = []
-            waiting = []
-            finished = []
-            for project in temp_projects_db.active_projects:
-                active.append(CustomDecoder.dict_to_object(project))
-            for project in temp_projects_db.waiting_projects:
-                waiting.append(CustomDecoder.dict_to_object(project))
-            for project in temp_projects_db.finished_projects:
-                finished.append(CustomDecoder.dict_to_object(project))
-            projects_db = ProjectsDB(active_projects=active, waiting_projects=waiting,
-                                     finished_projects=finished)
-            return projects_db
+            return EncodedDevicesDB(**obj)
         if isinstance(obj, dict) and 'device_id' in obj:
             return DeviceDB(**obj)
+
+        if isinstance(obj, dict) and 'active_projects' in obj:
+            return encoded_projects_db_to_projects_db(obj, from_dict=True)
         if isinstance(obj, dict) and 'project_id' in obj:
-            project_db = ProjectDB(**obj)
-            tasks = []
-            for task in project_db.tasks:
-                tasks.append(CustomDecoder.dict_to_object(task))
-            project = Project(project_id=project_db.project_id, tasks=tasks,
-                              stop_number=project_db.stop_number,
-                              stop_immediately=project_db.stop_immediately)
-            return project
+            return project_db_to_project(obj, from_dict=True)
         if isinstance(obj, dict) and 'modules' in obj:
             return ProjectStorage(**obj)
         if isinstance(obj, dict) and 'workers' in obj:
-            task_db = TaskDB(**obj)
-            workers = []
-            for worker in task_db.workers:
-                workers.append(CustomDecoder.dict_to_object(worker))
-            task = Task(workers=workers)
-            return task
+            return task_db_to_task(obj, from_dict=True)
         if isinstance(obj, dict) and 'worker_id' in obj:
-            worker_db = WorkerDB(**obj)
-            sent_date = datetime.strptime(
-                worker_db.sent_date, consts.DATETIME_FORMAT)
-            worker = Worker(worker_id=worker_db.worker_id, sent_date=sent_date,
-                            is_finished=worker_db.is_finished)
-            return worker
+            return worker_db_to_worker(obj, from_dict=True)
         return obj
 
 
@@ -160,24 +96,23 @@ class DBHandler:
         """
         Loads the database into memory.
         """
-        devices_database_file = create_path_string(consts.DEVICES_DIRECTORY,
-                                                   consts.DEVICES_DATABASE_NAME)
-        with open(devices_database_file, 'r') as file:
-            devices_db = json.load(file, cls=CustomDecoder)
         projects_database_file = create_path_string(consts.PROJECTS_DIRECTORY,
                                                     consts.PROJECTS_DATABASE_NAME)
         with open(projects_database_file, 'r') as file:
             projects_db = json.load(file, cls=CustomDecoder)
-        self._db = DB(devices_db=devices_db, projects_db=projects_db)
+        devices_database_file = create_path_string(consts.DEVICES_DIRECTORY,
+                                                   consts.DEVICES_DATABASE_NAME)
+        with open(devices_database_file, 'r') as file:
+            devices_db = json.load(file, cls=CustomDecoder)
+
+        self._db = EncodedDB(devices_db=devices_db, projects_db=projects_db)
         print('a')
 
     def init_device_dbs_to_devices(self):
         """
         Converts every device (DeviceDB) in the starting database to its Device representation.
         """
-        devices = self._db.devices_db.devices
-        for i in range(len(devices)):
-            devices[i] = DBUtils.device_db_to_device(devices[i])
+        self._db.devices_db = DBUtils.encoded_devices_db_to_devices_db(self._db.devices_db)
 
     def update_db(self) -> None:
         """
@@ -256,24 +191,33 @@ class DBHandler:
 # TODO: add sort devices, sort projects, sort projects in device
 
 class DBUtils:
+    # @staticmethod
+    # def device_to_device_db(device: Device) -> DeviceDB:
+    #     """
+    #     Converts a Device object to a DeviceDB object.
+    #
+    #     Args:
+    #         device (Device): a device.
+    #
+    #     Returns:
+    #         DeviceDB: the device's database representation.
+    #
+    #     """
+    #     device_id = device.device_id
+    #     projects_ids = [project.project_id for project in device.projects]  # TODO: sort when a new project is uploaded
+    #     return DeviceDB(device_id=device_id, projects_ids=projects_ids)
+
     @staticmethod
-    def device_to_device_db(device: Device) -> DeviceDB:
-        """
-        Converts a Device object to a DeviceDB object.
+    def encoded_devices_db_to_devices_db(encoded_device_db: Union[EncodedDevicesDB, dict],
+                                         *, from_dict=False) -> DevicesDB:
+        if from_dict:
+            encoded_device_db = EncodedDevicesDB(**encoded_device_db)
+        devices = [DBUtils.device_db_to_device(device_db) for device_db in encoded_device_db.devices]
+        return DevicesDB(devices=devices)
 
-        Args:
-            device (Device): a device.
-
-        Returns:
-            DeviceDB: the device's database representation.
-
-        """
-        device_id = device.device_id
-        projects_ids = [project.project_id for project in device.projects]  # TODO: sort when a new project is uploaded
-        return DeviceDB(device_id=device_id, projects_ids=projects_ids)
 
     @staticmethod
-    def device_db_to_device(device_db: DeviceDB) -> Device:
+    def device_db_to_device(device_db: Union[DeviceDB, dict], *, from_dict=False) -> Device:
         """
         Converts a DeviceDB object to a Device object.
 
@@ -284,7 +228,8 @@ class DBUtils:
             Device: a Device instance based on the device db.
 
         """
-
+        if from_dict:
+            device_db = DeviceDB(**device_db)
         device_id = device_db.device_id
         # TODO: maybe change
         projects = [DBUtils.find_in_db(project_id, DatabaseType.projects_db)
