@@ -12,14 +12,15 @@ import consts
 from consts import DatabaseType
 from data_models import (Device, DeviceDB, Project, Task, Worker, ProjectStorage,
                          DB, DevicesDB, ProjectsDB, WorkerDB, TaskDB, ProjectDB,
-                         EncodedProjectsDB, EncodedDevicesDB, EncodedDB)
+                         EncodedProjectsDB, EncodedDevicesDB # EncodedDB
+                         )
 from utils import create_path_string
 from handle_db_file_conversion import (projects_db_to_encoded_projects_db,
                                        project_to_project_db, task_to_task_db,
                                        worker_to_worker_db, datetime_to_str,
                                        device_to_device_db, devices_db_to_encoded_devices_db,
-                                       encoded_projects_db_to_projects_db,
-                                       project_db_to_project, task_db_to_task,
+                                       # encoded_projects_db_to_projects_db,
+                                       # project_db_to_project, task_db_to_task,
                                        worker_db_to_worker)
 
 
@@ -29,7 +30,9 @@ def singleton(cls):
 
     @wraps(cls)
     def wrapper(*args, **kwargs):
-        return _instances.setdefault(cls.__name__, cls(*args, **kwargs))
+        if cls.__name__ not in _instances:
+            _instances[cls.__name__] = cls(*args, **kwargs)
+        return _instances[cls.__name__]
 
     return wrapper
 
@@ -40,7 +43,7 @@ class CustomEncoder(json.JSONEncoder):
     def default(self, obj: object):  # -> dict[str, Union[str, list[str]], bool]:
         """ Called in case json can't serialize object. """
         # TODO: find a better way
-        print(obj, type(obj))
+        print('DUMP:', obj, type(obj))
         if isinstance(obj, DevicesDB):
             return devices_db_to_encoded_devices_db(obj, dict_form=True)
         if isinstance(obj, Device):
@@ -67,19 +70,21 @@ class CustomDecoder(json.JSONDecoder):
     @staticmethod
     def dict_to_object(obj: object) -> Union[Device, Project, Task, Worker, Any]:
         """ Called for every json object. """
+        # NOTE: json decoder decodes from the inside outward.
+        print('LOAD:', obj)
         if isinstance(obj, dict) and 'devices' in obj:
             return EncodedDevicesDB(**obj)
         if isinstance(obj, dict) and 'device_id' in obj:
             return DeviceDB(**obj)
 
         if isinstance(obj, dict) and 'active_projects' in obj:
-            return encoded_projects_db_to_projects_db(obj, from_dict=True)
+            return ProjectsDB(**obj)
         if isinstance(obj, dict) and 'project_id' in obj:
-            return project_db_to_project(obj, from_dict=True)
+            return Project(**obj)
         if isinstance(obj, dict) and 'modules' in obj:
             return ProjectStorage(**obj)
         if isinstance(obj, dict) and 'workers' in obj:
-            return task_db_to_task(obj, from_dict=True)
+            return Task(**obj)
         if isinstance(obj, dict) and 'worker_id' in obj:
             return worker_db_to_worker(obj, from_dict=True)
         return obj
@@ -105,14 +110,17 @@ class DBHandler:
         with open(devices_database_file, 'r') as file:
             devices_db = json.load(file, cls=CustomDecoder)
 
-        self._db = EncodedDB(devices_db=devices_db, projects_db=projects_db)
+        self._db = DB(projects_db=projects_db)
+
+        self.init_devices_db(devices_db)
+
         print('a')
 
-    def init_device_dbs_to_devices(self):
+    def init_devices_db(self, encoded_devices_db: EncodedDevicesDB):
         """
         Converts every device (DeviceDB) in the starting database to its Device representation.
         """
-        self._db.devices_db = DBUtils.encoded_devices_db_to_devices_db(self._db.devices_db)
+        self._db.devices_db = DBUtils.encoded_devices_db_to_devices_db(encoded_devices_db, self)
 
     def update_db(self) -> None:
         """
@@ -209,20 +217,22 @@ class DBUtils:
 
     @staticmethod
     def encoded_devices_db_to_devices_db(encoded_device_db: Union[EncodedDevicesDB, dict],
-                                         *, from_dict=False) -> DevicesDB:
+                                         db: DBHandler, *, from_dict=False) -> DevicesDB:
         if from_dict:
             encoded_device_db = EncodedDevicesDB(**encoded_device_db)
-        devices = [DBUtils.device_db_to_device(device_db) for device_db in encoded_device_db.devices]
+        devices = [DBUtils.device_db_to_device(device_db, db) for device_db in encoded_device_db.devices]
         return DevicesDB(devices=devices)
 
 
     @staticmethod
-    def device_db_to_device(device_db: Union[DeviceDB, dict], *, from_dict=False) -> Device:
+    def device_db_to_device(device_db: Union[DeviceDB, dict], db: DBHandler, *,
+                            from_dict=False) -> Device:
         """
         Converts a DeviceDB object to a Device object.
 
         Args:
             device_db (DeviceDB): a database representation of a device.
+            db (DBHandler): the db handler which devices need to be converted.
 
         Returns:
             Device: a Device instance based on the device db.
@@ -232,12 +242,13 @@ class DBUtils:
             device_db = DeviceDB(**device_db)
         device_id = device_db.device_id
         # TODO: maybe change
-        projects = [DBUtils.find_in_db(project_id, DatabaseType.projects_db)
+        projects = [DBUtils.find_in_db(project_id, DatabaseType.projects_db, db)
                     for project_id in device_db.projects_ids]
         return Device(device_id=device_id, projects=projects)
 
+    # TODO: maybe raise errors for db
     @staticmethod
-    def find_in_db(id: str, database_type: DatabaseType) -> Union[Device, Project, None]:
+    def find_in_db(id: str, database_type: DatabaseType, db: DBHandler = None) -> Union[Device, Project, None]:
         """
         Looks for the object with the given id in the database specified in database_type.
 
@@ -249,12 +260,16 @@ class DBUtils:
         Args:
             id (str): the id of the object to be returned.
             database_type (DatabaseType): the database type in which to look for the object.
+            db (DBHandler) = None: an optional parameter which allows to pass the db object
+                needed instead of creating it inside of the function. used for first init
+                in order to prevent infinite recursion.
 
         Returns:
             Union[Device, Project]: the device or project with the corresponding id.
             None: when no object with the given id is present in the given DatabaseType.
         """
-        db = DBHandler()
+        if not db:
+            db = DBHandler()
         database = db.get_database(database_type)
 
         if database_type & DatabaseType.devices_db:

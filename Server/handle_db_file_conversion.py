@@ -104,42 +104,42 @@ def datetime_to_str(datetime_: datetime) -> str:
 
 
 
-def encoded_projects_db_to_projects_db(encoded_projects_db: Union[EncodedProjectsDB, dict], *, from_dict=False) -> ProjectsDB:
-    if from_dict:
-        encoded_projects_db = EncodedProjectsDB(**encoded_projects_db)
-    active = []
-    waiting = []
-    finished = []
-    for project in encoded_projects_db.active_projects:
-        active.append(project_db_to_project(project))
-    for project in encoded_projects_db.waiting_projects:
-        waiting.append(project_db_to_project(project))
-    for project in encoded_projects_db.finished_projects:
-        finished.append(project_db_to_project(project))
-    projects_db = ProjectsDB(active_projects=active, waiting_projects=waiting,
-                             finished_projects=finished)
-    return projects_db
+# def encoded_projects_db_to_projects_db(encoded_projects_db: Union[EncodedProjectsDB, dict], *, from_dict=False) -> ProjectsDB:
+#     if from_dict:
+#         encoded_projects_db = EncodedProjectsDB(**encoded_projects_db)
+#     active = []
+#     waiting = []
+#     finished = []
+#     for project in encoded_projects_db.active_projects:
+#         active.append(project_db_to_project(project))
+#     for project in encoded_projects_db.waiting_projects:
+#         waiting.append(project_db_to_project(project))
+#     for project in encoded_projects_db.finished_projects:
+#         finished.append(project_db_to_project(project))
+#     projects_db = ProjectsDB(active_projects=active, waiting_projects=waiting,
+#                              finished_projects=finished)
+#     return projects_db
 
 
-def project_db_to_project(project_db: Union[ProjectDB, dict], *, from_dict=False) -> Project:
-    if from_dict:
-        project_db = ProjectDB(**project_db)
-    tasks = []
-    for task in project_db.tasks:
-        tasks.append(task_db_to_task(task))
-    project = Project(project_id=project_db.project_id, tasks=tasks,
-                      stop_number=project_db.stop_number,
-                      stop_immediately=project_db.stop_immediately)
-    return project
+# def project_db_to_project(project_db: Union[ProjectDB, dict], *, from_dict=False) -> Project:
+#     if from_dict:
+#         project_db = ProjectDB(**project_db)
+#     tasks = []
+#     for task in project_db.tasks:
+#         tasks.append(task_db_to_task(task))
+#     project = Project(project_id=project_db.project_id, tasks=tasks,
+#                       stop_number=project_db.stop_number,
+#                       stop_immediately=project_db.stop_immediately)
+#     return project
 
-def task_db_to_task(task_db: Union[TaskDB, dict], *, from_dict=False) -> Task:
-    if from_dict:
-        task_db = TaskDB(**task_db)
-    workers = []
-    for worker in task_db.workers:
-        workers.append(worker_db_to_worker(worker))
-    task = Task(workers=workers)
-    return task
+# def task_db_to_task(task_db: Union[TaskDB, dict], *, from_dict=False) -> Task:
+#     if from_dict:
+#         task_db = TaskDB(**task_db)
+#     workers = []
+#     for worker in task_db.workers:
+#         workers.append(worker_db_to_worker(worker))
+#     task = Task(workers=workers)
+#     return task
 
 
 def worker_db_to_worker(worker_db: Union[WorkerDB, dict], *, from_dict=False) -> Worker:

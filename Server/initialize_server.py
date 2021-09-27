@@ -27,7 +27,7 @@ def init_server():
     init_devices_database()
     init_projects_database()
     db = DBHandler()
-    db.init_device_dbs_to_devices()
+    #db.init_device_dbs_to_devices()
 
 
 def init_devices_database():

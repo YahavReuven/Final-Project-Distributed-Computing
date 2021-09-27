@@ -142,11 +142,11 @@ class EncodedProjectsDB:
 
 @dataclass
 class DB:
-    devices_db: DevicesDB
-    projects_db: ProjectsDB
+    devices_db: DevicesDB = DevicesDB()
+    projects_db: ProjectsDB = ProjectsDB()
 
 
-@dataclass
-class EncodedDB:
-    devices_db: EncodedDevicesDB
-    projects_db: ProjectsDB
+# @dataclass
+# class EncodedDB:
+#     devices_db: EncodedDevicesDB
+#     projects_db: ProjectsDB
