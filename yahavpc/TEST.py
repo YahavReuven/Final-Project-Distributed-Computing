@@ -1,22 +1,32 @@
 from parallelize import Distribute
-
+import hashlib
 import math
 
-
-@Distribute('alex', range(40), 10, './Results', modules=['math'])
-class A:
+class bruteforce:
 
     @classmethod
-    def parallel_func(cls, number):
-        print(math.sqrt(9))
-        cls.b(number)
-        return f'{int(number/10)}-{number}'
+        def parallel_func(cls, number):
 
-    @staticmethod
-    def b(number):
-        print(math.sqrt(4))
-        with open(f'./task/additional_results/{int(number/10)}-{number}.txt', 'w') as file:
-            file.write("hello: " + str(number))
+            for i in range(2, int(math.sqrt(number) + 1)):
+                if number % i == 0:
+                    return false
+            return true
+
+
+# @Distribute('alex', range(40), 10, './Results', modules=['math'])
+# class A:
+#
+#     @classmethod
+#     def parallel_func(cls, number):
+#         print(math.sqrt(9))
+#         cls.b(number)
+#         return f'{int(number/10)}-{number}'
+#
+#     @staticmethod
+#     def b(number):
+#         print(math.sqrt(4))
+#         with open(f'./task/additional_results/{int(number/10)}-{number}.txt', 'w') as file:
+#             file.write("hello: " + str(number))
 
     # @staticmethod
     # def stop_func(str_num):
