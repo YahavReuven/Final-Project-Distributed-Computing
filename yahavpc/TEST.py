@@ -19,8 +19,9 @@ class A:
             file.write("hello: " + str(number))
 
     # @staticmethod
-    # def stop_func(num):
-    #     return num % 2 == 0
+    # def stop_func(str_num):
+    #     num = int((str_num.split("-"))[1])
+    #     return num == 10
 
 
 # class A:

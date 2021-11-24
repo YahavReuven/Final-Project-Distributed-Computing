@@ -4,7 +4,7 @@ The main module of the client application.
 
 from initialize_app import init_user, init_task_storage
 from handle_users import switch_user
-from worker import execute_task
+from worker import task_menu
 
 user = init_user()
 init_task_storage()
@@ -13,4 +13,4 @@ while True:
     if action == 'user':
         user = switch_user()
     if action == 'task':
-        execute_task(user)
+        task_menu(user)

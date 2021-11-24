@@ -9,7 +9,7 @@ from datetime import datetime
 
 import consts
 from consts import DatabaseType
-from data_models import Task, SentTask, ReturnedTask, Worker, Project
+from data_models import Task, SentTask, ReturnedTask, Worker, Project, TaskStatisticsServer, TaskStatistics
 from errors import (ProjectNotFoundError, ProjectFinishedError, UnnecessaryTaskError,
                     NoTaskAvailable)
 from db import DBHandler
@@ -87,6 +87,7 @@ async def get_new_task(device_id: str) -> SentTask:
 # TODO: check waiting database
 # TODO: function too long
 # TODO: check if the project is finished and move to finished in database
+# TODO: check if statistics are valid
 async def return_task_results(returned_task: ReturnedTask):
     db = DBHandler()
 
@@ -118,6 +119,8 @@ async def return_task_results(returned_task: ReturnedTask):
                                       returned_task.task_number)
 
     worker.is_finished = True
+    worker.statistics = TaskStatisticsServer(task_statistics=TaskStatistics(**returned_task.statistics),
+                                             with_communications=datetime.utcnow() - worker.sent_date)
 
     if returned_task.stop_called:
         project.stop_immediately = True

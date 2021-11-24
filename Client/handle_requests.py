@@ -61,6 +61,7 @@ def request_upload_task_results(server_ip, server_port, returned_task: ReturnedT
                             json={'worker_id': returned_task.worker_id,
                                   'project_id': returned_task.project_id,
                                   'task_number': returned_task.task_number,
+                                  'statistics': returned_task.statistics,
                                   'results': returned_task.results,
                                   'base64_zipped_additional_results':
                                       returned_task.base64_zipped_additional_results,

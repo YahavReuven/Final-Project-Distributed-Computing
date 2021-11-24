@@ -2,7 +2,7 @@
 Module used to update the database and load it to memory correctly.
 """
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 from dataclasses import asdict
 from functools import wraps
@@ -12,16 +12,23 @@ import consts
 from consts import DatabaseType
 from data_models import (Device, DeviceDB, Project, Task, Worker, ProjectStorage,
                          DB, DevicesDB, ProjectsDB, WorkerDB, TaskDB, ProjectDB,
-                         EncodedProjectsDB, EncodedDevicesDB # EncodedDB
+                         EncodedProjectsDB, EncodedDevicesDB, TaskStatistics,
+                         TaskStatisticsServer, ProjectStatisticsServer # EncodedDB
                          )
 from utils import create_path_string
 from handle_db_file_conversion import (projects_db_to_encoded_projects_db,
                                        project_to_project_db, task_to_task_db,
                                        worker_to_worker_db, datetime_to_str,
+                                       str_to_date_time,
                                        device_to_device_db, devices_db_to_encoded_devices_db,
                                        # encoded_projects_db_to_projects_db,
                                        # project_db_to_project, task_db_to_task,
-                                       worker_db_to_worker)
+                                       worker_db_to_worker,
+                                       task_statistics_to_task_statistics_db,
+                                       task_statistics_db_to_task_statistics,
+                                       task_statistics_server_db_to_task_statistics_server,
+                                       task_statistics_server_to_task_statistics_server_db,
+                                       project_statistics_server_as_dict)
 
 
 def singleton(cls):
@@ -58,8 +65,16 @@ class CustomEncoder(json.JSONEncoder):
             return worker_to_worker_db(obj, dict_form=True)
         if isinstance(obj, ProjectStorage):
             return asdict(obj)
+        if isinstance(obj, ProjectStatisticsServer):
+            return project_statistics_server_as_dict(obj, dict_form=True)
+        if isinstance(obj, TaskStatisticsServer):
+            return task_ststistics_server_to_task_statistics_server_db(obj, dict_form=True)
+        if isinstance(obj, TaskStatistics):
+            return task_statistics_to_task_statistics_db(obj, dict_form=True)
         if isinstance(obj, datetime):
             return datetime_to_str(obj)
+        if isinstance(obj, timedelta):
+            return str(obj)
         return super().default(obj)
 
 
@@ -80,6 +95,7 @@ class CustomDecoder(json.JSONDecoder):
         if isinstance(obj, dict) and 'active_projects' in obj:
             return ProjectsDB(**obj)
         if isinstance(obj, dict) and 'project_id' in obj:
+            obj.update({"upload_time": str_to_date_time(obj["upload_time"])})
             return Project(**obj)
         if isinstance(obj, dict) and 'modules' in obj:
             return ProjectStorage(**obj)
@@ -87,6 +103,10 @@ class CustomDecoder(json.JSONDecoder):
             return Task(**obj)
         if isinstance(obj, dict) and 'worker_id' in obj:
             return worker_db_to_worker(obj, from_dict=True)
+        if isinstance(obj, dict) and 'with_communications' in obj:
+            return task_statistics_server_db_to_task_statistics_server(obj, from_dict=True)
+        if isinstance(obj, dict) and 'pure_run_time' in obj:
+            return task_ststistics_db_to_task_statistics(obj, from_dict=True)
         return obj
 
 

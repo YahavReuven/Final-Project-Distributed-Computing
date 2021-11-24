@@ -8,4 +8,6 @@ RESULTS_FILE = 'results'
 ADDITIONAL_RESULTS_DIRECTORY = 'additional_results'
 ZIPPED_ADDITIONAL_RESULTS = 'additional_results.zip'
 
+STATISTICS_FILE = 'stats'
+
 JSON_EXTENSION = '.json'

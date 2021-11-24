@@ -5,6 +5,7 @@ Module used to handle projects and the projects' database
 import json
 from uuid import uuid4
 import shutil
+from datetime import datetime
 
 import consts
 from consts import DatabaseType
@@ -16,6 +17,8 @@ from initialize_server import init_project_storage
 from storage_handler import merge_results, zip_additional_results
 from authentication import authenticate_creator
 from utils import create_path_string, validate_base64_and_decode
+from server_statistics import create_project_statistics
+from handle_db_file_conversion import project_statistics_server_as_dict
 
 
 # TODO: make it work with UploadFile instead of bytes
@@ -36,6 +39,7 @@ async def create_new_project(new_project: NewProject) -> str:
         InvalidBase64Error: if the received NewProject contains invalid base64.
 
     """
+    upload_project_time = datetime.utcnow()
     validate_base64_and_decode(new_project.base64_serialized_class, return_obj=False)
     validate_base64_and_decode(new_project.base64_serialized_iterable, return_obj=False)
 
@@ -43,7 +47,7 @@ async def create_new_project(new_project: NewProject) -> str:
     init_project_storage(project_id)
     store_serialized_project(new_project, project_id)
 
-    project = Project(project_id=project_id)
+    project = Project(project_id=project_id, upload_time=upload_project_time)
     if not (creator := DBUtils.find_in_db(new_project.creator_id,
                                           DatabaseType.devices_db)):
         raise DeviceNotFoundError
@@ -88,7 +92,9 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
     results = merge_results(project_id)
     additional_results = zip_additional_results(project_id)
 
-    returned_project = ReturnedProject(results=results, base64_zipped_additional_results=additional_results)
+    statistics = project_statistics_server_as_dict(create_project_statistics(project_id))
+    returned_project = ReturnedProject(results=results, base64_zipped_additional_results=additional_results,
+                                       statistics=statistics)
 
     db = DBHandler()
     db.move_project(project, DatabaseType.waiting_to_return_projects_db, DatabaseType.finished_projects_db)

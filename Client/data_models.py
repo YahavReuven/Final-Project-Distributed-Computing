@@ -3,6 +3,31 @@ Module used to define data classes.
 """
 from dataclasses import dataclass, field
 from typing import Optional
+from datetime import timedelta
+
+from pydantic import BaseModel
+
+@dataclass
+class TaskStatistics:
+    pure_run_time: timedelta
+    total_execution_time: timedelta
+
+
+@dataclass
+class StorageTaskStatistics:
+    project_id: str
+    task_number: int
+    statistics: TaskStatistics
+
+@dataclass
+class TaskStatisticsServer:
+    task_statistics: TaskStatistics
+    with_communications: timedelta
+
+@dataclass
+class ProjectStatisticsServer:
+    overall_project_time: timedelta
+    task_statistics: list[TaskStatisticsServer] = field(default_factory=list)
 
 
 @dataclass
@@ -29,6 +54,7 @@ class ReturnedTask:
     worker_id: str
     project_id: str
     task_number: int
+    statistics: dict
     results: dict
     base64_zipped_additional_results: Optional[str] = None
     stop_called: bool = False
@@ -42,5 +68,5 @@ class User:
     ip: str
     port: int
     device_id: str
-    projects: Optional[list[object]] = field(default_factory=list)
-    tasks: Optional[list[object]] = field(default_factory=list)
+    projects: list[ProjectStatisticsServer] = field(default_factory=list)
+    tasks: list[StorageTaskStatistics] = field(default_factory=list)

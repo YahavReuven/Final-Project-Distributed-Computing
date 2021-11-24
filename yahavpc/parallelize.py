@@ -17,6 +17,7 @@ from data_models import NewProject
 from project_utils import create_class_to_send, create_iterable_to_send
 from handle_results import save_results
 from handle_imports import validate_builtins
+from creator_statistics import save_statistics
 
 
 class Distribute:
@@ -98,6 +99,7 @@ class Distribute:
                                                               self._user.device_id, self._project_id)
                 time.sleep(1)
             print("done asking server")
+            save_statistics(project_results.statistics)
             save_results(project_results, self._results_path)
             return project_results.results
 

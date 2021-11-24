@@ -11,7 +11,7 @@ from utils import create_path_string
 import consts
 from errors import InvalidIPv4Address, InvalidPortNumber
 from users_utils import get_users_names
-from data_models import User
+from data_models import User, StorageTaskStatistics, TaskStatistics
 from handle_json import CustomDecoder, CustomEncoder
 
 from uuid import uuid4
@@ -130,5 +130,9 @@ class UsersDataHandler:
                 return user.user.device_id
         return request_register_device(ip, port)
 
-    def add_task(self):
+    def add_task(self, project_id: str, task_number: int, task_statistics: TaskStatistics):
+        statistics = StorageTaskStatistics(project_id=project_id, task_number=task_number,
+                                           statistics=task_statistics)
+        self._user.tasks.append(statistics)
+        self._update_data_file()
         pass

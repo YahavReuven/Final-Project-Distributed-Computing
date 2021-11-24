@@ -3,10 +3,44 @@ Module used to define data classes and fastapi base models
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, Union
 
 from pydantic import BaseModel
+
+@dataclass
+class TaskStatistics:
+    pure_run_time: timedelta
+    total_execution_time: timedelta
+
+@dataclass
+class TaskStatisticsDB:
+    pure_run_time: str
+    total_execution_time: str
+
+
+@dataclass
+class TaskStatisticsServer:
+    task_statistics: TaskStatistics
+    with_communications: timedelta
+
+
+@dataclass
+class TaskStatisticsServerDB:
+    task_statistics: TaskStatisticsDB
+    with_communications: str
+
+
+@dataclass
+class ProjectStatisticsServer:
+    overall_project_time: timedelta
+    task_statistics: list[TaskStatisticsServer] = field(default_factory=list)
+
+
+@dataclass
+class ProjectStatisticsServerDB:
+    overall_project_time: str
+    task_statistics: list[TaskStatisticsServerDB] = field(default_factory=list)
 
 
 class NewProject(BaseModel):
@@ -22,6 +56,7 @@ class NewProject(BaseModel):
 class ReturnedProject(BaseModel):
     results: dict
     base64_zipped_additional_results: str
+    statistics: dict
 
 
 class SentTask(BaseModel):
@@ -39,6 +74,7 @@ class ReturnedTask(BaseModel):
     worker_id: str
     project_id: str
     task_number: int
+    statistics: dict
     results: dict
     base64_zipped_additional_results: Optional[str] = None
     stop_called: bool = False
@@ -49,6 +85,7 @@ class ReturnedTask(BaseModel):
 class Worker:
     worker_id: str
     sent_date: datetime
+    statistics: TaskStatisticsServer = None
     is_finished: bool = False
 
 
@@ -56,6 +93,7 @@ class Worker:
 class WorkerDB:
     worker_id: str
     sent_date: str
+    statistics: TaskStatisticsServerDB = None
     is_finished: bool = False
 
 
@@ -77,6 +115,7 @@ class TaskDB:
 class Project:
     """A project's representation in the database."""
     project_id: str
+    upload_time: datetime
     tasks: list[Task] = field(default_factory=list)
     stop_number: int = -1
     stop_immediately: bool = False
@@ -86,6 +125,7 @@ class Project:
 class ProjectDB:
     """A project's representation in the database."""
     project_id: str
+    upload_time: str
     tasks: list[TaskDB] = field(default_factory=list)
     stop_number: int = -1
     stop_immediately: bool = False
