@@ -35,7 +35,7 @@ def create_path_string(*directories, from_current_directory: bool = True) -> str
     for directory in directories:
         path.append(str(directory))
 
-    return '\\'.join(path)
+    return '/'.join(path)
 
 # TODO: check function, external
 def parse_timedelta(stamp):

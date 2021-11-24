@@ -2,15 +2,16 @@ from parallelize import Distribute
 import hashlib
 import math
 
+@Distribute('alex', range(10**6), 10**5, './Results', modules=['math'])
 class bruteforce:
 
     @classmethod
-        def parallel_func(cls, number):
+    def parallel_func(cls, number):
 
-            for i in range(2, int(math.sqrt(number) + 1)):
-                if number % i == 0:
-                    return false
-            return true
+        for i in range(2, int(math.sqrt(number) + 1)):
+            if number % i == 0:
+                return False
+        return True
 
 
 # @Distribute('alex', range(40), 10, './Results', modules=['math'])
@@ -50,7 +51,7 @@ class bruteforce:
 #
 #
 input('1')
-project = A()
+project = bruteforce()
 
 input('2')
 b = project.get_results()
