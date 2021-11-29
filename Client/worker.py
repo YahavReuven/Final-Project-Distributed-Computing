@@ -69,7 +69,7 @@ class TaskExecUtils:
         has_stop_func = has_stop_function(parallel_cls)
 
         iteration_index = start
-        #results = {}
+        results = {}
 
         # fn = parallel_cls.parallel_func
 
@@ -95,12 +95,12 @@ class TaskExecUtils:
                 iteration_index += 1
                 continue
 
-            #results[iteration_index] = return_value
-            #iteration_index += 1
+            results[iteration_index] = return_value
+            iteration_index += 1
 
         pure_run_time_end = datetime.utcnow()
 
-        results_to_file(cls.results)
+        results_to_file(results)
 
         total_execution_time_end = datetime.utcnow()
         task_statistics = TaskStatistics(pure_run_time=pure_run_time_end - pure_run_time_start,

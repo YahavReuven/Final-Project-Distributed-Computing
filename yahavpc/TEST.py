@@ -4,14 +4,12 @@ import math
 
 @Distribute('alex', range(10**8), 10**6, './Results', modules=['math'])
 class bruteforce:
-    results = {}
 
     @classmethod
     def parallel_func(cls, number):
         for i in range(2, int(math.sqrt(number) + 1)):
             if number % i == 0:
                 return False
-        results[number] = True
         return True
 
 
