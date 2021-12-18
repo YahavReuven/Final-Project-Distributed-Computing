@@ -6,7 +6,6 @@ import json
 import importlib
 
 import requests
-import dill
 
 import consts
 from errors import ParallelFunctionNotFoundError, ResultsBeforeCreationError
@@ -18,36 +17,52 @@ from project_utils import create_class_to_send, create_iterable_to_send
 from handle_results import save_results
 from handle_imports import validate_builtins
 from creator_statistics import save_statistics
+from handle_project_functions import validate_special_functions
 
 
 class Distribute:
-    def __init__(self, user_name: str, iterable: Iterable, task_size: int, results_path, *, modules = []):
+    def __init__(self, user_name: str, iterable: Iterable, task_size: int,
+                 results_path: str, *, parallel_func: str = 'parallel_func',
+                 stop_func: str = '', only_if_func: str = '', modules: list = []):
         self._user_name = user_name
         validate_user_name(self._user_name)
         self._iterable = iterable
         self._task_size = task_size
         # TODO: delete and find a way to do it from client
         self._results_path = results_path
+        self._parallel_func = parallel_func
+        self._stop_func = stop_func
+        self._only_if_func = only_if_func
         self._modules = modules
 
     def __call__(self, cls):
         print('in __call__ decorator factory')
-        return self.Decorator(cls, self._user_name, self._iterable, self._task_size, self._results_path, self._modules)
+        return self.Decorator(cls, self._user_name, self._iterable, self._task_size,
+                              self._results_path, self._parallel_func, self._stop_func,
+                              self._only_if_func, self._modules)
 
     class Decorator:
 
-        def __init__(self, cls, user_name, iterable: Iterable, task_size: int, results_path, modules):
+        def __init__(self, cls, user_name: str, iterable: Iterable, task_size: int,
+                     results_path: str, parallel_func: str, stop_func: str,
+                     only_if_func: str, modules: list):
             self._cls = cls
             self._user_name = user_name
             self._iterable = iterable
             self._task_size = task_size
             self._results_path = results_path
+            self._parallel_func = parallel_func
+            self._stop_func = stop_func
+            self._only_if_func = only_if_func
             self._modules = modules
 
             self._user = None
 
             validate_user_name(self._user_name)
             validate_builtins(self._modules)
+            validate_special_functions(cls, parallel_func=self._parallel_func,
+                                       stop_func=self._stop_func,
+                                       only_if_func=self._only_if_func)
 
         def __call__(self):
             """
@@ -61,7 +76,11 @@ class Distribute:
             self._cls = create_class_to_send(self._cls)
             self._iterable = create_iterable_to_send(self._iterable)
 
-            project = NewProject(creator_id=self._user.device_id, task_size=self._task_size,
+            project = NewProject(creator_id=self._user.device_id,
+                                 task_size=self._task_size,
+                                 parallel_func=self._parallel_func,
+                                 stop_func=self._stop_func,
+                                 only_if_func=self._only_if_func,
                                  base64_serialized_class=self._cls,
                                  base64_serialized_iterable=self._iterable,
                                  modules=self._modules)
@@ -99,8 +118,8 @@ class Distribute:
                                                               self._user.device_id, self._project_id)
                 time.sleep(1)
             print("done asking server")
-            save_statistics(project_results.statistics)
             save_results(project_results, self._results_path)
+            save_statistics(self._results_path,project_results.statistics)
             return project_results.results
 
 

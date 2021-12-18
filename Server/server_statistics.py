@@ -13,7 +13,7 @@ def create_project_statistics(project_id: str):
             for task in project.tasks:
                 for worker in task.workers:
                     tasks_statistics.append(worker.statistics)
-            overall_project_time = datetime.utcnow() - project.upload_time
+            overall_project_time = project.finish_time - project.upload_time
             break
 
     statistics = ProjectStatisticsServer(task_statistics=tasks_statistics,

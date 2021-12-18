@@ -1,5 +1,7 @@
 import base64
 import binascii
+import re
+from datetime import timedelta
 
 from errors import InvalidBase64Error
 

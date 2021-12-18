@@ -130,4 +130,5 @@ async def return_task_results(returned_task: ReturnedTask):
         project.stop_number = returned_task.task_number
 
     if is_project_done(project):
+        project.finish_time = datetime.utcnow()
         db.move_project(project, DatabaseType.active_projects_db, DatabaseType.waiting_to_return_projects_db)

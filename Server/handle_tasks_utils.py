@@ -52,7 +52,10 @@ def create_task_to_send(project_id: str, task_number: int) -> SentTask:
                     task_size=project_storage.task_size,
                     base64_serialized_class=project_storage.base64_serialized_class,
                     base64_serialized_iterable=project_storage.base64_serialized_iterable,
-                    modules=project_storage.modules)
+                    modules=project_storage.modules,
+                    parallel_func= project_storage.parallel_func,
+                    stop_func= project_storage.stop_func,
+                    only_if_func= project_storage.only_if_func)
 
 
 def create_new_worker(device_id: str) -> Worker:

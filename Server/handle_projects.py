@@ -128,7 +128,10 @@ def store_serialized_project(project: NewProject, project_id: str):
                                      base64_serialized_iterable=
                                      project.base64_serialized_iterable,
                                      modules=project.modules,
-                                     task_size=project.task_size
+                                     task_size=project.task_size,
+                                     parallel_func=project.parallel_func,
+                                     stop_func=project.stop_func,
+                                     only_if_func=project.only_if_func
                                      )
 
     with open(serialized_project_path, 'w') as file:

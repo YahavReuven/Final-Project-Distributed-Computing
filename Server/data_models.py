@@ -42,14 +42,17 @@ class ProjectStatisticsServerDB:
     overall_project_time: str
     task_statistics: list[TaskStatisticsServerDB] = field(default_factory=list)
 
-
+#----------------------------------
 class NewProject(BaseModel):
     """A new project sent from the client"""
     creator_id: str  # TODO: the device id of the creator of the project. maybe change to user
     task_size: int
+    parallel_func: str
+    stop_func: str
+    only_if_func: str
     base64_serialized_class: str
     base64_serialized_iterable: str
-    modules: list
+    modules: list #Should be empty if is not needed
 
 
 # TODO: check annotation for dict
@@ -58,7 +61,7 @@ class ReturnedProject(BaseModel):
     base64_zipped_additional_results: str
     statistics: dict
 
-
+#-----------------------------------
 class SentTask(BaseModel):
     """A task sent to the client"""
     project_id: str
@@ -67,6 +70,9 @@ class SentTask(BaseModel):
     base64_serialized_class: str
     base64_serialized_iterable: str
     modules: list
+    parallel_func: str
+    stop_func: str
+    only_if_func: str
 
 
 # TODO: add results json
@@ -116,6 +122,7 @@ class Project:
     """A project's representation in the database."""
     project_id: str
     upload_time: datetime
+    finish_time: Union[None, datetime] = None
     tasks: list[Task] = field(default_factory=list)
     stop_number: int = -1
     stop_immediately: bool = False
@@ -126,17 +133,22 @@ class ProjectDB:
     """A project's representation in the database."""
     project_id: str
     upload_time: str
+    finish_time: Union[None, str] = None
     tasks: list[TaskDB] = field(default_factory=list)
     stop_number: int = -1
     stop_immediately: bool = False
 
-
+#------------------------------------------
+# TODO: check for initalization
 @dataclass
 class ProjectStorage:
     base64_serialized_class: str
     base64_serialized_iterable: str
     modules: list
     task_size: int
+    parallel_func: str
+    stop_func: str
+    only_if_func: str
 
 
 

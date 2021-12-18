@@ -6,7 +6,7 @@ import json
 from requests import Response
 
 from data_models import ReceivedTask
-
+from errors import check_response_error
 
 # TODO: check for errors
 
@@ -38,6 +38,7 @@ def handle_new_task_response(response: Response) -> ReceivedTask:
     """
     content = response.text
     task_data = json.loads(content)
+    check_response_error(response)
     return ReceivedTask(**task_data)
 
 

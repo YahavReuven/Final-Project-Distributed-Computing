@@ -21,6 +21,9 @@ class ProjectStatisticsServer:
 class NewProject:
     creator_id: str
     task_size: int
+    parallel_func: str
+    stop_func: str
+    only_if_func: str
     base64_serialized_class: str
     base64_serialized_iterable: str
     modules: list

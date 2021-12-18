@@ -72,8 +72,12 @@ def project_to_project_db(project: Project, *, dict_form=False) -> Union[Project
     for task in project.tasks:
         tasks.append(task_to_task_db(task))
     upload_time = datetime_to_str(project.upload_time)
+    finish_time = None
+    if project.finish_time:
+        finish_time = datetime_to_str(project.finish_time)
     project_db = ProjectDB(project_id=project.project_id,
                            upload_time=upload_time,
+                           finish_time=finish_time,
                            tasks=tasks,
                            stop_number=project.stop_number,
                            stop_immediately=project.stop_immediately)
@@ -189,6 +193,8 @@ def project_statistics_server_as_dict(statistics: ProjectStatisticsServer, *, di
 #     return task
 
 
+# TODO: problem in functions. fix
+
 def worker_db_to_worker(worker_db: Union[WorkerDB, dict], *, from_dict=False) -> Worker:
     if from_dict:
         worker_db = WorkerDB(**worker_db)
@@ -204,7 +210,7 @@ def worker_db_to_worker(worker_db: Union[WorkerDB, dict], *, from_dict=False) ->
 def task_statistics_server_db_to_task_statistics_server(statistics_db: TaskStatisticsServerDB, *, from_dict=False) \
     -> TaskStatisticsServer:
     if from_dict:
-        worker_db = TaskStatisticsServerDB(**statistics_db)
+        statistics_db = TaskStatisticsServerDB(**statistics_db)
 
     task_statistics = None
     if statistics_db.task_statistics:
@@ -216,10 +222,10 @@ def task_statistics_server_db_to_task_statistics_server(statistics_db: TaskStati
     return statistics
 
 
-def task_statistics_db_to_task_statistics(statistics_db: TaskStatisticsDB, *, dict_form=False) \
+def task_statistics_db_to_task_statistics(statistics_db: TaskStatisticsDB, *, from_dict=False) \
     -> TaskStatistics:
     if from_dict:
-        worker_db = TaskStatisticsDB(**statistics_db)
+        statistics_db = TaskStatisticsDB(**statistics_db)
     pure_run_time = parse_timedelta(statistics_db.pure_run_time)
     total_execution_time = parse_timedelta(statistics_db.total_execution_time)
 

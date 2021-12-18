@@ -68,7 +68,7 @@ class CustomEncoder(json.JSONEncoder):
         if isinstance(obj, ProjectStatisticsServer):
             return project_statistics_server_as_dict(obj, dict_form=True)
         if isinstance(obj, TaskStatisticsServer):
-            return task_ststistics_server_to_task_statistics_server_db(obj, dict_form=True)
+            return task_statistics_server_to_task_statistics_server_db(obj, dict_form=True)
         if isinstance(obj, TaskStatistics):
             return task_statistics_to_task_statistics_db(obj, dict_form=True)
         if isinstance(obj, datetime):
@@ -95,7 +95,8 @@ class CustomDecoder(json.JSONDecoder):
         if isinstance(obj, dict) and 'active_projects' in obj:
             return ProjectsDB(**obj)
         if isinstance(obj, dict) and 'project_id' in obj:
-            obj.update({"upload_time": str_to_date_time(obj["upload_time"])})
+            obj.update({'upload_time': str_to_date_time(obj['upload_time'])})
+            obj.update({'finish_time': obj['finish_time'] if str_to_date_time(obj['finish_time']) else None})
             return Project(**obj)
         if isinstance(obj, dict) and 'modules' in obj:
             return ProjectStorage(**obj)
@@ -106,7 +107,7 @@ class CustomDecoder(json.JSONDecoder):
         if isinstance(obj, dict) and 'with_communications' in obj:
             return task_statistics_server_db_to_task_statistics_server(obj, from_dict=True)
         if isinstance(obj, dict) and 'pure_run_time' in obj:
-            return task_ststistics_db_to_task_statistics(obj, from_dict=True)
+            return task_statistics_db_to_task_statistics(obj, from_dict=True)
         return obj
 
 

@@ -2,25 +2,22 @@
 import importlib
 
 # TODO: allow to work with third library
-def import_modules(cls, modules: list):
+def import_modules(obj, modules: list, *functions):
     """
 
     Note:
         cls should only be a parallel class.
     Args:
-        cls:
+        obj:
 
     Returns:
 
     """
-    fn = cls.parallel_func
     for i in modules:
         try:
             module = importlib.import_module(i)
         except ModuleNotFoundError:
-            print("third library is not supported yet!")
-        fn.__globals__.update({i: module})
-
-
-
-
+            print("third party library is not supported yet!")
+        for fn in functions:
+            if fn:
+                fn.__globals__.update({i: module})

@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 from data_models import NewProject
@@ -8,6 +10,9 @@ def request_upload_new_project(server_ip: str, server_port, project: NewProject)
     response = requests.post(f'http://{server_ip}:{server_port}/upload_new_project',
                              json={'creator_id': project.creator_id,
                                    'task_size': project.task_size,
+                                   'parallel_func': project.parallel_func,
+                                   'stop_func': project.stop_func,
+                                   'only_if_func': project.only_if_func,
                                    'base64_serialized_class': project.base64_serialized_class,
                                    'base64_serialized_iterable': project.base64_serialized_iterable,
                                    'modules': project.modules})

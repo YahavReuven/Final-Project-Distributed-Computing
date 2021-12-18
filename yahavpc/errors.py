@@ -2,8 +2,17 @@
 Module used to define costume errors.
 """
 
-class ParallelFunctionNotFoundError(Exception):
+
+class FunctionNotFoundError(Exception):
+    """A function is not present in the given class."""
+
+
+class ParallelFunctionNotFoundError(FunctionNotFoundError):
     """A parallel function is not present in the given class."""
+
+
+class UnsupportedSpecialFunctionsCombination(Exception):
+    """An unsupported combination of special functions was used."""
 
 
 class UserNotFoundError(Exception):
