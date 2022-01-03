@@ -99,11 +99,12 @@ def store_task_results(project_id: str, task_results: dict, task_number: int):
     results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                       consts.PROJECT_STORAGE_RESULTS, task_number,
                                       consts.RETURNED_TASK_RESULTS_DIRECTORY)
-    os.makedirs(results_path, exist_ok=True)
+    os.makedirs(results_path, exist_ok=True, mode=0o777)
 
     result_file = create_path_string(results_path, consts.RESULTS_FILE,
                                      from_current_directory=False)
     with open(result_file, 'w') as file:
+        os.chmod(result_file, mode=0o777)
         json.dump(task_results, file)
 
 
@@ -122,11 +123,12 @@ def store_task_additional_results(project_id: str, base64_zipped_additional_resu
                                       consts.RETURNED_TASK_RESULTS_DIRECTORY,
                                       consts.RETURNED_TASK_ADDITIONAL_RESULTS_DIRECTORY)
 
-    os.makedirs(results_path, exist_ok=True)
+    os.makedirs(results_path, exist_ok=True, mode=0o777)
 
     temp_results_file = create_path_string(results_path, consts.RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE,
                                            from_current_directory=False)
     with open(temp_results_file, 'wb') as file:
+        os.chmod(temp_results_file, mode=0o777)
         file.write(decoded_additional_results)
 
     with zipfile.ZipFile(temp_results_file) as zip_file:

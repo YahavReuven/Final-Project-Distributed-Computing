@@ -3,6 +3,7 @@
 Module used to handle projects and the projects' database
 """
 import json
+import os
 from uuid import uuid4
 import shutil
 from datetime import datetime
@@ -135,6 +136,7 @@ def store_serialized_project(project: NewProject, project_id: str):
                                      )
 
     with open(serialized_project_path, 'w') as file:
+        os.chmod(serialized_project_path, mode=0o777)
         json.dump(project_storage, file, cls=CustomEncoder)
 
 

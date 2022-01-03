@@ -28,6 +28,7 @@ def merge_results(project_id: str) -> dict:
     results_json_file = create_path_string(results_path, consts.RESULTS_FILE,
                                            from_current_directory=False)
     with open(results_json_file, 'w') as file:
+        os.chmod(results_json_file, mode=0o777)
         json.dump(results, file)
 
     return results
@@ -41,7 +42,7 @@ def zip_additional_results(project_id) -> str:
                                            consts.TEMP_PROJECT_ADDITIONAL_RESULTS_DIRECTORY,
                                            from_current_directory=False)
 
-    os.makedirs(temp_results_path)
+    os.makedirs(temp_results_path, mode=0o777)
 
     tasks_storage = sorted(os.listdir(base_results_path))
 

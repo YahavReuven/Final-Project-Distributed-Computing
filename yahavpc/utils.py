@@ -25,18 +25,3 @@ def create_path_string(*directories, from_current_directory: bool = True) -> str
         path.append(str(directory))
 
     return '\\'.join(path)
-
-
-def validate_parallel_function(cls):
-    """
-    Checks if a parallel function is present in the given class.
-
-    Raises:
-        ParallelFunctionNotFound: if a parallel function is not
-            defined in the class.
-    """
-    for attribute in dir(cls):
-        if (callable(getattr(cls, attribute)) and
-                attribute == consts.PARALLEL_FUNCTION_NAME):
-            return
-    raise ParallelFunctionNotFoundError

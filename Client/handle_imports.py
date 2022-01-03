@@ -1,5 +1,5 @@
-
 import importlib
+
 
 # TODO: allow to work with third library
 def import_modules(obj, modules: list, *functions):
@@ -8,6 +8,7 @@ def import_modules(obj, modules: list, *functions):
     Note:
         cls should only be a parallel class.
     Args:
+        modules:
         obj:
 
     Returns:

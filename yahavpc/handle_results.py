@@ -16,7 +16,7 @@ def save_results(returned_project: ReturnedProject, results_path):
 def save_results_file(results: dict, results_path):
     results_file = create_path_string(results_path, consts.RESULTS_FILE + consts.JSON_EXTENSION)
 
-    os.makedirs(results_path)
+    os.makedirs(results_path, mode=0o777)
 
     with open(results_file, 'w') as file:
         json.dump(results, file)
@@ -28,10 +28,10 @@ def save_additional_results(z_additional_results, results_path):
     additional_results_path = create_path_string(results_path, consts.ADDITIONAL_RESULTS_DIRECTORY,
                                                  from_current_directory=False)
 
-    os.makedirs(additional_results_path)
+    os.makedirs(additional_results_path, mode=0o777)
 
     z_additional_results_path = create_path_string(results_path, consts.ZIPPED_ADDITIONAL_RESULTS,
-                                           from_current_directory=False)
+                                                   from_current_directory=False)
     with open(z_additional_results_path, 'wb') as file:
         file.write(z_additional_results)
 

@@ -1,6 +1,9 @@
 
 from datetime import datetime, timedelta
 import re
+import errno
+import os
+import stat
 
 import consts
 
@@ -24,7 +27,7 @@ def create_path_string(*directories, from_current_directory: bool = True) -> str
     for directory in directories:
         path.append(str(directory))
 
-    return '\\'.join(path)
+    return '/'.join(path)
 
 
 def is_file_json(file_name: str) -> bool:
@@ -57,3 +60,13 @@ def parse_timedelta(stamp):
     else:
         return timedelta(hours=time_dict['h'],
                          minutes=time_dict['m'], seconds=time_dict['s'])
+
+
+
+# def handleRemoveReadonly(func, path, exc):
+#     excvalue = exc[1]
+#     if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
+#         os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+#         func(path)
+#     else:
+#         raise

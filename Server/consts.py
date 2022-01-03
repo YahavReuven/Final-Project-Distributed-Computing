@@ -49,18 +49,3 @@ class DatabaseType(Flag):
     waiting_to_return_projects_db = auto()
     projects_db = (active_projects_db | finished_projects_db |
                    waiting_to_return_projects_db)
-
-
-
-
-# class ProjectsDatabaseType(str, Enum):
-#     active_projects_db = 'active_db'
-#     waiting_to_return_projects_db = 'waiting_db'
-#     finished_projects_db = 'finished_db'
-#     all = 'all'
-
-
-
-
-
-

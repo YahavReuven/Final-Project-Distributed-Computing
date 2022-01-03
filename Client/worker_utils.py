@@ -13,22 +13,6 @@ import consts
 from utils import create_path_string
 
 
-def has_stop_function(cls) -> bool:
-    """
-    Checks if a parallel class has a stop function or not.
-
-    Args:
-        cls: the parallel class
-
-    Returns:
-        whether or not the parallel class has a stop function.
-    """
-    for attribute in dir(cls):
-        if callable(getattr(cls, attribute)) and attribute == consts.STOP_FUNCTION_NAME:
-            return True
-    return False
-
-
 # TODO: maybe change results to own object
 def results_to_file(results: dict):
     """
@@ -147,10 +131,11 @@ def init_task_result_storage():
     task_path = create_path_string(consts.TASKS_DIRECTORY)
     additional_results_path = create_path_string(task_path, consts.ADDITIONAL_RESULTS_DIRECTORY,
                                                  from_current_directory=False)
-    os.makedirs(additional_results_path, exist_ok=True)
+    os.makedirs(additional_results_path, exist_ok=True, mode=0o777)
     results_file = create_path_string(task_path, consts.RESULTS_FILE + consts.JSON_EXTENSION,
                                       from_current_directory=False)
     with open(results_file, 'w') as file:
+        os.chmod(results_file, mode=0o777)
         json.dump({}, file)
 
 

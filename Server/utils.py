@@ -39,6 +39,7 @@ def create_path_string(*directories, from_current_directory: bool = True) -> str
 
     return '/'.join(path)
 
+
 # TODO: check function, external
 def parse_timedelta(stamp):
     if 'day' in stamp:
@@ -48,7 +49,7 @@ def parse_timedelta(stamp):
         m = re.match(r'(?P<h>\d+):(?P<m>\d+):'
                      r'(?P<s>\d[\.\d+]*)', stamp)
     if not m:
-        return ''
+        raise ValueError
 
     time_dict = {key: float(val) for key, val in m.groupdict().items()}
     if 'd' in time_dict:

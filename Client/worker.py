@@ -10,7 +10,7 @@ from handle_users_data import UsersDataHandler
 from client_statistics import get_task_statistics, task_statistics_as_dict
 
 
-from worker_utils import (has_stop_function, results_to_file, get_results, has_additional_results,
+from worker_utils import (results_to_file, get_results, has_additional_results,
                           get_zip_additional_results, get_task_cls, get_task_iterable,
                           init_task_result_storage, clean_results_directory)
 from utils import parse_timedelta

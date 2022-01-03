@@ -15,20 +15,21 @@ from data_models import (Device, DeviceDB, Project, Task, Worker, ProjectStorage
                          EncodedProjectsDB, EncodedDevicesDB, TaskStatistics,
                          TaskStatisticsServer, ProjectStatisticsServer # EncodedDB
                          )
-from utils import create_path_string
+from utils import create_path_string, parse_timedelta
 from handle_db_file_conversion import (projects_db_to_encoded_projects_db,
                                        project_to_project_db, task_to_task_db,
                                        worker_to_worker_db, datetime_to_str,
                                        str_to_date_time,
-                                       device_to_device_db, devices_db_to_encoded_devices_db,
+                                       device_to_device_db_DELETE, devices_db_to_encoded_devices_db,
                                        # encoded_projects_db_to_projects_db,
                                        # project_db_to_project, task_db_to_task,
-                                       worker_db_to_worker,
+                                       # worker_db_to_worker,
                                        task_statistics_to_task_statistics_db,
-                                       task_statistics_db_to_task_statistics,
-                                       task_statistics_server_db_to_task_statistics_server,
+                                       # task_statistics_db_to_task_statistics,
+                                       # task_statistics_server_db_to_task_statistics_server,
                                        task_statistics_server_to_task_statistics_server_db,
-                                       project_statistics_server_as_dict)
+                                       project_statistics_server_as_dict,
+                                       encode_json_recursively)
 
 
 def singleton(cls):
@@ -50,32 +51,82 @@ class CustomEncoder(json.JSONEncoder):
     def default(self, obj: object):  # -> dict[str, Union[str, list[str]], bool]:
         """ Called in case json can't serialize object. """
         # TODO: find a better way
-        print('DUMP:', obj, type(obj))
-        if isinstance(obj, DevicesDB):
-            return devices_db_to_encoded_devices_db(obj, dict_form=True)
-        if isinstance(obj, Device):
-            return device_to_device_db(obj, dict_form=True)
-        if isinstance(obj, ProjectsDB):
-            return projects_db_to_encoded_projects_db(obj, dict_form=True)
-        if isinstance(obj, Project):
-            return project_to_project_db(obj, dict_form=True)
-        if isinstance(obj, Task):
-            return task_to_task_db(obj, dict_form=True)
-        if isinstance(obj, Worker):
-            return worker_to_worker_db(obj, dict_form=True)
-        if isinstance(obj, ProjectStorage):
-            return asdict(obj)
-        if isinstance(obj, ProjectStatisticsServer):
-            return project_statistics_server_as_dict(obj, dict_form=True)
-        if isinstance(obj, TaskStatisticsServer):
-            return task_statistics_server_to_task_statistics_server_db(obj, dict_form=True)
-        if isinstance(obj, TaskStatistics):
-            return task_statistics_to_task_statistics_db(obj, dict_form=True)
-        if isinstance(obj, datetime):
-            return datetime_to_str(obj)
-        if isinstance(obj, timedelta):
-            return str(obj)
-        return super().default(obj)
+        # print('DUMP:', obj, type(obj))
+        # if isinstance(obj, DevicesDB):
+        #     return devices_db_to_encoded_devices_db(obj, dict_form=True)
+        # if isinstance(obj, Device):
+        #     return device_to_device_db(obj, dict_form=True)
+        x = encode_json_recursively(asdict(obj))
+        return x
+        # return super().default(obj)
+
+
+# class CustomEncoder(json.JSONEncoder):
+#     """ Custom class to encode client in order to dump to json file. """
+#
+#     def default(self, obj: object):  # -> dict[str, Union[str, list[str]], bool]:
+#         """ Called in case json can't serialize object. """
+#         # TODO: find a better way
+#         # print('DUMP:', obj, type(obj))
+#         if isinstance(obj, DevicesDB):
+#             x = asdict(obj)
+#             return devices_db_to_encoded_devices_db(obj, dict_form=True)
+#         if isinstance(obj, Device):
+#             return device_to_device_db(obj, dict_form=True)
+#         if isinstance(obj, ProjectsDB):
+#             return projects_db_to_encoded_projects_db(obj, dict_form=True)
+#         if isinstance(obj, Project):
+#             return project_to_project_db(obj, dict_form=True)
+#         if isinstance(obj, Task):
+#             return task_to_task_db(obj, dict_form=True)
+#         if isinstance(obj, Worker):
+#             return worker_to_worker_db(obj, dict_form=True)
+#         if isinstance(obj, ProjectStorage):
+#             return asdict(obj)
+#         if isinstance(obj, ProjectStatisticsServer):
+#             return project_statistics_server_as_dict(obj, dict_form=True)
+#         if isinstance(obj, TaskStatisticsServer):
+#             return task_statistics_server_to_task_statistics_server_db(obj, dict_form=True)
+#         if isinstance(obj, TaskStatistics):
+#             return task_statistics_to_task_statistics_db(obj, dict_form=True)
+#         if isinstance(obj, datetime):
+#             return datetime_to_str(obj)
+#         if isinstance(obj, timedelta):
+#             return str(obj)
+#         return super().default(obj)
+
+
+# class CustomDecoder(json.JSONDecoder):
+#     def __init__(self):
+#         super().__init__(object_hook=self.dict_to_object)
+#
+#     @staticmethod
+#     def dict_to_object(obj: object) -> Union[Device, Project, Task, Worker, Any]:
+#         """ Called for every json object. """
+#         # NOTE: json decoder decodes from the inside outward.
+#         # print('LOAD:', obj)
+#         if isinstance(obj, dict) and 'devices' in obj:
+#             return EncodedDevicesDB(**obj)
+#         if isinstance(obj, dict) and 'device_id' in obj:
+#             return DeviceDB(**obj)
+#
+#         if isinstance(obj, dict) and 'active_projects' in obj:
+#             return ProjectsDB(**obj)
+#         if isinstance(obj, dict) and 'project_id' in obj:
+#             obj.update({'upload_time': str_to_date_time(obj['upload_time'])})
+#             obj.update({'finish_time': obj['finish_time'] if str_to_date_time(obj['finish_time']) else None})
+#             return Project(**obj)
+#         if isinstance(obj, dict) and 'modules' in obj:
+#             return ProjectStorage(**obj)
+#         if isinstance(obj, dict) and 'workers' in obj:
+#             return Task(**obj)
+#         if isinstance(obj, dict) and 'worker_id' in obj:
+#             return worker_db_to_worker(obj, from_dict=True)
+#         if isinstance(obj, dict) and 'with_communications' in obj:
+#             return task_statistics_server_db_to_task_statistics_server(obj, from_dict=True)
+#         if isinstance(obj, dict) and 'pure_run_time' in obj:
+#             return task_statistics_db_to_task_statistics(obj, from_dict=True)
+#         return obj
 
 
 class CustomDecoder(json.JSONDecoder):
@@ -83,31 +134,43 @@ class CustomDecoder(json.JSONDecoder):
         super().__init__(object_hook=self.dict_to_object)
 
     @staticmethod
-    def dict_to_object(obj: object) -> Union[Device, Project, Task, Worker, Any]:
+    def dict_to_object(obj: object):
         """ Called for every json object. """
         # NOTE: json decoder decodes from the inside outward.
-        print('LOAD:', obj)
+        # print('LOAD:', obj)
+        # print(obj)
+        if isinstance(obj, dict):
+            for key, val in obj.items():
+                if isinstance(val, str):
+                    # print('+++' + val)
+                    try:
+                        result = str_to_date_time(val)
+                    except ValueError:
+                        try:
+                            result = parse_timedelta(val)
+                        except ValueError:
+                            result = val
+                    finally:
+                        obj[key] = result
+
         if isinstance(obj, dict) and 'devices' in obj:
             return EncodedDevicesDB(**obj)
         if isinstance(obj, dict) and 'device_id' in obj:
             return DeviceDB(**obj)
-
         if isinstance(obj, dict) and 'active_projects' in obj:
             return ProjectsDB(**obj)
         if isinstance(obj, dict) and 'project_id' in obj:
-            obj.update({'upload_time': str_to_date_time(obj['upload_time'])})
-            obj.update({'finish_time': obj['finish_time'] if str_to_date_time(obj['finish_time']) else None})
             return Project(**obj)
         if isinstance(obj, dict) and 'modules' in obj:
             return ProjectStorage(**obj)
         if isinstance(obj, dict) and 'workers' in obj:
             return Task(**obj)
         if isinstance(obj, dict) and 'worker_id' in obj:
-            return worker_db_to_worker(obj, from_dict=True)
+            return Worker(**obj)
         if isinstance(obj, dict) and 'with_communications' in obj:
-            return task_statistics_server_db_to_task_statistics_server(obj, from_dict=True)
+            return TaskStatisticsServer(**obj)
         if isinstance(obj, dict) and 'pure_run_time' in obj:
-            return task_statistics_db_to_task_statistics(obj, from_dict=True)
+            return TaskStatistics(**obj)
         return obj
 
 
@@ -147,7 +210,7 @@ class DBHandler:
         """
         Updates the database backup files.
         """
-        print('updating db...')  # TODO: remove after testing
+        # print('updating db...')  # TODO: remove after testing
         devices_database_file = create_path_string(consts.DEVICES_DIRECTORY,
                                                    consts.DEVICES_DATABASE_NAME)
         with open(devices_database_file, 'w') as file:
