@@ -45,4 +45,4 @@ class User:
 class ReturnedProject:
     results: dict
     base64_zipped_additional_results: str
-    statistics: dict
+    statistics: str  # of json

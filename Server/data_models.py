@@ -8,15 +8,11 @@ from typing import Optional, Union
 
 from pydantic import BaseModel
 
+
 @dataclass
 class TaskStatistics:
     pure_run_time: timedelta
     total_execution_time: timedelta
-
-@dataclass
-class TaskStatisticsDB:
-    pure_run_time: str
-    total_execution_time: str
 
 
 @dataclass
@@ -26,23 +22,11 @@ class TaskStatisticsServer:
 
 
 @dataclass
-class TaskStatisticsServerDB:
-    task_statistics: TaskStatisticsDB
-    with_communications: str
-
-
-@dataclass
 class ProjectStatisticsServer:
     overall_project_time: timedelta
     task_statistics: list[TaskStatisticsServer] = field(default_factory=list)
 
 
-@dataclass
-class ProjectStatisticsServerDB:
-    overall_project_time: str
-    task_statistics: list[TaskStatisticsServerDB] = field(default_factory=list)
-
-#----------------------------------
 class NewProject(BaseModel):
     """A new project sent from the client"""
     creator_id: str  # TODO: the device id of the creator of the project. maybe change to user
@@ -52,16 +36,16 @@ class NewProject(BaseModel):
     only_if_func: str
     base64_serialized_class: str
     base64_serialized_iterable: str
-    modules: list #Should be empty if is not needed
+    modules: list  # Should be empty if is not needed
 
 
 # TODO: check annotation for dict
 class ReturnedProject(BaseModel):
     results: dict
     base64_zipped_additional_results: str
-    statistics: dict
+    statistics: str  # of json
 
-#-----------------------------------
+
 class SentTask(BaseModel):
     """A task sent to the client"""
     project_id: str
@@ -96,25 +80,8 @@ class Worker:
 
 
 @dataclass
-class WorkerDB:
-    worker_id: str
-    sent_date: str
-    statistics: TaskStatisticsServerDB = None
-    is_finished: bool = False
-
-
-@dataclass
 class Task:
     workers: list[Worker] = field(default_factory=list)
-
-
-@dataclass
-class TaskDB:
-    workers: list[WorkerDB] = field(default_factory=list)
-
-# @dataclass
-# class TaskDB:
-#     workers_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -128,17 +95,6 @@ class Project:
     stop_immediately: bool = False
 
 
-@dataclass
-class ProjectDB:
-    """A project's representation in the database."""
-    project_id: str
-    upload_time: str
-    finish_time: Union[None, str] = None
-    tasks: list[TaskDB] = field(default_factory=list)
-    stop_number: int = -1
-    stop_immediately: bool = False
-
-#------------------------------------------
 # TODO: check for initalization
 @dataclass
 class ProjectStorage:
@@ -149,7 +105,6 @@ class ProjectStorage:
     parallel_func: str
     stop_func: str
     only_if_func: str
-
 
 
 # TODO: maybe add DeviceInfo that Device and DeviceDB will inherit from
@@ -177,6 +132,7 @@ class DevicesDB:
 class EncodedDevicesDB:
     devices: list[DeviceDB] = field(default_factory=list)
 
+
 @dataclass
 class ProjectsDB:
     active_projects: list[Project] = field(default_factory=list)
@@ -185,20 +141,6 @@ class ProjectsDB:
 
 
 @dataclass
-class EncodedProjectsDB:
-    """ A representation of the ProjectsDB class in json"""
-    active_projects: list[ProjectDB] = field(default_factory=list)
-    waiting_projects: list[ProjectDB] = field(default_factory=list)
-    finished_projects: list[ProjectDB] = field(default_factory=list)
-
-
-@dataclass
 class DB:
     devices_db: DevicesDB = DevicesDB()
     projects_db: ProjectsDB = ProjectsDB()
-
-
-# @dataclass
-# class EncodedDB:
-#     devices_db: EncodedDevicesDB
-#     projects_db: ProjectsDB

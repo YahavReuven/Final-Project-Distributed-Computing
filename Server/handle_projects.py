@@ -19,7 +19,6 @@ from storage_handler import merge_results, zip_additional_results
 from authentication import authenticate_creator
 from utils import create_path_string, validate_base64_and_decode
 from server_statistics import create_project_statistics
-from handle_db_file_conversion import project_statistics_server_as_dict
 
 
 # TODO: make it work with UploadFile instead of bytes
@@ -93,7 +92,8 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
     results = merge_results(project_id)
     additional_results = zip_additional_results(project_id)
 
-    statistics = project_statistics_server_as_dict(create_project_statistics(project_id))
+    # TODO: fix
+    statistics = json.dumps(create_project_statistics(project_id), cls=CustomEncoder)
     returned_project = ReturnedProject(results=results, base64_zipped_additional_results=additional_results,
                                        statistics=statistics)
 

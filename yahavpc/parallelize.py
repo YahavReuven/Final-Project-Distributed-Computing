@@ -14,7 +14,7 @@ from handle_users import validate_user_name, get_user
 from handle_requests import request_upload_new_project, request_get_project_results
 from data_models import NewProject
 from project_utils import create_class_to_send, create_iterable_to_send
-from handle_results import save_results
+from handle_results import save_results, find_results_free_path
 from handle_imports import validate_builtins
 from creator_statistics import save_statistics
 from handle_project_functions import validate_special_functions
@@ -118,8 +118,9 @@ class Distribute:
                                                               self._user.device_id, self._project_id)
                 time.sleep(1)
             print("done asking server")
+            self._results_path = find_results_free_path(self._results_path)
             save_results(project_results, self._results_path)
-            save_statistics(self._results_path,project_results.statistics)
+            save_statistics(self._results_path, project_results.statistics)
             return project_results.results
 
 

@@ -10,14 +10,10 @@ PORT = 8000
 
 DEVICES_DIRECTORY = 'devices'
 DEVICES_DATABASE_NAME = 'devices_database.json'
-# DEVICES_DATABASE_KEY = 'devices'
 
 
 PROJECTS_DIRECTORY = 'projects'
 PROJECTS_DATABASE_NAME = 'projects_database.json'
-# ACTIVE_PROJECTS_DB_KEY = 'active'
-# FINISHED_PROJECTS_DB_KEY = 'finished'
-# WAITING_TO_RETURN_PROJECTS_DB_KEY = 'waiting'
 
 
 PROJECT_STORAGE_PROJECT = 'project'
