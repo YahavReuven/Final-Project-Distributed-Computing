@@ -7,7 +7,7 @@ import os
 import shutil
 from datetime import datetime
 
-from db import CustomDecoder
+from database import CustomDecoder
 import consts
 from data_models import Task, SentTask, Worker, Project
 from utils import validate_base64_and_decode, create_path_string

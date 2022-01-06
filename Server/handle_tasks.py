@@ -12,7 +12,7 @@ from consts import DatabaseType
 from data_models import Task, SentTask, ReturnedTask, Worker, Project, TaskStatisticsServer, TaskStatistics
 from errors import (ProjectNotFoundError, ProjectFinishedError, UnnecessaryTaskError,
                     NoTaskAvailable)
-from db import DBHandler
+from database import DBHandler
 from handle_projects import is_project_done, get_project_state
 from utils import validate_base64_and_decode, create_path_string
 from authentication import authenticate_device, authenticate_worker
@@ -110,7 +110,6 @@ async def return_task_results(returned_task: ReturnedTask):
 
     # TODO: check if there are results and additional results
     store_task_results(returned_task.project_id, returned_task.results, returned_task.task_number)
-
 
     if returned_task.base64_zipped_additional_results:
         validate_base64_and_decode(returned_task.base64_zipped_additional_results,

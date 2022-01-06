@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+import copy
 
 import consts
+
 
 def datetime_to_str(datetime_: datetime) -> str:
     return datetime_.strftime(consts.DATETIME_FORMAT)
@@ -20,11 +22,11 @@ def device_to_device_db(device: dict) -> dict:
         dict: the device's database representation.
 
     """
-
+    device_db = copy.deepcopy(device)
     projects_ids = [project['project_id'] for project in device['projects']]
-    device.pop('projects')
-    device['projects_ids'] = projects_ids
-    return device
+    device_db.pop('projects')
+    device_db['projects_ids'] = projects_ids
+    return device_db
 
 
 def encode_json_recursively(obj):

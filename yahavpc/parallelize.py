@@ -8,7 +8,7 @@ import importlib
 import requests
 
 import consts
-from errors import ParallelFunctionNotFoundError, ResultsBeforeCreationError
+from errors import ParallelFunctionNotFoundError, ResultsBeforeCreationError, ServerError
 from utils import create_path_string
 from handle_users import validate_user_name, get_user
 from handle_requests import request_upload_new_project, request_get_project_results
@@ -112,17 +112,21 @@ class Distribute:
             if not self._user:
                 raise ResultsBeforeCreationError
 
-            project_results = None
-            while not project_results:
-                project_results = request_get_project_results(self._user.ip, self._user.port,
-                                                              self._user.device_id, self._project_id)
-                time.sleep(1)
+            while True:
+                try:
+                    project_results = request_get_project_results(self._user.ip, self._user.port,
+                                                                  self._user.device_id, self._project_id)
+                except ServerError:
+                    time.sleep(5)
+                    continue
+                else:
+                    break
+
             print("done asking server")
             self._results_path = find_results_free_path(self._results_path)
             save_results(project_results, self._results_path)
             save_statistics(self._results_path, project_results.statistics)
             return project_results.results
-
 
 # @Distribute('alex', range(40), 10, './Results')
 # class A:

@@ -7,13 +7,14 @@ import os
 from uuid import uuid4
 import shutil
 from datetime import datetime
+from typing import Union
 
 import consts
 from consts import DatabaseType
 from data_models import Project, NewProject, ReturnedProject, ProjectStorage
 from errors import (DeviceNotFoundError, ProjectNotFoundError, ProjectIsActive,
                     ProjectFinishedError)
-from db import DBHandler, DBUtils, CustomEncoder
+from database import DBHandler, DBUtils, CustomEncoder
 from initialize_server import init_project_storage
 from storage_handler import merge_results, zip_additional_results
 from authentication import authenticate_creator

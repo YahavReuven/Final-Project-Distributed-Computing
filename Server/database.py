@@ -217,7 +217,8 @@ class DBUtils:
         # TODO: maybe change
         projects = [DBUtils.find_in_db(project_id, DatabaseType.projects_db, db)
                     for project_id in device_db.projects_ids]
-        return Device(device_id=device_id, projects=projects)
+        is_blocked = device_db.is_blocked
+        return Device(device_id=device_id, projects=projects, is_blocked=is_blocked)
 
     # TODO: maybe raise errors for db
     @staticmethod

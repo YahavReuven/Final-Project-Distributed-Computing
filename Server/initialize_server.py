@@ -6,7 +6,7 @@ import time
 import os
 
 import consts
-from db import DBHandler, CustomEncoder
+from database import DBHandler, CustomEncoder
 from utils import create_path_string
 from data_models import DevicesDB, ProjectsDB
 

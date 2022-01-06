@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from db import DBHandler
+from database import DBHandler
 from consts import DatabaseType
 from data_models import ProjectStatisticsServer
 

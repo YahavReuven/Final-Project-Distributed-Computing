@@ -55,6 +55,7 @@ class NoTaskAvailable(BadRequestError):
     """Error raised if there isn't a task available to send to the worker."""
     message = 'no task available'
 
+
 # TODO: check if needed
 class IDAuthenticationError(BadRequestError):
     """Error raised if a given id is not authenticated to do the action which caused the error to be raised"""
@@ -68,6 +69,11 @@ class WorkerNotAuthenticatedError(IDNotFoundError):
 class InvalidBase64Error(BadRequestError):
     """Error raised if an invalid base64 string is received from the client."""
     message = 'invalid base64 string'
+
+
+class DeviceIsBlocked(BadRequestError):
+    """ Error raised if a blocked device tried to get a task to run. """
+    message = 'blocked device'
 
 
 async def handle_server_error(request: Request, exc: ServerError) -> JSONResponse:

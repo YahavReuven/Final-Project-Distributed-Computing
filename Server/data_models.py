@@ -71,6 +71,11 @@ class ReturnedTask(BaseModel):
     is_exhausted: bool = False
 
 
+class DevicePermissions(BaseModel):
+    device_id: str
+    is_blocked: bool
+
+
 @dataclass
 class Worker:
     worker_id: str
@@ -114,6 +119,7 @@ class Device:
     """A device's representation in the memory database."""
     device_id: str
     projects: list[Project] = field(default_factory=list)
+    is_blocked: bool = False
 
 
 @dataclass
@@ -121,6 +127,7 @@ class DeviceDB:
     """A device's representation in the file database."""
     device_id: str
     projects_ids: list[str] = field(default_factory=list)
+    is_blocked: bool = False
 
 
 @dataclass
