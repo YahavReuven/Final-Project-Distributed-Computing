@@ -1,6 +1,6 @@
 import time
 import base64
-from collections.abc import Iterable
+from typing import Iterator
 import json
 
 import importlib
@@ -21,12 +21,12 @@ from handle_project_functions import validate_special_functions
 
 
 class Distribute:
-    def __init__(self, user_name: str, iterable: Iterable, task_size: int,
+    def __init__(self, user_name: str, iterator: Iterator, task_size: int,
                  results_path: str, *, parallel_func: str = 'parallel_func',
                  stop_func: str = '', only_if_func: str = '', modules: list = []):
         self._user_name = user_name
         validate_user_name(self._user_name)
-        self._iterable = iterable
+        self._iterator = iterator
         self._task_size = task_size
         # TODO: delete and find a way to do it from client
         self._results_path = results_path
@@ -37,18 +37,18 @@ class Distribute:
 
     def __call__(self, cls):
         # print('in __call__ decorator factory')
-        return self.Decorator(cls, self._user_name, self._iterable, self._task_size,
+        return self.Decorator(cls, self._user_name, self._iterator, self._task_size,
                               self._results_path, self._parallel_func, self._stop_func,
                               self._only_if_func, self._modules)
 
     class Decorator:
 
-        def __init__(self, cls, user_name: str, iterable: Iterable, task_size: int,
+        def __init__(self, cls, user_name: str, iterator: Iterator, task_size: int,
                      results_path: str, parallel_func: str, stop_func: str,
                      only_if_func: str, modules: list):
             self._cls = cls
             self._user_name = user_name
-            self._iterable = iterable
+            self._iterator = iterator
             self._task_size = task_size
             self._results_path = results_path
             self._parallel_func = parallel_func
@@ -74,7 +74,7 @@ class Distribute:
             """
             self._user = get_user(self._user_name)
             self._cls = create_class_to_send(self._cls)
-            self._iterable = create_iterable_to_send(self._iterable)
+            self._iterator = create_iterable_to_send(self._iterator)
 
             project = NewProject(creator_id=self._user.device_id,
                                  task_size=self._task_size,
@@ -82,7 +82,7 @@ class Distribute:
                                  stop_func=self._stop_func,
                                  only_if_func=self._only_if_func,
                                  base64_serialized_class=self._cls,
-                                 base64_serialized_iterable=self._iterable,
+                                 base64_serialized_iterable=self._iterator,
                                  modules=self._modules)
             self._project_id = request_upload_new_project(self._user.ip, self._user.port, project)
 

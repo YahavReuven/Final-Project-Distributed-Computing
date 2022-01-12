@@ -40,7 +40,9 @@ async def create_new_project(new_project: NewProject) -> str:
         InvalidBase64Error: if the received NewProject contains invalid base64.
 
     """
-    upload_project_time = datetime.utcnow()
+    if not (creator := DBUtils.find_in_db(new_project.creator_id,
+                                          DatabaseType.devices_db)):
+        raise DeviceNotFoundError
     validate_base64_and_decode(new_project.base64_serialized_class, return_obj=False)
     validate_base64_and_decode(new_project.base64_serialized_iterable, return_obj=False)
 
@@ -48,10 +50,10 @@ async def create_new_project(new_project: NewProject) -> str:
     init_project_storage(project_id)
     store_serialized_project(new_project, project_id)
 
+    upload_project_time = datetime.utcnow()
+
     project = Project(project_id=project_id, upload_time=upload_project_time)
-    if not (creator := DBUtils.find_in_db(new_project.creator_id,
-                                          DatabaseType.devices_db)):
-        raise DeviceNotFoundError
+
 
     db = DBHandler()
     db.add_to_database(project, DatabaseType.active_projects_db)

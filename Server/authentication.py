@@ -1,7 +1,6 @@
 """
 Module used for the authentication of id's sent to the server from the client.
 """
-
 from database import DBUtils
 from consts import DatabaseType
 from data_models import Worker, Task

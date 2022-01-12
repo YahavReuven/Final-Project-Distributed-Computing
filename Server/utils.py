@@ -58,3 +58,24 @@ def parse_timedelta(stamp):
     else:
         return timedelta(hours=time_dict['h'],
                          minutes=time_dict['m'], seconds=time_dict['s'])
+
+
+
+# def md5(password):
+#     pass
+#
+# possible_passwords = []
+#
+# hashed_password = "..."
+# for password in possible_passwords:
+#     if md5(password) == hashed_password:
+#         return password
+#
+#
+# n = 5
+#
+#
+# a = [0, 1] # fibonacci sequence
+# for i in range(2, n+1):
+#     a[i] = a[i - 1] + a[i - 2]
+# return a[n]

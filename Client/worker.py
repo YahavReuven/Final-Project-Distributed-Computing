@@ -93,6 +93,7 @@ class TaskExecUtils:
         import_modules(parallel_obj, cls.task.modules, parallel_func, stop_func, only_if_func)
         pure_run_time_start = datetime.utcnow()
         for param_value in iterable:
+            # TODO: not sure what the if does
             # TODO: assumes another client is correct
             param_storage = param_value
             if type(param_value) != int and type(param_value) != float and type(param_value) != bool and type(param_value) != None:
