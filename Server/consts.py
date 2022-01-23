@@ -1,39 +1,28 @@
 """
 Module used to define constants.
 """
-
 from datetime import timedelta
 from enum import Flag, auto
 
-# TODO: change every const ending with KEY to dataclass
 PORT = 8000
 
 DEVICES_DIRECTORY = 'devices'
 DEVICES_DATABASE_NAME = 'devices_database.json'
 
-
 PROJECTS_DIRECTORY = 'projects'
 PROJECTS_DATABASE_NAME = 'projects_database.json'
-
-
 PROJECT_STORAGE_PROJECT = 'project'
 PROJECT_STORAGE_RESULTS = 'results'
-
 PROJECT_STORAGE_JSON_PROJECT = 'project.json'
-
-SENT_TASK_VALIDITY = timedelta(days=1)
-SENT_TASK_DATE_KEY = 'sent_date'
-DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
-
 
 RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE = 'temp_results.zip'
 RETURNED_TASK_RESULTS_DIRECTORY = 'results'
 RETURNED_TASK_ADDITIONAL_RESULTS_DIRECTORY = 'additional_results'
+TEMP_PROJECT_ADDITIONAL_RESULTS_DIRECTORY = 'temp'
 RESULTS_FILE = 'results.json'
 
-TEMP_PROJECT_ADDITIONAL_RESULTS_DIRECTORY = 'temp'
-PROJECT_ADDITIONAL_RESULTS_DIRECTORY = 'results'
-
+SENT_TASK_VALIDITY = timedelta(days=1)
+DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
 
 UPDATE_DB_DELAY = 60*0.1
 

@@ -8,7 +8,6 @@ from errors import (DeviceNotFoundError, ProjectNotFoundError, DeviceIsBlocked,
                     WorkerNotAuthenticatedError)
 
 
-# TODO: check docstring
 def authenticate_device(device_id: str):
     """
     Checks if a device with the given device_id is present in the database
@@ -46,7 +45,6 @@ def authenticate_creator(device_id: str, project_id: str):
             device may not be its creator.
 
     """
-
     try:
         authenticate_device(device_id)
     except DeviceIsBlocked:
@@ -59,16 +57,6 @@ def authenticate_creator(device_id: str, project_id: str):
             return
 
     raise ProjectNotFoundError
-
-
-# def authenticate_project(project_id: str) -> bool:
-#
-#     project = DBUtils.find_in_db(project_id, DatabaseType.projects_db)
-#
-#     if not project:
-#         raise ProjectNotFoundError
-#
-#     return True
 
 
 # TODO: check docstring and annotation
@@ -87,7 +75,6 @@ def authenticate_worker(worker_id: str, task: Task) -> Worker:
         WorkerNotAuthenticatedError: if the device is not a worker in
             the given task.
     """
-
     try:
         authenticate_device(worker_id)
     except DeviceIsBlocked:

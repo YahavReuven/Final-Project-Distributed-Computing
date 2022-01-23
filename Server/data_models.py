@@ -113,7 +113,6 @@ class ProjectStorage:
 
 
 # TODO: maybe add DeviceInfo that Device and DeviceDB will inherit from
-
 @dataclass
 class Device:
     """A device's representation in the memory database."""

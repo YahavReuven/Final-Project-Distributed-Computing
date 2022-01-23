@@ -1,6 +1,6 @@
 /.venv/
 /.idea/
-/yahavpc/.idea/
+/yahavdc/.idea/
 /yahavpc_DELETE/
 /Tests
 /Server/.idea
@@ -8,3 +8,4 @@
 /Client/.idea
 /Client/__pycache__
 /venv/
+/TEST.py/

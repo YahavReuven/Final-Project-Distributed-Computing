@@ -1,5 +1,5 @@
 """
-Module used to update the database and load it to memory correctly.
+Module used to handle the database.
 """
 import json
 from dataclasses import asdict
@@ -24,7 +24,6 @@ def singleton(cls):
         if cls.__name__ not in _instances:
             _instances[cls.__name__] = cls(*args, **kwargs)
         return _instances[cls.__name__]
-
     return wrapper
 
 
@@ -50,7 +49,6 @@ class CustomDecoder(json.JSONDecoder):
         if isinstance(obj, dict):
             for key, val in obj.items():
                 if isinstance(val, str):
-                    # print('+++' + val)
                     try:
                         result = str_to_date_time(val)
                     except ValueError:
@@ -103,7 +101,6 @@ class DBHandler:
             devices_db = json.load(file, cls=CustomDecoder)
 
         self._db = DB(projects_db=projects_db)
-
         self.init_devices_db(devices_db)
 
     def init_devices_db(self, encoded_devices_db: EncodedDevicesDB):

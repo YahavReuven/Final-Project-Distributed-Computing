@@ -71,8 +71,8 @@ class UsersDataHandler:
         Creates a new user.
         """
         # TODO: change to gui
-        server_ip = input("please enter the server's ip:")
-        server_port = input("please enter the port number:")
+        server_ip = input("please enter the server's ip: ")
+        server_port = input("please enter the port number: ")
 
         self._validate_new_user(server_ip, server_port)
         server_port = int(server_port)
