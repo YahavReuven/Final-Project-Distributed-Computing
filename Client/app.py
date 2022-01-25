@@ -6,21 +6,6 @@ from handle_users import switch_user
 from worker import task_menu
 
 
-def welcome():
-    """
-    Displays the welcome message.
-    """
-    print(""" /$$$$$$$   /$$$$$$        /$$                                 /$$              
-| $$__  $$ /$$__  $$      /$$/                                | $$              
-| $$  \ $$| $$  \__/     /$$/   /$$$$$$  /$$$$$$$   /$$$$$$  /$$$$$$    /$$$$$$ 
-| $$  | $$| $$          /$$/   /$$__  $$| $$__  $$ |____  $$|_  $$_/   /$$__  $$
-| $$  | $$| $$         /$$/   | $$  \ $$| $$  \ $$  /$$$$$$$  | $$    | $$$$$$$$
-| $$  | $$| $$    $$  /$$/    | $$  | $$| $$  | $$ /$$__  $$  | $$ /$$| $$_____/
-| $$$$$$$/|  $$$$$$/ /$$/     |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/|  $$$$$$$
-|_______/  \______/ |__/       \______/ |__/  |__/ \_______/   \___/   \_______/""")
-    print('\n\nWelcome, and thank you for using "DC/onate".\n\n')
-
-
 def help_menu():
     """
     Displays the main menu.
@@ -32,7 +17,6 @@ def help_menu():
     """)
 
 
-welcome()
 user = init_user()
 init_task_storage()
 while True:

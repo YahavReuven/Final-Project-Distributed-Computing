@@ -3,8 +3,9 @@ import string
 import hashlib
 from yahavdc import Distribute
 
+password_length = 6
 bruteforce_iterator = itertools.product(string.ascii_letters +
-                                        string.digits, repeat=6)
+                                        string.digits, repeat=password_length)
 
 
 @Distribute('test', bruteforce_iterator, int(1.5e8), './Results',
@@ -25,12 +26,45 @@ class Bruteforce:
         return digest == cls.pass_hash
 
 
+project = Bruteforce()
+results = project.get_results()
+print(results)
+
+
+
+from yahavdc import Distribute
+
+
+@Distribute('alex', range(10 ** 8), 10 ** 6, './Results', parallel_func='is_prime',
+            only_if_func='write_num')
+class PrimesBellowN:
+
+    @classmethod
+    def is_prime(cls, number: int):
+        for i in range(2, int(number ** 0.5 + 1)):
+            if number % i == 0:
+                return False
+        return True
+
+    @staticmethod
+    def write_num(prime: bool):
+        return prime
+
+
+project = PrimesBellowN()
+results = project.get_results()
+print(results)
+.
+
+
+
 from yahavdc import Distribute
 
 
 @Distribute(...)
 class Project:
     ...
+
 
 project = Project()
 # Do something

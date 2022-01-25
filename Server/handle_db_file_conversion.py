@@ -1,3 +1,6 @@
+"""
+Module used to handle the conversion between database versions.
+"""
 from datetime import datetime, timedelta
 import copy
 
@@ -5,13 +8,17 @@ import consts
 
 
 def datetime_to_str(datetime_: datetime) -> str:
+    """
+    Converts datetime objects to string.
+
+    """
     return datetime_.strftime(consts.DATETIME_FORMAT)
 
 
 def device_to_device_db(device: dict) -> dict:
     """
     Converts the dict representation of a Device object to its representation
-    in the backup database.
+        in the database file.
 
     Args:
         device (dict): the dict representation of a Device.
@@ -30,6 +37,10 @@ def device_to_device_db(device: dict) -> dict:
 
 
 def encode_json_recursively(obj):
+    """
+    Encodes an object to json format.
+
+    """
     if isinstance(obj, datetime):
         return datetime_to_str(obj)
     elif isinstance(obj, timedelta):
@@ -49,4 +60,8 @@ def encode_json_recursively(obj):
 
 
 def str_to_date_time(str_datetime: str) -> datetime:
+    """
+    Converts string to datetime object.
+
+    """
     return datetime.strptime(str_datetime, consts.DATETIME_FORMAT)

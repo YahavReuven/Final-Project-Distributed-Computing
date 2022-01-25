@@ -28,7 +28,7 @@ def add_new_task_to_database(project: Project) -> Task:
     project.tasks.append(new_task)
     return new_task
 
-# TODO: change consts to dataclass
+
 def create_task_to_send(project_id: str, task_number: int) -> SentTask:
     """
     Creates a new task to send to a worker.
@@ -53,9 +53,9 @@ def create_task_to_send(project_id: str, task_number: int) -> SentTask:
                     base64_serialized_class=project_storage.base64_serialized_class,
                     base64_serialized_iterable=project_storage.base64_serialized_iterable,
                     modules=project_storage.modules,
-                    parallel_func= project_storage.parallel_func,
-                    stop_func= project_storage.stop_func,
-                    only_if_func= project_storage.only_if_func)
+                    parallel_func=project_storage.parallel_func,
+                    stop_func=project_storage.stop_func,
+                    only_if_func=project_storage.only_if_func)
 
 
 def create_new_worker(device_id: str) -> Worker:
@@ -92,9 +92,10 @@ def store_task_results(project_id: str, task_results: dict, task_number: int):
     Stores a returned task's results.
 
     Args:
-        project_id (str): the project id of the project which the task is associated with.:
+        project_id (str): the project id of the project which the task is associated with.
         task_results (dict): the results of the task.
         task_number (int): the task number of the returned task.
+
     """
     results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                       consts.PROJECT_STORAGE_RESULTS, task_number,
@@ -108,7 +109,8 @@ def store_task_results(project_id: str, task_results: dict, task_number: int):
         json.dump(task_results, file)
 
 
-def store_task_additional_results(project_id: str, base64_zipped_additional_results: str, task_number: int):
+def store_task_additional_results(project_id: str, base64_zipped_additional_results: str,
+                                  task_number: int):
     """
     Unzips a returned task's additional results and stores them in server's storage.
 
@@ -116,6 +118,7 @@ def store_task_additional_results(project_id: str, base64_zipped_additional_resu
         project_id (str): the project id of the project which the task is associated with.
         base64_zipped_additional_results (str): the zipped additional results in base64.
         task_number (int): the task number of the returned task.
+
     """
     decoded_additional_results = validate_base64_and_decode(base64_zipped_additional_results)
     results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
@@ -125,7 +128,8 @@ def store_task_additional_results(project_id: str, base64_zipped_additional_resu
 
     os.makedirs(results_path, exist_ok=True, mode=0o777)
 
-    temp_results_file = create_path_string(results_path, consts.RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE,
+    temp_results_file = create_path_string(results_path,
+                                           consts.RETURNED_TASK_TEMP_ZIPPED_RESULTS_FILE,
                                            from_current_directory=False)
     with open(temp_results_file, 'wb') as file:
         os.chmod(temp_results_file, mode=0o777)
@@ -134,21 +138,13 @@ def store_task_additional_results(project_id: str, base64_zipped_additional_resu
     with zipfile.ZipFile(temp_results_file) as zip_file:
         zip_file.extractall(results_path)
 
-    # file_names = os.listdir(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY)
-    #
-    # for file_name in file_names:
-    #     shutil.move(
-    #         os.path.join(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY, file_name),
-    #         results_path)
-    #
-    # os.rmdir(results_path + consts.RETURNED_TASK_RESULTS_DIRECTORY)
     os.remove(temp_results_file)
 
 
 def delete_unnecessary_tasks_storage(project: Project, stop_called_task_number: int):
     """
-    Deletes all of the tasks storage in a project, besides the task
-    which has the stop_called_task_number task number.
+    Deletes all the tasks' storage in a project, besides the task
+        which has the stop_called_task_number task number.
 
     Note:
         The function is called if a returned task of a project has a stop_called set.
@@ -156,7 +152,8 @@ def delete_unnecessary_tasks_storage(project: Project, stop_called_task_number: 
     Args:
         project (Project): the project which is associated with the returned task.
         stop_called_task_number (int): the task number of the task which has the
-            stop_called set
+            stop_called set.
+
     """
     results_path = create_path_string(consts.PROJECTS_DIRECTORY,
                                       project.project_id,

@@ -8,8 +8,6 @@ from requests import Response
 from data_models import ReceivedTask
 from errors import check_response_error
 
-# TODO: check for errors
-
 
 def handle_register_response(response: Response) -> str:
     """
@@ -22,6 +20,7 @@ def handle_register_response(response: Response) -> str:
         str: the device_id of the new device.
 
     """
+    check_response_error(response)
     return response.text[1:-1]
 
 
@@ -33,7 +32,7 @@ def handle_new_task_response(response: Response) -> ReceivedTask:
         response (Response): the response from the server.
 
     Returns:
-        ReceivedTask: te task received from the server.
+        ReceivedTask: the task received from the server.
 
     """
     content = response.text
@@ -42,5 +41,16 @@ def handle_new_task_response(response: Response) -> ReceivedTask:
     return ReceivedTask(**task_data)
 
 
-def handle_upload_task_results(response: Response):
+def handle_upload_task_results(response: Response) -> Response:
+    """
+    Handles the response of an upload_task_results request to the server.
+
+    Args:
+        response (Response): the response from the server.
+
+    Returns:
+        Response: the response from the server.
+
+    """
+    check_response_error(response)
     return response

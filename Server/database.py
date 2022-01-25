@@ -16,7 +16,7 @@ from handle_db_file_conversion import str_to_date_time, encode_json_recursively
 
 
 def singleton(cls):
-    """ An implementation of singleton using decorator. """
+    """An implementation of singleton using decorator."""
     _instances = {}
 
     @wraps(cls)
@@ -24,18 +24,18 @@ def singleton(cls):
         if cls.__name__ not in _instances:
             _instances[cls.__name__] = cls(*args, **kwargs)
         return _instances[cls.__name__]
+
     return wrapper
 
 
 class CustomEncoder(json.JSONEncoder):
-    """ Custom class to encode client in order to dump to json file. """
+    """Custom class to encode client in order to dump to json file."""
 
-    def default(self, obj: object):  # -> dict[str, Union[str, list[str]], bool]:
+    def default(self, obj: object):
         """ Called in case json can't serialize object. """
         # TODO: find a better way
         x = encode_json_recursively(asdict(obj))
         return x
-        # return super().default(obj)
 
 
 class CustomDecoder(json.JSONDecoder):
@@ -105,11 +105,16 @@ class DBHandler:
 
     def init_devices_db(self, encoded_devices_db: EncodedDevicesDB):
         """
-        Converts every device (DeviceDB) in the starting database to its Device representation.
+        Converts every device (DeviceDB) in the starting database to its
+            Device representation.
+
+        Args:
+            encoded_devices_db (EncodedDevicesDB): the encoded devices' database.
+
         """
         self._db.devices_db = DBUtils.encoded_devices_db_to_devices_db(encoded_devices_db, self)
 
-    def update_db(self) -> None:
+    def update_db(self):
         """
         Updates the database backup files.
         """
@@ -127,17 +132,19 @@ class DBHandler:
             Union[list[list[Device]], list[list[Project]], None]:
         """
         Returns the database sections as specified in the database_type.
+
         Args:
             database_type (DatabaseType): the database sections to be returned.
 
         Returns:
             Union[list[list[Device]], list[list[Project]]]: a list containing
-            lists for every section of the database that is to be returned.
+                lists for every section of the database that is to be returned.
         """
         results = []
 
         # TODO: raise error
-        if database_type & DatabaseType.devices_db and database_type & DatabaseType.projects_db:
+        if database_type & DatabaseType.devices_db and \
+                database_type & DatabaseType.projects_db:
             return None
 
         if database_type & DatabaseType.devices_db:
@@ -152,6 +159,14 @@ class DBHandler:
         return results
 
     def add_to_database(self, obj: Union[Device, Project], database_type: DatabaseType):
+        """
+        Adds a project or a device to the database.
+
+        Args:
+            obj (Union[Device, Project]): the object to add.
+            database_type (DatabaseType): the part of the database to add the object to.
+
+        """
         if database_type & DatabaseType.devices_db:
             self.get_database(DatabaseType.devices_db)[0].append(obj)
         if database_type & DatabaseType.active_projects_db:
@@ -163,11 +178,18 @@ class DBHandler:
 
     # TODO: check if return is needed
     # TODO: allow to remove a Device and project from finished projects
-    def remove_from_database(self, obj: Union[Device, Project], database_type: DatabaseType) -> bool:
+    def remove_from_database(self, obj: Project, database_type: DatabaseType) -> bool:
+        """
+        Removes a project from the database.
 
-        # if isinstance(obj, Device):
-        #     self._devices_db[consts.DEVICES_DATABASE_KEY].append(obj)
-        #     return True
+        Args:
+            obj (Project): the object to add.
+            database_type (DatabaseType): the part of the database to add the object to.
+
+        Returns:
+            bool: whether the removal was successful.
+
+        """
         if database_type & DatabaseType.active_projects_db:
             self.get_database(DatabaseType.active_projects_db)[0].remove(obj)
             return True
@@ -177,7 +199,17 @@ class DBHandler:
         return False
 
     # TODO: check if succeeded
-    def move_project(self, project: Project, move_from: DatabaseType, move_to: DatabaseType):  # -> bool:
+    def move_project(self, project: Project, move_from: DatabaseType,
+                     move_to: DatabaseType):
+        """
+        Moves a project to a different part of the database.
+
+        Args:
+            project (Project): the project to move.
+            move_from (DatabaseType): where is the project now.
+            move_to (DatabaseType): where to move the project to.
+
+        """
         self.add_to_database(project, move_to)
         self.remove_from_database(project, move_from)
 
@@ -188,21 +220,36 @@ class DBUtils:
 
     @staticmethod
     def encoded_devices_db_to_devices_db(encoded_device_db: Union[EncodedDevicesDB, dict],
-                                         db: DBHandler, *, from_dict=False) -> DevicesDB:
+                                         db: DBHandler, *, from_dict: bool = False) -> DevicesDB:
+        """
+        Converts every device (DeviceDB) in the starting database to its
+            Device representation.
+
+        Args:
+            encoded_device_db (Union[EncodedDevicesDB, dict]): the encoded devices' database.
+            db (DBHandler): the database handler.
+            from_dict (bool) = False: whether the database is passed as dict.
+
+        Returns:
+            DevicesDB: the database in the new representation.
+
+        """
         if from_dict:
             encoded_device_db = EncodedDevicesDB(**encoded_device_db)
-        devices = [DBUtils.device_db_to_device(device_db, db) for device_db in encoded_device_db.devices]
+        devices = [DBUtils.device_db_to_device(device_db, db) for device_db in
+                   encoded_device_db.devices]
         return DevicesDB(devices=devices)
 
     @staticmethod
     def device_db_to_device(device_db: Union[DeviceDB, dict], db: DBHandler, *,
-                            from_dict=False) -> Device:
+                            from_dict: bool = False) -> Device:
         """
         Converts a DeviceDB object to a Device object.
 
         Args:
-            device_db (DeviceDB): a database representation of a device.
+            device_db (Union[DeviceDB, dict]): a database representation of a device.
             db (DBHandler): the db handler which devices need to be converted.
+            from_dict (bool) = False: whether the database is passed as dict.
 
         Returns:
             Device: a Device instance based on the device db.
@@ -219,25 +266,28 @@ class DBUtils:
 
     # TODO: maybe raise errors for db
     @staticmethod
-    def find_in_db(id: str, database_type: DatabaseType, db: DBHandler = None) -> Union[Device, Project, None]:
+    def find_in_db(search_id: str, database_type: DatabaseType, db: DBHandler = None)\
+            -> Union[Device, Project, None]:
         """
         Looks for the object with the given id in the database specified in database_type.
 
         Note:
              the database_type should never include a combination of DatabaseType.device_db
-             and another value which is contained in DatabaseType.projects_db.
-             i.e. the following command should never return True:
-                (database_type & DatabaseType.devices_db and database_type & DatabaseType.projects_db)
+                and another value which is contained in DatabaseType.projects_db.
+                i.e. the following command should never return True:
+                (database_type & DatabaseType.devices_db and
+                 database_type & DatabaseType.projects_db)
         Args:
-            id (str): the id of the object to be returned.
+            search_id (str): the id of the object to be returned.
             database_type (DatabaseType): the database type in which to look for the object.
             db (DBHandler) = None: an optional parameter which allows to pass the db object
-                needed instead of creating it inside of the function. used for first init
+                needed instead of creating it inside the function. used for first init
                 in order to prevent infinite recursion.
 
         Returns:
             Union[Device, Project]: the device or project with the corresponding id.
             None: when no object with the given id is present in the given DatabaseType.
+
         """
         if not db:
             db = DBHandler()
@@ -245,13 +295,13 @@ class DBUtils:
 
         if database_type & DatabaseType.devices_db:
             for device in database[0]:
-                if device.device_id == id:
+                if device.device_id == search_id:
                     return device
 
         if database_type & DatabaseType.projects_db:
             for sub_database in database:
                 for project in sub_database:
-                    if project.project_id == id:
+                    if project.project_id == search_id:
                         return project
 
         return None

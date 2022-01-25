@@ -1,13 +1,11 @@
-# TODO: module needs checking ang changing
 """
-Module used to handle projects and the projects' database
+Module used to handle projects and the projects' database.
 """
 import json
 import os
 from uuid import uuid4
 import shutil
 from datetime import datetime
-from typing import Union
 
 import consts
 from consts import DatabaseType
@@ -22,7 +20,6 @@ from utils import create_path_string, validate_base64_and_decode
 from server_statistics import create_project_statistics
 
 
-# TODO: make it work with UploadFile instead of bytes
 async def create_new_project(new_project: NewProject) -> str:
     """
     Creates a new project, initializes its storage and updates the database.
@@ -37,7 +34,7 @@ async def create_new_project(new_project: NewProject) -> str:
     Raises:
         DeviceNotFoundError: if the received NewProject contains a creator
             id which is not present in the database.
-        InvalidBase64Error: if the received NewProject contains invalid base64.
+        InvalidBase64Error: if the received NewProject contains an invalid base64.
 
     """
     if not (creator := DBUtils.find_in_db(new_project.creator_id,
@@ -49,11 +46,8 @@ async def create_new_project(new_project: NewProject) -> str:
     project_id = uuid4().hex
     init_project_storage(project_id)
     store_serialized_project(new_project, project_id)
-
     upload_project_time = datetime.utcnow()
-
     project = Project(project_id=project_id, upload_time=upload_project_time)
-
 
     db = DBHandler()
     db.add_to_database(project, DatabaseType.active_projects_db)
@@ -62,11 +56,10 @@ async def create_new_project(new_project: NewProject) -> str:
     return project_id
 
 
-# TODO: check annotation
 # TODO: maybe remove the finished field in the database
 async def return_project_results(device_id: str, project_id: str) -> ReturnedProject:
     """
-    Returns a project results.
+    Returns a project's results.
 
     Args:
         device_id (str): the device id of the client requesting the results.
@@ -94,36 +87,33 @@ async def return_project_results(device_id: str, project_id: str) -> ReturnedPro
 
     results = merge_results(project_id)
     additional_results = zip_additional_results(project_id)
-
-    # TODO: fix
     statistics = json.dumps(create_project_statistics(project_id), cls=CustomEncoder)
-    returned_project = ReturnedProject(results=results, base64_zipped_additional_results=additional_results,
+    returned_project = ReturnedProject(results=results,
+                                       base64_zipped_additional_results=additional_results,
                                        statistics=statistics)
 
     db = DBHandler()
-    db.move_project(project, DatabaseType.waiting_to_return_projects_db, DatabaseType.finished_projects_db)
+    db.move_project(project, DatabaseType.waiting_to_return_projects_db,
+                    DatabaseType.finished_projects_db)
 
     delete_finished_project_storage(project)
 
     return returned_project
 
 
-# TODO: maybe change name
-# TODO: change consts to dataclass
 def store_serialized_project(project: NewProject, project_id: str):
     """
-    Stores the project's code (class), iterable and task size.
+    Stores the project's code (class), iterator and task size.
 
     Note:
-        Assumes that the project's storage is already  initialized.
+        Assumes that the project's storage is already initialized.
         Assumes that the given base64 data is valid.
 
     Args:
         project (NewProject): the project which needs to be stored.
-        project_id: the project's id of the project.
+        project_id (str): the project's id.
 
     """
-
     serialized_project_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                                  consts.PROJECT_STORAGE_PROJECT,
                                                  consts.PROJECT_STORAGE_JSON_PROJECT)
@@ -144,6 +134,16 @@ def store_serialized_project(project: NewProject, project_id: str):
 
 
 def is_project_done(project: Project) -> bool:
+    """
+    Checks whether a project is done.
+
+    Args:
+        project (Project): the project needed checking.
+
+    Returns:
+        bool: whether the project is done.
+
+    """
     if project.stop_immediately:
         return True
 
@@ -157,7 +157,17 @@ def is_project_done(project: Project) -> bool:
     return False
 
 
-def get_project_state(project_id: str):  # -> Union[(Project, DatabaseType), (None, None)]:
+def get_project_state(project_id: str):
+    """
+    Checks the project's state.
+
+    Args:
+        project_id (str): the id of the project.
+
+    Returns:
+        the project and its state.
+
+    """
     if project := DBUtils.find_in_db(project_id, DatabaseType.active_projects_db):
         return project, DatabaseType.active_projects_db
     if project := DBUtils.find_in_db(project_id, DatabaseType.waiting_to_return_projects_db):

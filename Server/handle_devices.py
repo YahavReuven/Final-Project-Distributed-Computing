@@ -16,14 +16,13 @@ async def register_device() -> str:
 
     Note:
         Assumes that './devices/devices_database.json' exists and contains
-        a json object.
+            a json object.
 
     Returns:
         str: the new device's id.
 
     """
     db = DBHandler()
-
     device_id = uuid4().hex
     device = Device(device_id=device_id)
     db.add_to_database(device, DatabaseType.devices_db)
@@ -31,22 +30,41 @@ async def register_device() -> str:
 
 
 async def block_device(device_id: str):
+    """
+    Blocks a device.
+
+    Args:
+        device_id (str): the id of the device to block.
+
+    """
     authenticate_device(device_id)
-    # shouldn't fail
     device = DBUtils.find_in_db(device_id, DatabaseType.devices_db)
     device.is_blocked = True
 
 
 async def unblock_device(device_id: str):
+    """
+    Un-blocks a device.
+
+    Args:
+        device_id (str): the id of the device to unblock.
+
+    """
     try:
         authenticate_device(device_id)
     except DeviceIsBlocked:
-        # shouldn't fail
         device = DBUtils.find_in_db(device_id, DatabaseType.devices_db)
         device.is_blocked = False
 
 
 async def get_devices_permissions() -> list[DevicePermissions]:
+    """
+    Returns the devices permissions.
+
+    Returns:
+        list[DevicePermissions]: the devices permissions.
+
+    """
     db = DBHandler()
 
     devices = db.get_database(DatabaseType.devices_db)[0]

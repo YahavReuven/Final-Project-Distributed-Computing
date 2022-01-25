@@ -1,7 +1,10 @@
+"""
+Module used for json custom handling.
+"""
 import json
-from dataclasses import asdict
 
 from data_models import User
+
 
 class CustomDecoder(json.JSONDecoder):
     def __init__(self):
@@ -9,7 +12,8 @@ class CustomDecoder(json.JSONDecoder):
 
     @staticmethod
     def dict_to_object(obj: object):
-        """ Called for every json object. """
+        """Called for every json object."""
         if isinstance(obj, dict) and 'ip' in obj:
             return User(**obj)
         return obj
+.

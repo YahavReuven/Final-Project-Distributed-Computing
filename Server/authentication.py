@@ -18,7 +18,7 @@ def authenticate_device(device_id: str):
 
     Raises:
         DeviceNotFoundError: if a device with the given device_id is not
-        present in the database.
+            present in the database.
         DeviceIsBlocked: if the device with the given device_id is blocked.
 
     """
@@ -31,8 +31,8 @@ def authenticate_device(device_id: str):
 
 def authenticate_creator(device_id: str, project_id: str):
     """
-    Checks if a project with a device with a given device_id is the creator
-        of a project with a given project_id.
+    Checks if a device with a given device_id is the creator of a project
+        with a given project_id.
 
     Args:
         device_id (str): the device_id which will be compared against the creator's.
@@ -51,7 +51,6 @@ def authenticate_creator(device_id: str, project_id: str):
         pass
 
     device = DBUtils.find_in_db(device_id, DatabaseType.devices_db)
-
     for project in device.projects:
         if project.project_id == project_id:
             return
@@ -69,11 +68,12 @@ def authenticate_worker(worker_id: str, task: Task) -> Worker:
         task (Task): the task which is checked.
 
     Returns:
-        Worker: if the device is a worker of the given task.
+        Worker: the worker of the task with the given id.
 
     Raises:
         WorkerNotAuthenticatedError: if the device is not a worker in
             the given task.
+
     """
     try:
         authenticate_device(worker_id)

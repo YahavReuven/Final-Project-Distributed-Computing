@@ -9,15 +9,14 @@ import consts
 
 # TODO: check with remove suffix
 def get_users_names() -> list:
+    """
+    Returns all the users' names.
+    """
     users_path = create_path_string(consts.USERS_DIRECTORY)
-
     dirs = os.listdir(users_path)
-
     names = []
-
     for file_name in dirs:
         if is_file_json(file_name):
             name_parts = file_name.split('.')
             names.append('.'.join(name_parts[:-1]))
-
     return names

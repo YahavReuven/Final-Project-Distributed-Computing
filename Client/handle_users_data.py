@@ -1,20 +1,18 @@
 """
 Module used to handle the data of the users.
 """
-
 import json
 from functools import wraps
 import ipaddress
 
+import consts
 from handle_requests import request_register_device
 from utils import create_path_string
-import consts
 from errors import InvalidIPv4Address, InvalidPortNumber
 from users_utils import get_users_names
 from data_models import User, StorageTaskStatistics, TaskStatistics
 from handle_json import CustomDecoder, CustomEncoder
 
-from uuid import uuid4
 
 # TODO: add costume json encoder and decoder
 
@@ -25,11 +23,10 @@ def name_based_singleton(cls):
 
     Note:
         The purpose of this function is to allow the creation of
-        a UsersDataHandler instance only if an instance (a user)
-        with the same user name isn't already created.
-
-        This is an helper function for the UsersDataHandler class and
-        should receive only this class.
+            a UsersDataHandler instance only if an instance (a user)
+            with the same user name isn't already created.
+        This is a helper function for the UsersDataHandler class and
+            should receive only this class.
 
     Args:
         cls (UsersDataHandler): the UsersDataHandler class.
@@ -80,20 +77,27 @@ class UsersDataHandler:
         device_id = self._set_device_id(server_ip, server_port)
         self._user = User(ip=server_ip, port=server_port, device_id=device_id)
         # TODO: only for testing
-        print(self._user_name, self.user.device_id)
         self._update_data_file()
 
     @staticmethod
     def _validate_new_user(server_ip: str, server_port: str):
         """
         Validates the user's data.
+
+        Args:
+            server_ip (str): the ip of the server.
+            server_port (str): the port of the server.
+
+        Raises:
+            InvalidIPv4Address: if an invalid ip address was passed.
+            InvalidPortNumber: if an invalid port number was passed.
+
         """
         try:
             ipaddress.ip_address(server_ip)
         except ValueError:
             raise InvalidIPv4Address
 
-        # TODO: check condition
         if not (server_port.isdigit() and
                 consts.MIN_PORT_NUM <= int(server_port) <= consts.MAX_PORT_NUM):
             raise InvalidPortNumber
@@ -104,7 +108,6 @@ class UsersDataHandler:
         """
         data_file_path = create_path_string(consts.USERS_DIRECTORY,
                                             self._user_name + consts.JSON_EXTENSION)
-
         with open(data_file_path, 'r') as file:
             self._user = json.load(file, cls=CustomDecoder)
 
@@ -118,10 +121,18 @@ class UsersDataHandler:
         with open(data_file_path, 'w') as file:
             json.dump(self.user, file, cls=CustomEncoder)
 
-    # TODO: maybe move outside function
+    # TODO: maybe move outside function. check function
     def _set_device_id(self, ip: str, port: int):
         """
         Sets the device id of the user.
+
+        Args:
+            ip (str): the ip of the server.
+            port (int): the port of the server.
+
+        Returns:
+            str: the device id.
+
         """
         names = get_users_names()
         for name in names:
@@ -131,8 +142,16 @@ class UsersDataHandler:
         return request_register_device(ip, port)
 
     def add_task(self, project_id: str, task_number: int, task_statistics: TaskStatistics):
+        """
+        Saves the statistics of a task.
+
+        Args:
+            project_id (str): the id ot the task's project.
+            task_number (int): the number of the task.
+            task_statistics (TaskStatistics): the statistics generated from the task.
+
+        """
         statistics = StorageTaskStatistics(project_id=project_id, task_number=task_number,
                                            statistics=task_statistics)
         self._user.tasks.append(statistics)
         self._update_data_file()
-        pass

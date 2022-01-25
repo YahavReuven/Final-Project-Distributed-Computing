@@ -1,3 +1,6 @@
+"""
+Module used for storage handling operations.
+"""
 import os
 import shutil
 import json
@@ -9,11 +12,19 @@ import consts
 
 # TODO: change
 def merge_results(project_id: str) -> dict:
+    """
+    Merges a project's results to one dict.
+
+    Args:
+        project_id (str): the id of the project.
+
+    Returns:
+        dict: the results.
+
+    """
     results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                       consts.PROJECT_STORAGE_RESULTS)
-
     results = {}
-
     directories = sorted(os.listdir(results_path))
 
     for directory in directories:
@@ -34,26 +45,31 @@ def merge_results(project_id: str) -> dict:
     return results
 
 
-def zip_additional_results(project_id) -> str:
+def zip_additional_results(project_id: str) -> str:
+    """
+    Zips the additional results of a project.
+
+    Args:
+        project_id (str): the id of the project.
+
+    Returns:
+        str: the zipped additional results.
+
+    """
     base_results_path = create_path_string(consts.PROJECTS_DIRECTORY, project_id,
                                            consts.PROJECT_STORAGE_RESULTS)
-
     temp_results_path = create_path_string(base_results_path,
                                            consts.TEMP_PROJECT_ADDITIONAL_RESULTS_DIRECTORY,
                                            from_current_directory=False)
-
     os.makedirs(temp_results_path, mode=0o777)
-
     tasks_storage = sorted(os.listdir(base_results_path))
 
     for task_directory in tasks_storage:
-        # TODO: not sure why this line is here
         if task_directory.isdigit():
             result_path = create_path_string(base_results_path, task_directory,
                                              consts.RETURNED_TASK_RESULTS_DIRECTORY,
                                              consts.RETURNED_TASK_ADDITIONAL_RESULTS_DIRECTORY,
                                              from_current_directory=False)
-
             if not os.path.isdir(result_path):
                 continue
 
@@ -68,10 +84,8 @@ def zip_additional_results(project_id) -> str:
                                                           consts.RETURNED_TASK_ADDITIONAL_RESULTS_DIRECTORY,
                                                           from_current_directory=False)
     zipped_results_path = shutil.make_archive(zipped_results_without_extension, 'zip', temp_results_path)
-
     with open(zipped_results_path, 'rb') as file:
         zipped_results = file.read()
 
     zipped_results = base64.b64encode(zipped_results).decode('utf-8')
-
     return zipped_results

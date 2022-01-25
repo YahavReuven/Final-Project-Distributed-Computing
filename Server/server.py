@@ -6,6 +6,7 @@ import threading
 import uvicorn
 from fastapi import FastAPI
 
+import consts
 from handle_devices import (register_device, get_devices_permissions, block_device,
                             unblock_device)
 from handle_projects import create_new_project, return_project_results
@@ -14,7 +15,6 @@ from database import DBHandler
 from initialize_server import init_server, update_db
 from data_models import SentTask, ReturnedProject, DevicePermissions
 from errors import ServerError, handle_server_error
-import consts
 
 app = FastAPI()
 

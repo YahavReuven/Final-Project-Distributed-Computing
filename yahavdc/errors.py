@@ -1,10 +1,10 @@
 """
 Module used to define costume errors.
 """
-
-from requests import Response
 import json
 import http
+
+from requests import Response
 
 
 class FunctionNotFoundError(Exception):
@@ -31,15 +31,33 @@ class ResultsBeforeCreationError(Exception):
 
 
 class ServerError(Exception):
-    """An error has occurred in the server"""
+    """An error has occurred in the server."""
 
 
 def check_response_error(response: Response):
+    """
+    Checks if an OK response was returned and handles it if not.
+
+    Args:
+        response (Response): the response's representation.
+
+    """
     if response.status_code != http.HTTPStatus.OK:
         handle_server_errors(response)
 
 
 def handle_server_errors(response: Response):
+    """
+    Prints the error message given in a non-OK response.
+
+    Args:
+        response (Response): the response's representation.
+
+    Raises:
+        ServerError: always raises this error.
+
+    """
     message = json.loads(response.text).get('message')  # TODO: make sure every error has 'message'
     print(message)
     raise ServerError
+.

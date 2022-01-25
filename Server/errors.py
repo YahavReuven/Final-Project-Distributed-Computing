@@ -1,7 +1,6 @@
 """
 Module used for custom errors and error handling.
 """
-
 from http import HTTPStatus
 
 from fastapi import Request
@@ -56,12 +55,13 @@ class NoTaskAvailable(BadRequestError):
     message = 'no task available'
 
 
-# TODO: check if needed
 class IDAuthenticationError(BadRequestError):
-    """Error raised if a given id is not authenticated to do the action which caused the error to be raised"""
+    """Error raised if a given id is not authenticated to do the action which caused
+     the error to be raised"""
+    message = 'id is not authenticated'
 
 
-class WorkerNotAuthenticatedError(IDNotFoundError):
+class WorkerNotAuthenticatedError(IDAuthenticationError):
     """Error raised if a worker is not authenticated to upload results to the task"""
     message = 'worker is not authenticated'
 
@@ -71,12 +71,15 @@ class InvalidBase64Error(BadRequestError):
     message = 'invalid base64 string'
 
 
-class DeviceIsBlocked(BadRequestError):
-    """ Error raised if a blocked device tried to get a task to run. """
+class DeviceIsBlocked(IDAuthenticationError):
+    """Error raised if a blocked device tried to get a task to run."""
     message = 'blocked device'
 
 
 async def handle_server_error(request: Request, exc: ServerError) -> JSONResponse:
+    """
+    Returns an error response to a client if one is raised.
+
+    """
     return JSONResponse(status_code=exc.status_code,
                         content={'message': exc.message})
-

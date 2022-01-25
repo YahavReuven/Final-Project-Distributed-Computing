@@ -16,11 +16,10 @@ from utils import create_path_string
 # TODO: maybe change results to own object
 def results_to_file(results: dict):
     """
-    Writes the results of a task to he results file.
-    Args:
-        results:
+    Writes the results of a task to the results file.
 
-    Returns:
+    Args:
+        results (dict): the results of the task.
 
     """
     results_file = create_path_string(consts.TASKS_DIRECTORY,
@@ -51,7 +50,14 @@ def zip_additional_results() -> str:
     return zipped_results_path
 
 
-def get_zip_additional_results():
+def get_zip_additional_results() -> str:
+    """
+    Loads the finished task's additional results from its file and returns it.
+
+    Returns:
+        bytes: the additional results of a finished task.
+
+    """
     zipped_results_path = zip_additional_results()
 
     with open(zipped_results_path, 'rb') as file:
@@ -96,19 +102,19 @@ def get_task_cls(task: ReceivedTask):
 # TODO: maybe get only the decoded iterable
 def get_task_iterable(task: ReceivedTask):
     """
-    Turns the decoded iterable received from task to an object.
+    Turns the decoded iterator received from task to an object.
 
     Args:
         task (ReceivedTask): the task.
 
     Returns:
-        the iterable as an object.
+        the iterator as an object.
 
     """
-    iterable = task.base64_serialized_iterable
-    iterable = base64.b64decode(iterable)
-    iterable = dill.loads(iterable)
-    return iterable
+    iterator = task.base64_serialized_iterable
+    iterator = base64.b64decode(iterator)
+    iterator = dill.loads(iterator)
+    return iterator
 
 
 def has_additional_results() -> bool:
@@ -127,6 +133,7 @@ def has_additional_results() -> bool:
 def init_task_result_storage():
     """
     Initializes the storage for a task's results.
+
     """
     task_path = create_path_string(consts.TASKS_DIRECTORY)
     additional_results_path = create_path_string(task_path, consts.ADDITIONAL_RESULTS_DIRECTORY,
@@ -142,6 +149,7 @@ def init_task_result_storage():
 def clean_results_directory():
     """
     Deletes the task's results storage.
+
     """
     task_path = create_path_string(consts.TASKS_DIRECTORY)
     shutil.rmtree(task_path)
