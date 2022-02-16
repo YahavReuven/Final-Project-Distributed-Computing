@@ -33,7 +33,6 @@ class CustomEncoder(json.JSONEncoder):
 
     def default(self, obj: object):
         """ Called in case json can't serialize object. """
-        # TODO: find a better way
         x = encode_json_recursively(asdict(obj))
         return x
 
@@ -127,7 +126,6 @@ class DBHandler:
         with open(projects_database_file, 'w') as file:
             json.dump(self._db.projects_db, file, cls=CustomEncoder)
 
-    # TODO: check annotations
     def get_database(self, database_type: DatabaseType) -> \
             Union[list[list[Device]], list[list[Project]], None]:
         """
@@ -142,7 +140,6 @@ class DBHandler:
         """
         results = []
 
-        # TODO: raise error
         if database_type & DatabaseType.devices_db and \
                 database_type & DatabaseType.projects_db:
             return None
@@ -176,8 +173,6 @@ class DBHandler:
         if database_type & DatabaseType.waiting_to_return_projects_db:
             self.get_database(DatabaseType.waiting_to_return_projects_db)[0].append(obj)
 
-    # TODO: check if return is needed
-    # TODO: allow to remove a Device and project from finished projects
     def remove_from_database(self, obj: Project, database_type: DatabaseType) -> bool:
         """
         Removes a project from the database.
@@ -198,7 +193,6 @@ class DBHandler:
             return True
         return False
 
-    # TODO: check if succeeded
     def move_project(self, project: Project, move_from: DatabaseType,
                      move_to: DatabaseType):
         """
@@ -213,8 +207,6 @@ class DBHandler:
         self.add_to_database(project, move_to)
         self.remove_from_database(project, move_from)
 
-
-# TODO: add sort devices, sort projects, sort projects in device
 
 class DBUtils:
 
@@ -258,15 +250,13 @@ class DBUtils:
         if from_dict:
             device_db = DeviceDB(**device_db)
         device_id = device_db.device_id
-        # TODO: maybe change
         projects = [DBUtils.find_in_db(project_id, DatabaseType.projects_db, db)
                     for project_id in device_db.projects_ids]
         is_blocked = device_db.is_blocked
         return Device(device_id=device_id, projects=projects, is_blocked=is_blocked)
 
-    # TODO: maybe raise errors for db
     @staticmethod
-    def find_in_db(search_id: str, database_type: DatabaseType, db: DBHandler = None)\
+    def find_in_db(search_id: str, database_type: DatabaseType, db: DBHandler = None) \
             -> Union[Device, Project, None]:
         """
         Looks for the object with the given id in the database specified in database_type.

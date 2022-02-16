@@ -13,7 +13,6 @@ import consts
 from utils import create_path_string
 
 
-# TODO: maybe change results to own object
 def results_to_file(results: dict):
     """
     Writes the results of a task to the results file.
@@ -81,7 +80,6 @@ def get_results() -> dict:
     return results
 
 
-# TODO: maybe get only the decoded class
 def get_task_cls(task: ReceivedTask):
     """
     Turns the decoded class received from task to a class object.
@@ -99,7 +97,6 @@ def get_task_cls(task: ReceivedTask):
     return parallel_cls
 
 
-# TODO: maybe get only the decoded iterable
 def get_task_iterable(task: ReceivedTask):
     """
     Turns the decoded iterator received from task to an object.

@@ -56,7 +56,6 @@ async def create_new_project(new_project: NewProject) -> str:
     return project_id
 
 
-# TODO: maybe remove the finished field in the database
 async def return_project_results(device_id: str, project_id: str) -> ReturnedProject:
     """
     Returns a project's results.

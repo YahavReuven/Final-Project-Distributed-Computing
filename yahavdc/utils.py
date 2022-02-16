@@ -24,4 +24,3 @@ def create_path_string(*directories: str, from_current_directory: bool = True) -
         path.append(str(directory))
 
     return '/'.join(path)
-.

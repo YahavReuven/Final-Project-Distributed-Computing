@@ -10,9 +10,6 @@ from handle_responses import (handle_register_response, handle_new_task_response
 from data_models import ReturnedTask, ReceivedTask
 
 
-# TODO: maybe change that the functions receives a UsersDataHandler object
-
-
 def request_register_device(server_ip: str, server_port: int) -> str:
     """
     Sends a register_device request to the server.

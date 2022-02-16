@@ -7,7 +7,6 @@ from utils import create_path_string, is_file_json
 import consts
 
 
-# TODO: check with remove suffix
 def get_users_names() -> list:
     """
     Returns all the users' names.

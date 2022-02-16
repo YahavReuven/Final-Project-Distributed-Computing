@@ -60,4 +60,3 @@ def get_user(user_name: str) -> User:
         user = json.load(file, cls=CustomDecoder)
 
     return user
-.

@@ -40,7 +40,6 @@ def is_file_json(file_name: str) -> bool:
     return file_name.endswith('.json')
 
 
-# TODO: check function, external
 def parse_timedelta(str_repr: str):
     """
     Converts a timedelta string representation to timedelta.

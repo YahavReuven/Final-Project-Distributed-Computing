@@ -37,4 +37,3 @@ def create_iterator_to_send(iterator: Iterator):
     serialized_iterable = dill.dumps(iterator)
     encoded_iterable = base64.b64encode(serialized_iterable).decode('utf-8')
     return encoded_iterable
-.

@@ -65,7 +65,6 @@ def init_projects_database():
             json.dump(ProjectsDB(), file, cls=CustomEncoder)
 
 
-# TODO: move to storage_handler
 def init_project_storage(project_id: str):
     """
     Initializes the project with the project's id storage space.

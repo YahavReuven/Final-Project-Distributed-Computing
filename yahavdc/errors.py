@@ -57,7 +57,6 @@ def handle_server_errors(response: Response):
         ServerError: always raises this error.
 
     """
-    message = json.loads(response.text).get('message')  # TODO: make sure every error has 'message'
+    message = json.loads(response.text).get('message')
     print(message)
     raise ServerError
-.

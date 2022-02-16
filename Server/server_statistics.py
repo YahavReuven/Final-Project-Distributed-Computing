@@ -5,8 +5,6 @@ from database import DBHandler
 from consts import DatabaseType
 from data_models import ProjectStatisticsServer
 
-# TODO: handle errors, project does not exists
-
 
 def create_project_statistics(project_id: str):
     """

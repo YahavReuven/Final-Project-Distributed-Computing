@@ -49,11 +49,9 @@ class User:
     tasks: list[TaskStatistics] = field(default_factory=list)
 
 
-# TODO: check annotation for dict
 @dataclass
 class ReturnedProject:
     """The data of a finished project."""
     results: dict
     base64_zipped_additional_results: str
     statistics: str  # of json
-.

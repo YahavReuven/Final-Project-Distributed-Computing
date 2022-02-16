@@ -49,7 +49,6 @@ class ReceivedTask:
     only_if_func: str
 
 
-# TODO: check if need to change to BaseModel
 @dataclass
 class ReturnedTask:
     """A finished task sent to the server."""

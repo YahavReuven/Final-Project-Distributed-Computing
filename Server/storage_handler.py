@@ -10,7 +10,6 @@ from utils import create_path_string
 import consts
 
 
-# TODO: change
 def merge_results(project_id: str) -> dict:
     """
     Merges a project's results to one dict.
@@ -77,7 +76,6 @@ def zip_additional_results(project_id: str) -> str:
             for file in additional_results:
                 file_path = create_path_string(result_path, file, from_current_directory=False)
                 shutil.move(file_path, temp_results_path)
-            # TODO: maybe check if empty
             os.rmdir(result_path)
 
     zipped_results_without_extension = create_path_string(base_results_path,

@@ -58,7 +58,6 @@ def authenticate_creator(device_id: str, project_id: str):
     raise ProjectNotFoundError
 
 
-# TODO: check docstring and annotation
 def authenticate_worker(worker_id: str, task: Task) -> Worker:
     """
     Checks if a device is a worker in the given task.

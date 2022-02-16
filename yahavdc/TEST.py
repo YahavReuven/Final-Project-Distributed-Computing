@@ -80,13 +80,13 @@ import itertools
 #             file.write("hello: " + str(number))
 
 
-input('1')
-start = time.time()
-project = Brouteforce()
-middle = time.time()
-input('2')
-end = time.time()
-print(end-start, middle-start)
-
-b = project.get_results()
-print(b)
+# input('1')
+# start = time.time()
+# project = Brouteforce()
+# middle = time.time()
+# input('2')
+# end = time.time()
+# print(end-start, middle-start)
+#
+# b = project.get_results()
+# print(b)

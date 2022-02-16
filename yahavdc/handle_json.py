@@ -16,4 +16,3 @@ class CustomDecoder(json.JSONDecoder):
         if isinstance(obj, dict) and 'ip' in obj:
             return User(**obj)
         return obj
-.

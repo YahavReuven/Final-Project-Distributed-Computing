@@ -53,4 +53,3 @@ def request_get_project_results(server_ip: str, server_port: str, device_id: str
                             f'device_id={device_id}&project_id={project_id}')
 
     return handle_get_project_response(response)
-.

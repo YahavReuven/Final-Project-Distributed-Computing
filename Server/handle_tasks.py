@@ -34,14 +34,12 @@ async def get_new_task(device_id: str) -> SentTask:
             to the worker. Extremely unlikely in a large network.
 
     """
-    # TODO: maybe send sliced iterator
     authenticate_device(device_id)
     db = DBHandler()
 
     for project in db.get_database(DatabaseType.active_projects_db)[0]:
         # if the project has a stop_immediately set to True,
         # the project is finished and doesn't create additional tasks
-        # TODO: might not be needed
         if project.stop_immediately:
             continue
 
@@ -62,7 +60,6 @@ async def get_new_task(device_id: str) -> SentTask:
                 add_worker_to_task(task, device_id)
                 return create_task_to_send(project.project_id, task_num)
 
-            # TODO: change in case more than one worker is needed for the task
             for worker in tasks[task_num].workers:
                 # checks if the task is expired and resends it in case it is.
                 is_expired = is_task_expired(worker)
@@ -76,10 +73,6 @@ async def get_new_task(device_id: str) -> SentTask:
     raise NoTaskAvailable
 
 
-# TODO: check waiting database
-# TODO: function too long
-# TODO: check if the project is finished and move to finished in database
-# TODO: check if statistics are valid
 async def return_task_results(returned_task: ReturnedTask):
     """
     Handles the results and statistics of a finished task.
@@ -97,14 +90,11 @@ async def return_task_results(returned_task: ReturnedTask):
     if not project_state:
         raise ProjectNotFoundError
 
-    # TODO: maybe delete worker. maybe delete when stop number is called. maybe store in database
     if 0 <= project.stop_number < returned_task.task_number:
         raise UnnecessaryTaskError
 
     task = project.tasks[returned_task.task_number]
-    # TODO: check if the task is already finished
     worker = authenticate_worker(returned_task.worker_id, task)
-    # TODO: check if there are results and additional results
     store_task_results(returned_task.project_id, returned_task.results,
                        returned_task.task_number)
 

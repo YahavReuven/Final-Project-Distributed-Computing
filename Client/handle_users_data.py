@@ -14,9 +14,6 @@ from data_models import User, StorageTaskStatistics, TaskStatistics
 from handle_json import CustomDecoder, CustomEncoder
 
 
-# TODO: add costume json encoder and decoder
-
-# TODO: check for a better way
 def name_based_singleton(cls):
     """
     An implementation of a name based singleton using decorator.
@@ -67,7 +64,6 @@ class UsersDataHandler:
         """
         Creates a new user.
         """
-        # TODO: change to gui
         server_ip = input("please enter the server's ip: ")
         server_port = input("please enter the port number: ")
 
@@ -76,7 +72,6 @@ class UsersDataHandler:
 
         device_id = self._set_device_id(server_ip, server_port)
         self._user = User(ip=server_ip, port=server_port, device_id=device_id)
-        # TODO: only for testing
         self._update_data_file()
 
     @staticmethod
@@ -121,7 +116,6 @@ class UsersDataHandler:
         with open(data_file_path, 'w') as file:
             json.dump(self.user, file, cls=CustomEncoder)
 
-    # TODO: maybe move outside function. check function
     def _set_device_id(self, ip: str, port: int):
         """
         Sets the device id of the user.

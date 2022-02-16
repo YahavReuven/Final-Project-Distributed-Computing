@@ -31,7 +31,7 @@ class ProjectStatisticsServer:
 
 class NewProject(BaseModel):
     """A new project sent from the client."""
-    creator_id: str  # TODO: the device id of the creator of the project. maybe change to user
+    creator_id: str
     task_size: int
     parallel_func: str
     stop_func: str
@@ -41,7 +41,6 @@ class NewProject(BaseModel):
     modules: list  # Should be empty if is not needed
 
 
-# TODO: check annotation for dict
 class ReturnedProject(BaseModel):
     """A finished project's data."""
     results: dict
@@ -53,7 +52,7 @@ class SentTask(BaseModel):
     """A task sent to the client."""
     project_id: str
     task_number: int
-    task_size: int  # TODO: maybe change
+    task_size: int
     base64_serialized_class: str
     base64_serialized_iterable: str
     modules: list
@@ -62,7 +61,6 @@ class SentTask(BaseModel):
     only_if_func: str
 
 
-# TODO: add results json
 class ReturnedTask(BaseModel):
     """A returned task from a worker."""
     worker_id: str
@@ -107,7 +105,6 @@ class Project:
     stop_immediately: bool = False
 
 
-# TODO: check for initalization
 @dataclass
 class ProjectStorage:
     """The stored data of a project in a file."""
@@ -120,7 +117,6 @@ class ProjectStorage:
     only_if_func: str
 
 
-# TODO: maybe add DeviceInfo that Device and DeviceDB will inherit from
 @dataclass
 class Device:
     """A device's representation in the memory database."""

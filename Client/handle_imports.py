@@ -4,7 +4,6 @@ Module used to handle imports when executing a task.
 import importlib
 
 
-# TODO: allow to work with third library
 def import_modules(modules: list, *functions):
     """
     Imports the given modules inside the given functions.

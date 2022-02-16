@@ -89,4 +89,3 @@ def save_additional_results(z_additional_results: str, results_path: str):
     with zipfile.ZipFile(z_additional_results_path) as zip_file:
         zip_file.extractall(additional_results_path)
     os.remove(z_additional_results_path)
-.

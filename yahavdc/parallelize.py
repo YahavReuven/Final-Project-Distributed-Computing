@@ -38,7 +38,6 @@ class Distribute:
         validate_user_name(self._user_name)
         self._iterator = iterator
         self._task_size = int(task_size)
-        # TODO: delete and find a way to do it from client
         self._results_path = results_path
         self._parallel_func = parallel_func
         self._stop_func = stop_func
@@ -133,4 +132,3 @@ class Distribute:
             save_results(project_results, self._results_path)
             save_statistics(self._results_path, project_results.statistics)
             return project_results.results
-.

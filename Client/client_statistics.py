@@ -7,7 +7,6 @@ from handle_users_data import UsersDataHandler
 from data_models import StorageTaskStatistics, TaskStatistics
 
 
-# TODO: maybe return NONE
 def get_task_statistics(user: UsersDataHandler, project_id: str, task_number: int) \
         -> StorageTaskStatistics:
     """

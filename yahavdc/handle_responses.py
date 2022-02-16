@@ -39,4 +39,3 @@ def handle_get_project_response(response: Response) -> ReturnedProject:
     project_data = json.loads(content)
     check_response_error(response)
     return ReturnedProject(**project_data)
-.

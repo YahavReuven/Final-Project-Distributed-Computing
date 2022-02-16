@@ -23,4 +23,3 @@ def save_statistics(results_path: str, statistics: str):
     stats_dict = json.loads(statistics)
     with open(path, "w") as file:
         json.dump(stats_dict, file)
-.

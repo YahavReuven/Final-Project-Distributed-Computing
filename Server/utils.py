@@ -29,7 +29,6 @@ def validate_base64_and_decode(encoded: str, return_obj: bool = True):
         return obj
 
 
-# TODO: maybe replace with os.path.join
 def create_path_string(*directories: str, from_current_directory: bool = True) -> str:
     """
     Creates a string representing the path from the *directories.
@@ -54,7 +53,6 @@ def create_path_string(*directories: str, from_current_directory: bool = True) -
     return '/'.join(path)
 
 
-# TODO: check function, external
 def parse_timedelta(str_repr: str):
     """
     Converts a timedelta string representation to timedelta.

@@ -45,4 +45,3 @@ def validate_function_present(cls, function_name: str):
     function = getattr(cls(), function_name)
     if not callable(function):
         raise FunctionNotFoundError
-.

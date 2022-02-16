@@ -46,7 +46,6 @@ def execute_multiple_tasks(user: UsersDataHandler, num_of_tasks: int):
     """
     for i in range(num_of_tasks):
         response = execute_task(user)
-        # TODO: handle response
 
 
 def execute_task(user: UsersDataHandler):
@@ -102,13 +101,11 @@ class TaskExecUtils:
         # init the task storage for the results
         init_task_result_storage()
 
-        # TODO: maybe move to server
         # slice the iterable
         start = cls.task.task_number * cls.task.task_size
         end = start + cls.task.task_size
         iterable = islice(iterable, start, end)
 
-        # TODO: maybe add has_parallel_function
         has_stop_func = len(cls.task.stop_func)
         has_only_if_func = len(cls.task.only_if_func)
 
@@ -122,7 +119,6 @@ class TaskExecUtils:
         import_modules(cls.task.modules, parallel_func, stop_func, only_if_func)
         pure_run_time_start = datetime.utcnow()
         for param_value in iterable:
-            # TODO: assumes another client is correct
             param_storage = param_value
             if type(param_value) != int and type(param_value) != float and type(param_value) != bool and type(
                     param_value) is not None:
