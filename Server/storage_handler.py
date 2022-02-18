@@ -32,7 +32,7 @@ def merge_results(project_id: str) -> dict:
                                          consts.RESULTS_FILE, from_current_directory=False)
         with open(result_file, 'r') as file:
             results.update(json.load(file))
-
+        os.chmod(result_file, mode=0o777)
         os.remove(result_file)
 
     results_json_file = create_path_string(results_path, consts.RESULTS_FILE,
@@ -76,6 +76,7 @@ def zip_additional_results(project_id: str) -> str:
             for file in additional_results:
                 file_path = create_path_string(result_path, file, from_current_directory=False)
                 shutil.move(file_path, temp_results_path)
+            os.chmod(result_path, mode=0o777)
             os.rmdir(result_path)
 
     zipped_results_without_extension = create_path_string(base_results_path,

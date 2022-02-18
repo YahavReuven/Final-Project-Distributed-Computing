@@ -10,7 +10,8 @@ from datetime import datetime
 from database import CustomDecoder
 import consts
 from data_models import Task, SentTask, Worker, Project
-from utils import validate_base64_and_decode, create_path_string
+from utils import (validate_base64_and_decode, create_path_string,
+                   rmtree_onerror_remove_readonly)
 
 
 def add_new_task_to_database(project: Project) -> Task:
@@ -138,6 +139,7 @@ def store_task_additional_results(project_id: str, base64_zipped_additional_resu
     with zipfile.ZipFile(temp_results_file) as zip_file:
         zip_file.extractall(results_path)
 
+    os.chmod(temp_results_file, mode=0o777)
     os.remove(temp_results_file)
 
 
@@ -164,7 +166,7 @@ def delete_unnecessary_tasks_storage(project: Project, stop_called_task_number: 
         if task_directory != str(stop_called_task_number):
             task_path = create_path_string(results_path, task_directory,
                                            from_current_directory=False)
-            shutil.rmtree(task_path)
+            shutil.rmtree(task_path, onerror=rmtree_onerror_remove_readonly)
 
 
 def is_task_expired(worker: Worker) -> bool:

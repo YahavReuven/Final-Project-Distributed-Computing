@@ -1,8 +1,10 @@
 """
 Module used to provide utils.
 """
-from datetime import timedelta
 import re
+import os
+import stat
+from datetime import timedelta
 
 
 def create_path_string(*directories: str, from_current_directory: bool = True) -> str:
@@ -67,3 +69,15 @@ def parse_timedelta(str_repr: str):
     else:
         return timedelta(hours=time_dict['h'],
                          minutes=time_dict['m'], seconds=time_dict['s'])
+
+
+def rmtree_onerror_remove_readonly(func, path, _):
+    """
+    Clear the readonly bit and reattempt the removal.
+
+    Note:
+         is called only by rmtree.
+
+    """
+    os.chmod(path, stat.S_IWRITE)
+    func(path)

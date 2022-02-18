@@ -10,7 +10,7 @@ import dill
 
 from data_models import ReceivedTask
 import consts
-from utils import create_path_string
+from utils import create_path_string, rmtree_onerror_remove_readonly
 
 
 def results_to_file(results: dict):
@@ -149,4 +149,4 @@ def clean_results_directory():
 
     """
     task_path = create_path_string(consts.TASKS_DIRECTORY)
-    shutil.rmtree(task_path)
+    shutil.rmtree(task_path, onerror=rmtree_onerror_remove_readonly)

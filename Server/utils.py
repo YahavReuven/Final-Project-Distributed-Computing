@@ -4,6 +4,8 @@ Module used to provide utils.
 import base64
 import binascii
 import re
+import os
+import stat
 from datetime import timedelta
 
 from errors import InvalidBase64Error
@@ -63,6 +65,9 @@ def parse_timedelta(str_repr: str):
     Returns:
         timedelta: the timedelta object.
 
+    Raises:
+        ValueError: if the given string doesn't represent a timedelta object.
+
     """
     if 'day' in str_repr:
         match_obj = re.match(r'(?P<d>[-\d]+) day[s]*, (?P<h>\d+):'
@@ -71,7 +76,7 @@ def parse_timedelta(str_repr: str):
         match_obj = re.match(r'(?P<h>\d+):(?P<m>\d+):'
                              r'(?P<s>\d[\.\d+]*)', str_repr)
     if not match_obj:
-        return ''
+        raise ValueError
 
     time_dict = {key: float(val) for key, val in match_obj.groupdict().items()}
     if 'd' in time_dict:
@@ -80,3 +85,15 @@ def parse_timedelta(str_repr: str):
     else:
         return timedelta(hours=time_dict['h'],
                          minutes=time_dict['m'], seconds=time_dict['s'])
+
+
+def rmtree_onerror_remove_readonly(func, path, _):
+    """
+    Clear the readonly bit and reattempt the removal.
+
+    Note:
+         is called only by rmtree.
+
+    """
+    os.chmod(path, stat.S_IWRITE)
+    func(path)

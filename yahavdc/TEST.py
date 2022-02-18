@@ -39,30 +39,30 @@ import itertools
 #         return prime
 
 
-# @Distribute('alex', range(40), 10, './Results', parallel_func='main', only_if_func='only', modules=['math'])
-# class A:
-#
-#     @classmethod
-#     def main(cls, number):
-#         print(math.sqrt(9))
-#         cls.b(number)
-#         return f'{int(number/10)}-{number}'
-#
-#     @staticmethod
-#     def b(number):
-#         print(math.sqrt(4))
-#         with open(f'./task/additional_results/{int(number/10)}-{number}.txt', 'w') as file:
-#             file.write("hello: " + str(number))
-#
-#     @staticmethod
-#     def stop(str_num):
-#         num = int((str_num.split("-"))[1])
-#         return num == 10
-#
-#     @staticmethod
-#     def only(str_num):
-#         num = int((str_num.split("-"))[1])
-#         return num % 2 == 0
+@Distribute('alex', range(40), 10, './Results', parallel_func='main', only_if_func='only', modules=['math'])
+class A:
+
+    @classmethod
+    def main(cls, number):
+        print(math.sqrt(9))
+        cls.b(number)
+        return f'{int(number/10)}-{number}'
+
+    @staticmethod
+    def b(number):
+        print(math.sqrt(4))
+        with open(f'./task/additional_results/{int(number/10)}-{number}.txt', 'w') as file:
+            file.write("hello: " + str(number))
+
+    @staticmethod
+    def stop(str_num):
+        num = int((str_num.split("-"))[1])
+        return num == 10
+
+    @staticmethod
+    def only(str_num):
+        num = int((str_num.split("-"))[1])
+        return num % 2 == 0
 
 # @Distribute('alex', range(40), 10, './Results', modules=['math'])
 # class A:
@@ -80,13 +80,13 @@ import itertools
 #             file.write("hello: " + str(number))
 
 
-# input('1')
-# start = time.time()
-# project = Brouteforce()
-# middle = time.time()
-# input('2')
-# end = time.time()
-# print(end-start, middle-start)
-#
-# b = project.get_results()
-# print(b)
+input('1')
+start = time.time()
+project = A()
+middle = time.time()
+input('2')
+end = time.time()
+print(end-start, middle-start)
+
+results = project.get_results()
+print(results)

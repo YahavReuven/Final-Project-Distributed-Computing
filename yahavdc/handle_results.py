@@ -88,4 +88,6 @@ def save_additional_results(z_additional_results: str, results_path: str):
         file.write(z_additional_results)
     with zipfile.ZipFile(z_additional_results_path) as zip_file:
         zip_file.extractall(additional_results_path)
+
+    os.chmod(z_additional_results_path, mode=0o777)
     os.remove(z_additional_results_path)

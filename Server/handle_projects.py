@@ -16,7 +16,8 @@ from database import DBHandler, DBUtils, CustomEncoder
 from initialize_server import init_project_storage
 from storage_handler import merge_results, zip_additional_results
 from authentication import authenticate_creator
-from utils import create_path_string, validate_base64_and_decode
+from utils import (create_path_string, validate_base64_and_decode,
+                   rmtree_onerror_remove_readonly)
 from server_statistics import create_project_statistics
 
 
@@ -186,4 +187,4 @@ def delete_finished_project_storage(project: Project):
 
     """
     project_path = create_path_string(consts.PROJECTS_DIRECTORY, project.project_id)
-    shutil.rmtree(project_path)
+    shutil.rmtree(project_path, onerror=rmtree_onerror_remove_readonly)
