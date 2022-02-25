@@ -21,7 +21,7 @@ RETURNED_TASK_ADDITIONAL_RESULTS_DIRECTORY = 'additional_results'
 TEMP_PROJECT_ADDITIONAL_RESULTS_DIRECTORY = 'temp'
 RESULTS_FILE = 'results.json'
 
-SENT_TASK_VALIDITY = timedelta(days=1)
+SENT_TASK_VALIDITY = timedelta(minutes=5) # days=1
 DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
 
 UPDATE_DB_DELAY = 60*0.1

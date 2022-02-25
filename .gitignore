@@ -1,6 +1,7 @@
 /.venv/
 /.idea/
 /yahavdc/.idea/
+/yahavdc/__pycache__
 /yahavpc_DELETE/
 /Tests
 /Server/.idea
