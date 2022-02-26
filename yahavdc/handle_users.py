@@ -5,11 +5,11 @@ import os
 import json
 from pathlib import Path
 
-import consts
-from utils import create_path_string
-from errors import UserNotFoundError
-from data_models import User
-from handle_json import CustomDecoder
+from .consts import *
+from .utils import create_path_string
+from .errors import UserNotFoundError
+from .data_models import User
+from .handle_json import CustomDecoder
 
 
 def get_user_name_path(user_name: str) -> str:
@@ -23,8 +23,8 @@ def get_user_name_path(user_name: str) -> str:
         str: the path of the user's data file.
 
     """
-    return create_path_string(str(Path.home()), consts.APP_NAME, consts.USERS_DIRECTORY,
-                              user_name + consts.JSON_EXTENSION,
+    return create_path_string(str(Path.home()), APP_NAME, USERS_DIRECTORY,
+                              user_name + JSON_EXTENSION,
                               from_current_directory=False)
 
 

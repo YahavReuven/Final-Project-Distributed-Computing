@@ -3,7 +3,7 @@ Module used for json custom handling.
 """
 import json
 
-from data_models import User
+from .data_models import User
 
 
 class CustomDecoder(json.JSONDecoder):

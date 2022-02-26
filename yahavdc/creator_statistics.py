@@ -3,8 +3,8 @@ Module used for statistics handling.
 """
 import json
 
-import consts
-from utils import create_path_string
+from .consts import *
+from .utils import create_path_string
 
 
 def save_statistics(results_path: str, statistics: str):
@@ -17,7 +17,7 @@ def save_statistics(results_path: str, statistics: str):
 
     """
     path = create_path_string(results_path,
-                              consts.STATISTICS_FILE + consts.JSON_EXTENSION,
+                              STATISTICS_FILE + JSON_EXTENSION,
                               from_current_directory=False)
 
     stats_dict = json.loads(statistics)

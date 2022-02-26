@@ -5,38 +5,39 @@ import time
 import string
 import itertools
 
-# broutefore_iterator = itertools.product(string.ascii_letters + string.digits, repeat=6)
-# @Distribute('alex', broutefore_iterator, int(1.5e8), './Results', parallel_func='create_hash',
-#             stop_func='check_pass', modules=['hashlib'])
-# class Brouteforce:
-#     pass_hash = 'ff37814ec1f367f9b0c9fc6b16db6fba'
-#
-#     @classmethod
-#     def create_hash(cls, guess):
-#         guess = ''.join(guess)
-#         end_pwd = guess.encode('utf-8')
-#         digest = hashlib.md5(end_pwd.strip()).hexdigest()
-#         return digest
-#
-#     @classmethod
-#     def check_pass(cls, digset):
-#         return digset == cls.pass_hash
+bruteforce_iterator = itertools.product(string.ascii_letters + string.digits, repeat=6)
 
 
-
-@Distribute('beni', range(10**8), 10**6, './Results', parallel_func='is_prime', only_if_func='write_num')
-class PrimesBellowN:
+@Distribute('alex', bruteforce_iterator, int(1.5e8), './Results', parallel_func='create_hash',
+            stop_func='check_pass', modules=['hashlib'])
+class Bruteforce:
+    pass_hash = 'ff37814ec1f367f9b0c9fc6b16db6fba'
 
     @classmethod
-    def is_prime(cls, number: int):
-        for i in range(2, int(number**0.5 + 1)):
-            if number % i == 0:
-                return False
-        return True
+    def create_hash(cls, guess):
+        guess = ''.join(guess)
+        end_pwd = guess.encode('utf-8')
+        digest = hashlib.md5(end_pwd.strip()).hexdigest()
+        return digest
 
-    @staticmethod
-    def write_num(prime: bool):
-        return prime
+    @classmethod
+    def check_pass(cls, digset):
+        return digset == cls.pass_hash
+
+
+# @Distribute('beni', range(10**8), 10**6, './Results', parallel_func='is_prime', only_if_func='write_num')
+# class PrimesBellowN:
+#
+#     @classmethod
+#     def is_prime(cls, number: int):
+#         for i in range(2, int(number**0.5 + 1)):
+#             if number % i == 0:
+#                 return False
+#         return True
+#
+#     @staticmethod
+#     def write_num(prime: bool):
+#         return prime
 
 
 # @Distribute('alex', range(40), 10, './Results', parallel_func='main', only_if_func='only', modules=['math'])
@@ -82,11 +83,11 @@ class PrimesBellowN:
 
 input('1')
 start = time.time()
-project = PrimesBellowN()
+project = Bruteforce()
 middle = time.time()
 input('2')
 end = time.time()
-print(end-start, middle-start)
+print(end - start, middle - start)
 
 results = project.get_results()
 print(results)

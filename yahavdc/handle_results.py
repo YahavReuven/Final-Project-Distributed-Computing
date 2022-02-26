@@ -6,9 +6,9 @@ import os
 import base64
 import zipfile
 
-import consts
-from utils import create_path_string
-from data_models import ReturnedProject
+from .consts import *
+from .utils import create_path_string
+from .data_models import ReturnedProject
 
 
 def save_results(returned_project: ReturnedProject, results_path: str):
@@ -61,7 +61,7 @@ def save_results_file(results: dict, results_path: str):
 
     """
     results_file = create_path_string(results_path,
-                                      consts.RESULTS_FILE + consts.JSON_EXTENSION,
+                                      RESULTS_FILE + JSON_EXTENSION,
                                       from_current_directory=False)
     with open(results_file, 'w') as file:
         json.dump(results, file)
@@ -78,11 +78,11 @@ def save_additional_results(z_additional_results: str, results_path: str):
     """
     z_additional_results = base64.b64decode(z_additional_results.encode('utf-8'))
     additional_results_path = create_path_string(results_path,
-                                                 consts.ADDITIONAL_RESULTS_DIRECTORY,
+                                                 ADDITIONAL_RESULTS_DIRECTORY,
                                                  from_current_directory=False)
     os.makedirs(additional_results_path, mode=0o777)
     z_additional_results_path = create_path_string(results_path,
-                                                   consts.ZIPPED_ADDITIONAL_RESULTS,
+                                                   ZIPPED_ADDITIONAL_RESULTS,
                                                    from_current_directory=False)
     with open(z_additional_results_path, 'wb') as file:
         file.write(z_additional_results)

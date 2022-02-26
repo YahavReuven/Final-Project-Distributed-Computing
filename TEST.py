@@ -8,7 +8,7 @@ bruteforce_iterator = itertools.product(string.ascii_letters +
                                         string.digits, repeat=password_length)
 
 
-@Distribute('test', bruteforce_iterator, int(1.5e8), './Results',
+@Distribute('test', bruteforce_iterator, int(1.5e7), './Results',
             parallel_func='create_hash', stop_func='check_pass',
             modules=['hashlib'])
 class Bruteforce:
@@ -27,45 +27,46 @@ class Bruteforce:
 
 
 project = Bruteforce()
+input('1')
 results = project.get_results()
 print(results)
 
 
 
-from yahavdc import Distribute
-
-
-@Distribute('alex', range(10 ** 8), 10 ** 6, './Results', parallel_func='is_prime',
-            only_if_func='write_num')
-class PrimesBellowN:
-
-    @classmethod
-    def is_prime(cls, number: int):
-        for i in range(2, int(number ** 0.5 + 1)):
-            if number % i == 0:
-                return False
-        return True
-
-    @staticmethod
-    def write_num(prime: bool):
-        return prime
-
-
-project = PrimesBellowN()
-results = project.get_results()
-print(results)
-.
-
-
-
-from yahavdc import Distribute
-
-
-@Distribute(...)
-class Project:
-    ...
-
-
-project = Project()
-# Do something
-results = project.get_results()
+# from yahavdc import Distribute
+#
+#
+# @Distribute('alex', range(10 ** 8), 10 ** 6, './Results', parallel_func='is_prime',
+#             only_if_func='write_num')
+# class PrimesBellowN:
+#
+#     @classmethod
+#     def is_prime(cls, number: int):
+#         for i in range(2, int(number ** 0.5 + 1)):
+#             if number % i == 0:
+#                 return False
+#         return True
+#
+#     @staticmethod
+#     def write_num(prime: bool):
+#         return prime
+#
+#
+# project = PrimesBellowN()
+# results = project.get_results()
+# print(results)
+# .
+#
+#
+#
+# from yahavdc import Distribute
+#
+#
+# @Distribute(...)
+# class Project:
+#     ...
+#
+#
+# project = Project()
+# # Do something
+# results = project.get_results()

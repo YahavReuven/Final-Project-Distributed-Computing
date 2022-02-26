@@ -3,8 +3,8 @@ Module used to handle requests sent to the server.
 """
 import requests
 
-from data_models import NewProject
-from handle_responses import handle_new_project_response, handle_get_project_response
+from .data_models import NewProject
+from .handle_responses import handle_new_project_response, handle_get_project_response
 
 
 def request_upload_new_project(server_ip: str, server_port: str, project: NewProject):

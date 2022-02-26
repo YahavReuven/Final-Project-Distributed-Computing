@@ -182,4 +182,9 @@ class TaskExecUtils:
             returned_task.is_exhausted = True
 
         cls.task = None
-        return request_upload_task_results(user.user.ip, user.user.port, returned_task)
+        response = None
+        try:
+            response = request_upload_task_results(user.user.ip, user.user.port, returned_task)
+        except ServerError:
+            pass
+        return response

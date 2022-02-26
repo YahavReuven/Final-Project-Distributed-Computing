@@ -1,7 +1,7 @@
 """
 Module used to handle the special functions of a project.
 """
-from errors import FunctionNotFoundError, UnsupportedSpecialFunctionsCombination
+from .errors import FunctionNotFoundError, UnsupportedSpecialFunctionsCombination
 
 
 def validate_special_functions(cls, *, parallel_func: str, stop_func: str,

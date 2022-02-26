@@ -5,8 +5,8 @@ import json
 
 from requests import Response
 
-from data_models import ReturnedProject
-from errors import check_response_error
+from .data_models import ReturnedProject
+from .errors import check_response_error
 
 
 def handle_new_project_response(response: Response) -> str:
