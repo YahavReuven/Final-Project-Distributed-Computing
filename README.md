@@ -65,7 +65,7 @@ The server handles all of the communication between all of the clients.
 To install and run the server:
 
 ```shell
-git clone https://github.com/YahavReuven/Final-Project.git
+git clone https://github.com/YahavReuven/Final-Project-Distributed-Computing.git
 cd ./Final-Project/Server
 pip install -r requirements.txt
 python server.py
@@ -108,7 +108,7 @@ In case a worker takes too long to execute the task, there is a safeguard which 
 To install "yahavdc":
 
 ```shell
-git clone https://github.com/YahavReuven/Final-Project.git
+git clone https://github.com/YahavReuven/Final-Project-Distributed-Computing.git
 cd ./Final-Project/yahavdc
 pip install -r requirements.txt
 ```
@@ -210,7 +210,7 @@ It is required in order to be both a creator or a worker.
 To install and run the client side application:
 
 ```shell
-git clone https://github.com/YahavReuven/Final-Project.git
+git clone https://github.com/YahavReuven/Final-Project-Distributed-Computing.git
 cd ./Final-Project/Client
 pip install -r requirements.txt
 python app.py
