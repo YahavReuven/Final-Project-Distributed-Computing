@@ -9,5 +9,5 @@
 /Client/.idea
 /Client/__pycache__
 /venv/
-/TEST.py/
-/TEST_RUN.py/
+TEST.py/
+TEST_RUN.py/
