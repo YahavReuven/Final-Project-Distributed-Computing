@@ -13,7 +13,7 @@ Table of Contents
     + [How to Use "yahavdc"](#how-to-use--yahavdc-)
       - [The Class Decorator Factory - Distribute](#the-class-decorator-factory---distribute)
         * [The Special Functions](#the-special-functions)
-        * [The Attributes](#the-attributes)
+        * [The Paramaters](#the-paramaters)
       - [Initiate the Project](#initiate-the-project)
       - [Results and Statistics](#results-and-statistics)
   * [The Client Side Application](#the-client-side-application)
@@ -173,7 +173,7 @@ met the function's requirement.
 
 The use of both the "parallel function" and the "only if function" is **not** supported, and will raise an error.
 
-##### The Attributes
+##### The Paramaters
 
 * **`user_name`** - The name which ids the server.
 * **`iterator`** - The full iterator which holds the values with which to execute the project.  
