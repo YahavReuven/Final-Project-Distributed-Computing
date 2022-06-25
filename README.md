@@ -1,4 +1,4 @@
-Table of Contents
+Table of Contents 
 - [Final Project - Distributed Computing](#final-project---distributed-computing)
   * [Objective](#objective)
   * [A Word of Caution](#a-word-of-caution)
